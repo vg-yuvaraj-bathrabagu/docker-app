@@ -1,0 +1,65 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createModel" method="post">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Model</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Title
+                        <star>*</star>
+                    </label>
+                    <input value="{{ simulation.title }}" class="form-control" type="text" name="title"
+                           data-rule-required="true" data-msg-required="Please enter the title"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Type
+                        <star>*</star>
+                    </label>
+                    <select id="name" name="type" class="form-control" data-rule-required="true"
+                            data-msg-required="Please enter the type of watcher">
+                        <option value="">----</option>
+                        <option value="SNS">SNS</option>
+                        <option value="SQS">SQS</option>
+                        <option value="SNS/SQS">SNS/SQS</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="hidden" id="name_val" value="{{ simulation.category }}"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Description
+                        <star>*</star>
+                    </label>
+                    <textarea class="form-control" rows="3" name="description" data-rule-required="true"
+                              data-msg-required="Please enter the description">{{ simulation.description }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label required class="control-label">Code
+                        <star>*</star>
+                    </label>
+                    <textarea class="form-control querystring" rows="3" name="querystring" data-rule-required="true"
+                              data-msg-required="Please enter the code">{{ simulation.querystring }}</textarea>
+                </div>
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+                <div class="error" id="error_contents"></div>
+                <input type="hidden" name="id" value="{{ simulation.id }}"/>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

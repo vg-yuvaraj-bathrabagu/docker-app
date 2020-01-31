@@ -1,0 +1,616 @@
+Index: src/Controller/FileController.php
+===================================================================
+--- src/Controller/FileController.php	(revision 515565461437717d74dea23e870275ebd041961a)
++++ src/Controller/FileController.php	(revision 515565461437717d74dea23e870275ebd041961a)
+@@ -1,101 +0,0 @@
+-<?php
+-namespace App\Controller;
+-
+-use App\Entity\Template;
+-use App\Form\TemplateType;
+-use App\Helper\Utils;
+-use App\Repository\TemplateRepository;
+-use Keboola\Csv\CsvFile;
+-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+-use Symfony\Component\HttpFoundation\Request;
+-use Symfony\Component\Routing\Annotation\Route;
+-
+-class FileController extends Controller {
+-
+-    use Utils;
+-    /**
+-     * @Route("/createtemplate-step1", methods={"POST"})
+-     */
+-    public function createTemplate(Request $request, TemplateRepository $templateRepository) {
+-
+-        $template = new Template();
+-        // TODO: Set the account for this user
+-        // $template->setAccount($this->getAccount($this->getUser()));
+-        $form = $this->createForm(TemplateType::class, $template);
+-        $form->handleRequest($request);
+-
+-        $file = $template->getSamplefile();
+-        $fileName = time().'.'.$file->guessExtension();
+-
+-        try {
+-            $file->move($this->getParameter("templates_upload_directory"), $fileName);
+-        } catch (\FileException $e) {
+-
+-        }
+-
+-        // handle the uploaded file
+-        // read the first two lines of the file
+-        // Open a file for reading
+-        /* $samplefile = fopen($this->getParameter("templates_upload_directory").$fileName, "r");
+-        // Check if you are at the end of the file
+-        $sample_row = [];
+-        for ($i = 0; $i < 2; $i++) {
+-            $line = fgets($samplefile);
+-            print_r("The line at ".$i." is ".$line."<br><br>");
+-            if ($line === NULL) {
+-                if ($i == 0) {
+-                    // no header
+-                    throw new \Exception("File does not contain any data");
+-                }
+-                if ($i == 1) {
+-                    // no header
+-                    throw new \Exception("File does not contain sample data row");
+-                }
+-            }
+-            $sample_row[] = $line;
+-
+-        }
+-
+-        fclose($samplefile);*/
+-
+-        $csvFile = new CsvFile($this->getParameter("templates_upload_directory").$fileName, $template->getDelimiterCharacter(), CsvFile::DEFAULT_ENCLOSURE, CsvFile::DEFAULT_ESCAPED_BY, 0);
+-
+-        $header = $csvFile->getHeader();
+-        //  move to the next row
+-        $csvFile->next();
+-        $first_row = $csvFile->current();
+-        print_r("Header Row ");print_r($header);print_r("<br>");
+-        print_r("First Row ");print_r($first_row);print_r("<br>");
+-
+-        $template->setSamplerow(implode(",", $header)."\n".implode(",", $first_row));
+-        $entityManager = $this->getDoctrine()->getManager();
+-        $entityManager->persist($template);
+-
+-        // actually executes the queries (i.e. the INSERT query)
+-        $entityManager->flush();
+-
+-        return $this->render('template_table.twig',
+-                                ['templates'=> $templateRepository->getAll($this->getUser()),
+-                                    'template_id' => $template->getId(),
+-                                    'form' => $this->createForm(TemplateType::class)->createView()]) ;
+-
+-    }
+-    /**
+-     * @Route("/templates")
+-     */
+-    public function index(TemplateRepository $templateRepository) {
+-        return $this->render("template.twig",
+-                ['templates'=> $templateRepository->getAll($this->getUser()),
+-                        'form' => $this->createForm(TemplateType::class, new Template())->createView()]);
+-    }
+-    /**
+-     * @Route("/templates/refresh")
+-     */
+-    public function refresh(TemplateRepository $templateRepository) {
+-        return $this->render("template_table.twig",
+-            ['templates'=> $templateRepository->getAll($this->getUser()),
+-                'form' => $this->createForm(TemplateType::class, new Template())->createView()]);
+-    }
+-
+-
+-}
+\ No newline at end of file
+Index: templates/template_wizard.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/template_wizard.twig	(date 1527623738000)
++++ templates/template_wizard.twig	(date 1527623738000)
+@@ -0,0 +1,144 @@
++{% extends 'base.html.twig' %}
++{% block body %}
++<div class="modal-dialog" role="document">
++    <!-- Modal content-->
++    <div class="modal-content">
++        <div class="modal-header">
++            <button type="button" class="close" data-dismiss="modal">&times;</button>
++            <h4 class="modal-title">Create New Template</h4>
++        </div>
++        <div class="modal-body">
++            <div class="card card-wizard" id="wizardCard">
++                <form id="wizardForm" method="POST" action="updateconfig">
++                    <div class="card-content">
++                        <ul class="nav">
++                            <li><a href="#tab1" data-toggle="tab">Database</a></li>
++                            <li><a href="#tab2" data-toggle="tab">S3</a></li>
++                        </ul>
++                        <div class="tab-content">
++                            <div class="tab-pane" id="tab1">
++                                <h5 class="text-center">Provide the configurations by completing this wizard.</h5>
++                                <div class="row">
++                                    <div class="col-md-5 col-md-offset-1">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Name<star>*</star>
++                                            </label>
++                                            <input class="form-control"
++                                                   type="text"
++                                                   name="db_host"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                    <div class="col-md-5">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Database<star>*</star>
++                                            </label>
++                                            <input class="form-control"
++                                                   type="text"
++                                                   name="db_dbname"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                </div>
++                                <div class="row">
++                                    <div class="col-md-5 col-md-offset-1">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Username<star>*</star>
++                                            </label>
++                                            <input class="form-control"
++                                                   type="text"
++                                                   name="db_user"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                    <div class="col-md-5">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Password<star>*</star>
++                                            </label>
++                                            <input class="form-control"
++                                                   type="password"
++                                                   name="db_password"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                            <div class="tab-pane" id="tab2">
++                                <h5 class="text-center">Provide the configurations by completing this wizard.</h5>
++                                <div class="row">
++                                    <div class="col-md-5 col-md-offset-1">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Key<star>*</star>
++                                            </label>
++                                            <input class="form-control"
++                                                   type="text"
++                                                   name="s3_key"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                    <div class="col-md-5">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Secret<star>*</star>
++                                            </label>
++                                            <!--     IMPORTANT! - the "bootstrap select picker" is not compatible with jquery.validation.js, that's why we use the "default select" inside this wizard. We will try to contact the guys who are responsibble for the "bootstrap select picker" to find a solution. Thank you for your patience.
++                                             -->
++                                            <input class="form-control"
++                                                   type="text"
++                                                   name="s3_secret"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                </div>
++                                <div class="row">
++                                    <div class="col-md-10 col-md-offset-1">
++                                        <div class="form-group">
++                                            <label class="control-label">
++                                                Bucket<star>*</star>
++                                            </label>
++                                            <!--     IMPORTANT! - the "bootstrap select picker" is not compatible with jquery.validation.js, that's why we use the "default select" inside this wizard. We will try to contact the guys who are responsibble for the "bootstrap select picker" to find a solution. Thank you for your patience.
++                                             -->
++                                            <input class="form-control"
++                                                   type="text"
++                                                   name="s3_bucket"
++                                                   required="true"
++                                                   value=""
++                                            />
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                        </div>
++                    </div>
++                    <div class="card-footer">
++                        <button type="button" class="btn btn-default btn-fill btn-wd btn-back pull-left">Back</button>
++                        <button type="button" class="btn btn-info btn-fill btn-wd btn-next pull-right">Next</button>
++                        <button type="button" class="finish btn btn-info btn-fill btn-wd btn-finish pull-right" >Finish</button>
++                        <div class="clearfix"></div>
++                    </div>
++                </form>
++            </div>
++        </div>
++
++    </div>
++</div>
++{%  endblock body %}
++{% block custom_javascript %}
++{%  endblock custom_javascript %}
+\ No newline at end of file
+Index: src/Controller/AppConfigurationController.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?php\n/**\n * Configuration Wizard controller actions\n */\n\nnamespace App\\Controller;\n\n\nuse App\\Helper\\Utils;\nuse Aws\\Exception\\AwsException;\nuse Aws\\S3\\S3Client;\nuse Symfony\\Bundle\\FrameworkBundle\\Controller\\Controller;\nuse Symfony\\Component\\HttpFoundation\\Request;\nuse Symfony\\Component\\Process\\Process;\nuse Symfony\\Component\\Routing\\Annotation\\Route;\nuse Symfony\\Component\\Yaml\\Yaml;\n\nclass AppConfigurationController extends Controller\n{\n    use Utils;\n\n    /**\n     * @Route(\"/install\", name=\"installconfig\")\n     */\n    public function install() {\n        return $this->render(\"install.twig\", [\"error\" => \"\"]);\n    }\n    /**\n     * @Route(\"/installsuccess\")\n     */\n    public function installsuccess() {\n        return $this->render(\"install_success.twig\");\n    }\n\n    /**\n     * @Route(\"/updateconfig\", methods={\"POST\"})\n     */\n    public function updateconfig(Request $request) {\n        $config = [];\n        $config['parameters']['rdbms_host'] = $request->request->get('rdbms_host');\n        $config['parameters']['rdbms_dbname'] = $request->request->get('rdbms_dbname');\n        $config['parameters']['rdbms_user'] = $request->request->get('rdbms_user');\n        $config['parameters']['rdbms_password'] = $request->request->get('rdbms_password');\n        $config['parameters']['aws_credentials_key'] = $request->request->get('aws_credentials_key');\n        $config['parameters']['aws_credentials_secret'] = $request->request->get('aws_credentials_secret');\n        $config['parameters']['athena_directory'] = $request->request->get('athena_directory');\n        $config['parameters']['athena_database'] = $request->request->get('athena_database');\n        $config['parameters']['athena_input'] = \"s3://\".$request->request->get('s3_bucket').DIRECTORY_SEPARATOR;\n        $config['parameters']['athena_output'] = \"s3://\".$request->request->get('s3_bucket').DIRECTORY_SEPARATOR.\"athena-output\".DIRECTORY_SEPARATOR;\n        $config['parameters']['sqs_notificationQueue'] = $request->request->get('sqs_notificationQueue');\n        $config['parameters']['s3_bucket'] = $request->request->get('s3_bucket');\n        $config['parameters']['need_update'] = \"no\";\n\n        $config_file_path = join(DIRECTORY_SEPARATOR, [$this->getParameter('kernel.project_dir'), \"config\", \"install.yaml\"]);\n        $backup_config_file_path = join(DIRECTORY_SEPARATOR, [$this->getParameter('kernel.project_dir'), \"config\", $this->getParameter(\"install_config_file\").\".bak\"]);\n\n        // bakup config file\n        copy($config_file_path, $backup_config_file_path);\n        // copy the config contents to the config file\n        file_put_contents($config_file_path, Yaml::dump($config));\n\n        // now need to reload the cache\n       $cache_clear = new Process(\"bin/console cache:clear\", $this->getParameter('kernel.project_dir'));\n       $cache_clear->run();\n        $cache_warmup = new Process(\"bin/console cache:warmup\", $this->getParameter('kernel.project_dir'));\n        $cache_warmup->run();\n\n       return $this->redirect(\"setupconfiguration\");\n\n    }\n\n\n    /**\n     * @Route(\"setupconfiguration\", name=\"setupconfiguration\")\n     */\n    public function setupConfiguration() {\n        $s3_bucket_result = $this->createAppBucket();\n        if (!empty($s3_bucket_result['error'])) {\n            $this->render('install.twig',['error' => \" Error creating S3 bucket \".$s3_bucket_result['error']]);\n        }\n\n        $athena_dir_result = $this->createAthenaDirectories();\n        if (!empty($athena_dir_result['error'])) {\n            $this->render('install.twig',['error' => \"Error creating Athena directories in S3 \".$athena_dir_result['error']]);\n        }\n\n        $athena_db_result = $this->createAthenaDatabase();\n        if (!empty($athena_db_result['error'])) {\n            $this->render('install.twig',['error' => \"Error creating Athena database \".$athena_db_result['error']]);\n        }\n\n        return $this->render('install_success.twig');\n    }\n\n    /**\n     * Create the configured S3 bucket\n     *\n     * @param S3Client\n     *\n     * @return array\n     */\n    public function createAppBucket() {\n        $s3 = $this->getS3Client();\n        $bucket = $this->getS3Bucket();\n        $isBucketExists = $s3->doesBucketExist($bucket);\n        $result = [];\n        if (!$isBucketExists) {\n            try {\n                $result = $s3->createBucket([\n                    'Bucket' => $bucket, // REQUIRED\n                ]);\n            } catch (AwsException $e) {\n                $result['error'] = $e->getMessage();\n            }\n        }\n        return $result;\n    }\n\n    /**\n     * @return mixed\n     */\n    public function createAthenaDirectories() {\n        $s3 = $this->getS3Client();\n        $bucket = $this->getS3Bucket();\n        $athenaDir = $this->getParameter('athena_directory');\n        $bills = $athenaDir.\"bills/\";\n        $invoices = $athenaDir.\"invoices/\";\n        $result = [];\n        try {\n            $result['athena'] = $s3->putObject([\n                'Bucket' => $bucket, // REQUIRED\n                'Key'    => $athenaDir\n            ]);\n            $result['bills'] = $s3->putObject([\n                'Bucket' => $bucket, // REQUIRED\n                'Key'    => $bills\n            ]);\n            $result['invoices'] = $s3->putObject([\n                'Bucket' => $bucket, // REQUIRED\n                'Key'    => $invoices\n            ]);\n        } catch (AwsException $e) {\n            $result['error'] = $e->getMessage();\n        }\n\n        return $result;\n    }\n\n    public function createAthenaDatabase() {\n        $athenaClient = $this->getAthenaClient();\n        $query = \"CREATE DATABASE IF NOT EXISTS \".$this->getParameter(\"athena_database\").\";\";\n        $result = [];\n        try {\n            $result = $this->processAthenaQuery($athenaClient, $query);\n        } catch (AwsException $e) {\n            $result['error'] = $e->getMessage();\n        } catch (\\Exception $e) {\n            $result['error'] = $e->getMessage();\n        }\n        return $result;\n    }\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Controller/AppConfigurationController.php	(revision 515565461437717d74dea23e870275ebd041961a)
++++ src/Controller/AppConfigurationController.php	(date 1527708117000)
+@@ -7,6 +7,7 @@
+ 
+ 
+ use App\Helper\Utils;
++use Aws\Athena\AthenaClient;
+ use Aws\Exception\AwsException;
+ use Aws\S3\S3Client;
+ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+@@ -59,13 +60,28 @@
+         // copy the config contents to the config file
+         file_put_contents($config_file_path, Yaml::dump($config));
+ 
++        $s3_bucket_result = $this->createAppBucket($config);
++        if (!empty($s3_bucket_result['error'])) {
++            $this->render('install.twig',['error' => " Error creating S3 bucket ".$s3_bucket_result['error']]);
++        }
++
++        $athena_dir_result = $this->createAthenaDirectories($config);
++        if (!empty($athena_dir_result['error'])) {
++            $this->render('install.twig',['error' => "Error creating Athena directories in S3 ".$athena_dir_result['error']]);
++        }
++
++        $athena_db_result = $this->createAthenaDatabase($config);
++        if (!empty($athena_db_result['error'])) {
++            $this->render('install.twig',['error' => "Error creating Athena database ".$athena_db_result['error']]);
++        }
++
+         // now need to reload the cache
+-       $cache_clear = new Process("bin/console cache:clear", $this->getParameter('kernel.project_dir'));
+-       $cache_clear->run();
+-        $cache_warmup = new Process("bin/console cache:warmup", $this->getParameter('kernel.project_dir'));
++        $cache_clear = new Process("bin/console cache:clear --env=".$request->server->get('APP_ENV'), $this->getParameter('kernel.project_dir'));
++        $cache_clear->run();
++        $cache_warmup = new Process("bin/console cache:warmup --env=".$request->server->get('APP_ENV'), $this->getParameter('kernel.project_dir'));
+         $cache_warmup->run();
+ 
+-       return $this->redirect("setupconfiguration");
++        return $this->render('install_success.twig');
+ 
+     }
+ 
+@@ -73,18 +89,18 @@
+     /**
+      * @Route("setupconfiguration", name="setupconfiguration")
+      */
+-    public function setupConfiguration() {
+-        $s3_bucket_result = $this->createAppBucket();
++    public function setupConfiguration($config) {
++        $s3_bucket_result = $this->createAppBucket($config);
+         if (!empty($s3_bucket_result['error'])) {
+             $this->render('install.twig',['error' => " Error creating S3 bucket ".$s3_bucket_result['error']]);
+         }
+ 
+-        $athena_dir_result = $this->createAthenaDirectories();
++        $athena_dir_result = $this->createAthenaDirectories($config);
+         if (!empty($athena_dir_result['error'])) {
+             $this->render('install.twig',['error' => "Error creating Athena directories in S3 ".$athena_dir_result['error']]);
+         }
+ 
+-        $athena_db_result = $this->createAthenaDatabase();
++        $athena_db_result = $this->createAthenaDatabase($config);
+         if (!empty($athena_db_result['error'])) {
+             $this->render('install.twig',['error' => "Error creating Athena database ".$athena_db_result['error']]);
+         }
+@@ -99,8 +115,17 @@
+      *
+      * @return array
+      */
+-    public function createAppBucket() {
+-        $s3 = $this->getS3Client();
++    public function createAppBucket($config) {
++        $s3 = new S3Client([
++            'version' =>  $this->getParameter('s3.version'),
++            'region' =>  $this->getParameter('s3.region'), // choose your favorite region
++            'credentials' => [
++                // use your aws credentials
++                'key' =>  $config['parameters']['aws_credentials_key'],
++                'secret' => $config['parameters']['aws_credentials_secret'],
++            ],
++        ]);
++
+         $bucket = $this->getS3Bucket();
+         $isBucketExists = $s3->doesBucketExist($bucket);
+         $result = [];
+@@ -119,8 +144,16 @@
+     /**
+      * @return mixed
+      */
+-    public function createAthenaDirectories() {
+-        $s3 = $this->getS3Client();
++    public function createAthenaDirectories($config) {
++        $s3 = new S3Client([
++            'version' =>  $this->getParameter('s3.version'),
++            'region' =>  $this->getParameter('s3.region'), // choose your favorite region
++            'credentials' => [
++                // use your aws credentials
++                'key' =>  $config['parameters']['aws_credentials_key'],
++                'secret' => $config['parameters']['aws_credentials_secret'],
++            ],
++        ]);
+         $bucket = $this->getS3Bucket();
+         $athenaDir = $this->getParameter('athena_directory');
+         $bills = $athenaDir."bills/";
+@@ -146,7 +179,16 @@
+         return $result;
+     }
+ 
+-    public function createAthenaDatabase() {
++    public function createAthenaDatabase($config) {
++        $athenaClient = new AthenaClient([
++            'version' =>  $this->getParameter('aws.version'),
++            'region' =>  $this->getParameter('aws.region'), // choose your favorite region
++            'credentials' => [
++                // use your aws credentials
++                'key' =>  $config['parameters']['aws_credentials_key'],
++                'secret' => $config['parameters']['aws_credentials_secret'],
++            ],
++        ]);
+         $athenaClient = $this->getAthenaClient();
+         $query = "CREATE DATABASE IF NOT EXISTS ".$this->getParameter("athena_database").";";
+         $result = [];
+Index: src/Controller/TemplateController.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Controller/TemplateController.php	(date 1527708117000)
++++ src/Controller/TemplateController.php	(date 1527708117000)
+@@ -0,0 +1,61 @@
++<?php
++namespace App\Controller;
++
++use App\Entity\Template;
++use App\Form\TemplateType;
++use App\Helper\Utils;
++use App\Repository\TemplateRepository;
++use Symfony\Bundle\FrameworkBundle\Controller\Controller;
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\Routing\Annotation\Route;
++
++class TemplateController extends Controller {
++
++    use Utils;
++    /**
++     * @Route("/createtemplate", methods={"POST"})
++     */
++    public function createTemplate(Request $request, TemplateRepository $templateRepository) {
++
++        $template = new Template();
++        // TODO: Set the account for this user
++        // $template->setAccount($this->getAccount($this->getUser()));
++        $form = $this->createForm(TemplateType::class, $template);
++        $form->handleRequest($request);
++
++
++        return $this->render('template_table.twig',
++                                ['templates'=> $templateRepository->getAll($this->getUser()),
++                                    'template_id' => $template->getId(),
++                                    'form' => $this->createForm(TemplateType::class)->createView()]) ;
++
++    }
++    /**
++     * @Route("/templates")
++     */
++    public function index(TemplateRepository $templateRepository) {
++        return $this->render("template.twig",
++                ['templates'=> $templateRepository->getAll($this->getUser()),
++                        'form' => $this->createForm(TemplateType::class, new Template())->createView()]);
++    }
++    /**
++     * @Route("/templates/refresh")
++     */
++    public function refresh(TemplateRepository $templateRepository) {
++        return $this->render("template_table.twig",
++            ['templates'=> $templateRepository->getAll($this->getUser()),
++                'form' => $this->createForm(TemplateType::class, new Template())->createView()]);
++    }
++
++
++    /**
++     * @Route("/wizard")
++     */
++    public function wizard(TemplateRepository $templateRepository) {
++        return $this->render("template_wizard.twig",
++            ['templates'=> $templateRepository->getAll($this->getUser()),
++                'form' => $this->createForm(TemplateType::class, new Template())->createView()]);
++    }
++
++
++}
+\ No newline at end of file
+Index: templates/template.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{% extends 'base.html.twig' %}\n{% block body %}\n    <div class=\"container-fluid\">\n        <div class=\"row\">\n            <div class=\"col-md-12\">\n                <div class=\"card\">\n                    <div class=\"card-content\">\n                        <div class=\"row\">\n                            <div class=\"col-md-2\">\n                                {{ include('search.twig') }}\n                            </div>\n                            <div class=\"col-md-8 text-center\">\n                                <a class=\"numbers btn btn-info btn-simple\" href=\"#\" data-target=\"#myModal\" data-toggle=\"modal\">Template</a>\n                            </div>\n                            <div class=\"col-md-2 pull-right text-right\">\n                                <a class=\"icon-big btn btn-info btn-simple\" href=\"#\" data-target=\"#myModal\" data-toggle=\"modal\">\n                                    <i class=\"fa fa-plus\"></i></a>\n                                <a class=\"icon-big btn btn-info btn-simple refresh pull-right small-ref\" href=\"javascript:void(0);\"><i\n                                            class=\"fa fa-refresh\"></i></a>\n                            </div>\n                        </div>\n                        <div class=\"clearfix\"></div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        <div class=\"row\">\n            <div class=\"col-md-12\">\n                <div class=\"refresh-big hide text-center\">\n                    <i class=\"fa fa-refresh fa-5x fa-spin refresh-big text-center\"></i>XXX\n                </div>\n                <div class=\"tablecontent\">\n                    {{ include('template_table.twig') }}\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"modal fade\" id=\"myModal\" role=\"dialog\">\n        <div class=\"modal-dialog\" role=\"document\">\n                <!-- Modal content-->\n                <div class=\"modal-content\">\n                    <div class=\"modal-header\">\n                        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\n                        <h4 class=\"modal-title\">Create New Template</h4>\n                    </div>\n                    <div class=\"modal-body\">\n                        <div class=\"card card-wizard\" id=\"wizardCard\">\n\t                            <form id=\"wizardForm\" method=\"POST\" action=\"updateconfig\">\n\t            \t\t\t\t\t<div class=\"card-content\">\n\t\t            \t\t\t\t    <ul class=\"nav\">\n\t\t            \t\t\t\t\t\t<li><a href=\"#tab1\" data-toggle=\"tab\">Database</a></li>\n\t\t            \t\t\t\t\t\t<li><a href=\"#tab2\" data-toggle=\"tab\">S3</a></li>\n\t\t            \t\t\t\t\t</ul>\n\t\t            \t\t\t\t\t<div class=\"tab-content\">\n\t\t            \t\t\t\t\t    <div class=\"tab-pane\" id=\"tab1\">\n\t\t                                        <h5 class=\"text-center\">Provide the configurations by completing this wizard.</h5>\n\t\t                                        <div class=\"row\">\n\t\t                                            <div class=\"col-md-5 col-md-offset-1\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tHost Name<star>*</star>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"text\"\n\t\t                                                           name=\"db_host\"\n                                                                   required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n                                                    <div class=\"col-md-5\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tDatabase<star>*</star>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"text\"\n\t\t                                                           name=\"db_dbname\"\n                                                                   required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n\t\t                                        </div>\n\t\t                                        <div class=\"row\">\n                                                    <div class=\"col-md-5 col-md-offset-1\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tUsername<star>*</star>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"text\"\n\t\t                                                           name=\"db_user\"\n\t\t                                                           required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n                                                    <div class=\"col-md-5\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tPassword<star>*</star>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"password\"\n\t\t                                                           name=\"db_password\"\n                                                                   required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n\t\t                                        </div>\n\t\t            \t\t\t\t\t    </div>\n\t\t            \t\t\t\t\t    <div class=\"tab-pane\" id=\"tab2\">\n                                                <h5 class=\"text-center\">Provide the configurations by completing this wizard.</h5>\n\t\t                                        <div class=\"row\">\n\t\t                                            <div class=\"col-md-5 col-md-offset-1\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n                                                                Key<star>*</star>\n                                                            </label>\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"text\"\n\t\t                                                           name=\"s3_key\"\n\t\t                                                           required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n\t\t                                            <div class=\"col-md-5\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tSecret<star>*</star>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t                                                    <!--     IMPORTANT! - the \"bootstrap select picker\" is not compatible with jquery.validation.js, that's why we use the \"default select\" inside this wizard. We will try to contact the guys who are responsibble for the \"bootstrap select picker\" to find a solution. Thank you for your patience.\n\t\t                                                     -->\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"text\"\n\t\t                                                           name=\"s3_secret\"\n\t\t                                                           required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n\t\t                                        </div>\n\t\t                                        <div class=\"row\">\n\t\t                                            <div class=\"col-md-10 col-md-offset-1\">\n\t\t                                                <div class=\"form-group\">\n\t\t                                                    <label class=\"control-label\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tBucket<star>*</star>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</label>\n\t\t                                                    <!--     IMPORTANT! - the \"bootstrap select picker\" is not compatible with jquery.validation.js, that's why we use the \"default select\" inside this wizard. We will try to contact the guys who are responsibble for the \"bootstrap select picker\" to find a solution. Thank you for your patience.\n\t\t                                                     -->\n\t\t                                                    <input class=\"form-control\"\n\t\t                                                           type=\"text\"\n\t\t                                                           name=\"s3_bucket\"\n\t\t                                                           required=\"true\"\n                                                                   value=\"\"\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t                                                </div>\n\t\t                                            </div>\n\t\t                                        </div>\n\t\t            \t\t\t\t\t    </div>\n\t\t            \t\t\t\t\t</div>\n\t            \t\t\t\t\t</div>\n\t\t            \t\t\t\t<div class=\"card-footer\">\n\t\t                                <button type=\"button\" class=\"btn btn-default btn-fill btn-wd btn-back pull-left\">Back</button>\n\t\t                                <button type=\"button\" class=\"btn btn-info btn-fill btn-wd btn-next pull-right\">Next</button>\n\t\t                                <button type=\"button\" class=\"finish btn btn-info btn-fill btn-wd btn-finish pull-right\" >Finish</button>\n\t\t                                <div class=\"clearfix\"></div>\n\t\t            \t\t\t\t</div>\n\t                        \t</form>\n\t                    \t</div>\n                    </div>\n\n                </div>\n        </div>\n    </div>\n{% endblock body %}\n{% block custom_javascript %}\n    <script type=\"text/javascript\">\n        $(document).ready(function () {\n            // Template Wizard\n            demo.initWizard();\n            $(document).on('click','.finish', function(){\n                $('#wizardForm').submit();\n            });\n\n            $('.small-ref').click(function () {\n                $('.refresh i').addClass(\"fa-spin\");\n                $.ajax({\n                    url: \"templates/refresh\",\n                    type: \"get\",\n                    dataType: \"html\", // Change this according to your response from the server.\n                    error: function (err) {\n                        error = true;\n                    },\n                    success: function (data) {\n                        $('.refresh i').removeClass(\"fa-spin\");\n                        $('.tablecontent').html(data);\n                        setupDataTable();\n                        $('.refresh i').removeClass(\"fa-spin\");\n                    }\n                });\n            });\n\n            $('#Templateform').validate({\n                submitHandler: function (form) {\n                    var vals = $(form).serializeArray();\n                    var notify = 'createtemplate';\n                    var message = \"Template \" + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + \"  creation started at:\" + Date();\n                    var type = \"info\";\n\n                    pushNotification(message, notify, type);\n                    $('.refresh i').addClass(\"fa-spin\");\n                    var error = false;\n                    $.ajax({\n                        url: \"createtemplate-step1\",\n                        data: new FormData(form), // the formData function is available in almost all new browsers\n                        type: \"post\",\n                        contentType: false,\n                        processData: false,\n                        cache: false,\n                        method: form.method,\n                        dataType: \"html\", // Change this according to your response from the server.\n                        error: function (err) {\n                            error = true;\n                        },\n                        success: function (data) {\n                            console.log(data);\n                        },\n                        complete: function (data) {\n                            var notify = message = \"Template \" + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + \" created at: \" + Date();\n                            var type = \"success\";\n                            if (error === true) {\n                                notify = message = \"Template \" + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + \" creation failed at: \" + Date();\n                                type = \"danger\";\n                            }\n                            pushNotification(message, notify, type);\n                            $('.btn-secondary').click()\n                            $('.refresh i').removeClass(\"fa-spin\");\n                            if (error !== true) {\n                                $('.tablecontent').html(data.responseText);\n                            }\n                            setupDataTable();\n                        },\n                    });\n                }\n            });\n\n            $('.toggle').click(function () {\n                $('.Template-form').toggle('10000');\n                $('.submit').toggle('10000')\n                $(\"i\", this).toggleClass(\"fa fa-caret-square-o-up fa fa-caret-square-o-down\");\n            });\n            //console.log($('#registerFormValidation').validate());\n            $(document).on('click', '.start', function () {\n                var id = $(this).attr('data-id');\n                var cat = $(this).attr('data-cat');\n                var error = false;\n                var notify = message = \"Template \" + cat + \" Start started at: \" + Date();\n                var type = \"info\";\n                pushNotification(message, notify, type);\n                $('.refresh i').addClass(\"fa-spin\");\n                $.ajax({\n                    url: \"starttemplate\",\n                    data: {'id': id},\n                    type: 'post',\n                    // Change this according to your response from the server.\n                    error: function (err) {\n                        error = true;\n                    },\n                    success: function (data) {\n                    },\n                    complete: function (data) {\n                        var notify = message = \"Template \" + cat + \" Started at: \" + Date();\n                        var type = \"success\";\n                        if (error === true) {\n                            notify = message = \"Template \" + cat + \" start failed at: \" + Date();\n                            type = \"danger\";\n                        }\n                        pushNotification(message, notify, type);\n                        $('.refresh i').removeClass(\"fa-spin\");\n                        if (error !== true) {\n                            $('.tablecontent').html(data.responseText);\n                        }\n                        setupDataTable();\n                    },\n                });\n            });\n\n            $(document).on('click', '.stop', function () {\n                if (confirm(\"Do You want to stop this Template ?\")) {\n                    var cat = $(this).attr('data-cat');\n                    var notify = message = \"Template \" + cat + \" Stop started at:\" + Date();\n                    var type = \"info\";\n                    pushNotification(message, notify, type);\n                    var id = $(this).attr('data-id');\n                    var error = false;\n                    $('.refresh i').addClass(\"fa-spin\");\n                    $.ajax({\n                        url: \"stoptemplate\",\n                        data: {'id': id},\n                        type: 'post',\n                        // Change this according to your response from the server.\n                        error: function (err) {\n                            error = true;\n                        },\n                        success: function (data) {\n\n                        },\n                        complete: function (data) {\n                            var notify = message = \"Template \" + cat + \" Stopped at: \" + Date();\n                            var type = \"success\";\n                            if (error === true) {\n                                notify = message = \"Template \" + cat + \" Stop failed at: \" + Date();\n                                type = \"danger\";\n                            }\n                            pushNotification(message, notify, type);\n                            $('.refresh i').removeClass(\"fa-spin\");\n                            if (error !== true) {\n                                $('.tablecontent').html(data.responseText);\n                            }\n                            setupDataTable();\n                        },\n                    });\n\n                }\n            });\n        });\n\n    </script>\n{% endblock %}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/template.twig	(revision 515565461437717d74dea23e870275ebd041961a)
++++ templates/template.twig	(date 1527623665000)
+@@ -36,145 +36,7 @@
+         </div>
+     </div>
+     <div class="modal fade" id="myModal" role="dialog">
+-        <div class="modal-dialog" role="document">
+-                <!-- Modal content-->
+-                <div class="modal-content">
+-                    <div class="modal-header">
+-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+-                        <h4 class="modal-title">Create New Template</h4>
+-                    </div>
+-                    <div class="modal-body">
+-                        <div class="card card-wizard" id="wizardCard">
+-	                            <form id="wizardForm" method="POST" action="updateconfig">
+-	            					<div class="card-content">
+-		            				    <ul class="nav">
+-		            						<li><a href="#tab1" data-toggle="tab">Database</a></li>
+-		            						<li><a href="#tab2" data-toggle="tab">S3</a></li>
+-		            					</ul>
+-		            					<div class="tab-content">
+-		            					    <div class="tab-pane" id="tab1">
+-		                                        <h5 class="text-center">Provide the configurations by completing this wizard.</h5>
+-		                                        <div class="row">
+-		                                            <div class="col-md-5 col-md-offset-1">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-																Host Name<star>*</star>
+-															</label>
+-		                                                    <input class="form-control"
+-		                                                           type="text"
+-		                                                           name="db_host"
+-                                                                   required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-                                                    <div class="col-md-5">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-																Database<star>*</star>
+-															</label>
+-		                                                    <input class="form-control"
+-		                                                           type="text"
+-		                                                           name="db_dbname"
+-                                                                   required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-		                                        </div>
+-		                                        <div class="row">
+-                                                    <div class="col-md-5 col-md-offset-1">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-																Username<star>*</star>
+-															</label>
+-		                                                    <input class="form-control"
+-		                                                           type="text"
+-		                                                           name="db_user"
+-		                                                           required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-                                                    <div class="col-md-5">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-																Password<star>*</star>
+-															</label>
+-		                                                    <input class="form-control"
+-		                                                           type="password"
+-		                                                           name="db_password"
+-                                                                   required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-		                                        </div>
+-		            					    </div>
+-		            					    <div class="tab-pane" id="tab2">
+-                                                <h5 class="text-center">Provide the configurations by completing this wizard.</h5>
+-		                                        <div class="row">
+-		                                            <div class="col-md-5 col-md-offset-1">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-                                                                Key<star>*</star>
+-                                                            </label>
+-		                                                    <input class="form-control"
+-		                                                           type="text"
+-		                                                           name="s3_key"
+-		                                                           required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-		                                            <div class="col-md-5">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-																Secret<star>*</star>
+-															</label>
+-		                                                    <!--     IMPORTANT! - the "bootstrap select picker" is not compatible with jquery.validation.js, that's why we use the "default select" inside this wizard. We will try to contact the guys who are responsibble for the "bootstrap select picker" to find a solution. Thank you for your patience.
+-		                                                     -->
+-		                                                    <input class="form-control"
+-		                                                           type="text"
+-		                                                           name="s3_secret"
+-		                                                           required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-		                                        </div>
+-		                                        <div class="row">
+-		                                            <div class="col-md-10 col-md-offset-1">
+-		                                                <div class="form-group">
+-		                                                    <label class="control-label">
+-																Bucket<star>*</star>
+-															</label>
+-		                                                    <!--     IMPORTANT! - the "bootstrap select picker" is not compatible with jquery.validation.js, that's why we use the "default select" inside this wizard. We will try to contact the guys who are responsibble for the "bootstrap select picker" to find a solution. Thank you for your patience.
+-		                                                     -->
+-		                                                    <input class="form-control"
+-		                                                           type="text"
+-		                                                           name="s3_bucket"
+-		                                                           required="true"
+-                                                                   value=""
+-															/>
+-		                                                </div>
+-		                                            </div>
+-		                                        </div>
+-		            					    </div>
+-		            					</div>
+-	            					</div>
+-		            				<div class="card-footer">
+-		                                <button type="button" class="btn btn-default btn-fill btn-wd btn-back pull-left">Back</button>
+-		                                <button type="button" class="btn btn-info btn-fill btn-wd btn-next pull-right">Next</button>
+-		                                <button type="button" class="finish btn btn-info btn-fill btn-wd btn-finish pull-right" >Finish</button>
+-		                                <div class="clearfix"></div>
+-		            				</div>
+-	                        	</form>
+-	                    	</div>
+-                    </div>
+-
+-                </div>
+-        </div>
++        <!-- Wizard goes here -->
+     </div>
+ {% endblock body %}
+ {% block custom_javascript %}

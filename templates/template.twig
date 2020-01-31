@@ -1,0 +1,420 @@
+{% extends 'base.html.twig' %}
+{%  set tables_rows_per_page = tables_templates_rows_per_page %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col-md-2">
+                                {{ include('search.twig') }}
+                            </div>
+                            <div class="col-md-8 text-center">
+                                <a class="numbers btn btn-info btn-simple" href="#" data-target="#templateModal" data-toggle="modal">Template</a>
+                            </div>
+                            <div class="col-md-2 pull-right text-right">
+                                <a class="icon-big btn btn-info btn-simple" href="#" data-target="#templateModal" data-toggle="modal">
+                                    <i class="fa fa-plus"></i></a>
+                                <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
+                                            class="fa fa-refresh"></i></a>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="refresh-big hide text-center">
+                    <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>XXX
+                </div>
+                <div class="tablecontent">
+                    {{ include('template_table.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="templateModal" role="dialog">
+        {{  include ('template_form.twig') }}
+    </div>
+{% endblock body %}
+{% block custom_javascript %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Template Wizard
+            initTemplateWizard();
+            $('.small-ref').click(function () {
+                $('.refresh i').addClass("fa-spin");
+                $.ajax({
+                    url: "templates/refresh",
+                    type: "get",
+                    dataType: "html", // Change this according to your response from the server.
+                    error: function (err) {
+                        error = true;
+                    },
+                    success: function (data) {
+                        $('.refresh i').removeClass("fa-spin");
+                        $('.tablecontent').html(data);
+                        setupDataTable();
+                        $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            });
+
+            $('.toggle').click(function () {
+                $('.Template-form').toggle('10000');
+                $('.submit').toggle('10000')
+                $("i", this).toggleClass("fa fa-caret-square-o-up fa fa-caret-square-o-down");
+            });
+
+            $(document).on('click','.edit', function(){
+                var href = $(this).attr('data-location');
+                $('#templateModal').load(href,function(){
+                    $('#templateModal').modal({show:true});
+                    $(".create").html('Update');
+                    $('#template_format').val($('#format_val').val()).prop('selected', true);
+                    $('#template_type').val($('#type_val').val()).prop('selected', true);
+                    $('#template_delimiter').val($('#delimiter_val').val()).prop('selected', true);
+                    initTemplateWizard();
+                });
+            });
+
+            // hack to load a blank wizard instance - this is different from other
+            // forms since clearing the form is not enough
+            $(document).on('click', '.btn-secondary.cls, .close', function() {
+                $('#templateModal').load("blanktemplate",function(){
+                    initTemplateWizard();
+                });
+            });
+
+            $(document).on('click','.deactivate', function(){
+                var href = $(this).attr('data-location');
+                var template = $(this).attr('data-name');
+                    var message = template+" Template deactivation started at " + Date();
+                    var type = "info";
+                    pushNotification(message, message, type);
+                    var error = false;
+                    $.ajax({
+                        url:href,
+                        type:"get",
+                        error:function(err){
+                            error = true;
+                        },
+                        success:function(data){
+                        },
+                        complete:function(data){
+                            var message = template+" template deactivation completed at " + Date();
+                            var type = "success";
+                            if (error === true) {
+                                message = template+" template deactivation failed at " + Date()+ " error: " + data.responseText;
+                                type = "danger";
+                            }
+                            pushNotification(message, message, type);
+                            $('.refresh i').removeClass("fa-spin");
+                            if (error !== true) {
+                                $('.tablecontent').html(data.responseText);
+                            }
+                            setupDataTable();
+                        }
+
+                    });
+            });
+
+            $(document).on('click','.activate', function(){
+                var href = $(this).attr('data-location');
+                var template = $(this).attr('data-name');
+                    var message = template+" Template activation started at " + Date();
+                    var type = "info";
+                    pushNotification(message, message, type);
+                    var error = false;
+                    $.ajax({
+                        url:href,
+                        type:"get",
+                        error:function(err){
+                            console.error(err);
+                            error = true;
+                        },
+                        success:function(data){
+
+                        },
+                        complete:function(data){
+                            var message = template+" template activation completed at " + Date();
+                            var type = "success";
+                            if (error === true) {
+                                message = template+" template activation failed at " + Date()+ " error: " + data.responseText;
+                                type = "danger";
+                            } else {
+                                $('.tablecontent').html(data.responseText);
+                                setupDataTable();
+                            }
+                            pushNotification(message, message, type);
+                            $('.refresh i').removeClass("fa-spin");
+                        }
+                    });
+            });
+            $(document).on('click','.sync', function(){
+                var href = $(this).attr('data-location');
+                var template = $(this).attr('data-name');
+                    var message = template+" Template sync started at " + Date();
+                    var type = "info";
+                    pushNotification(message, message, type);
+                    var error = false;
+                    $.ajax({
+                        url:href,
+                        type:"get",
+                        error:function(err){
+                            console.error(err);
+                            error = true;
+                        },
+                        success:function(data){
+
+                        },
+                        complete:function(data){
+                            var message = template+" template sync completed at " + Date();
+                            var type = "success";
+                            if (error === true) {
+                                message = template+" template sync failed at " + Date()+ " error: " + data.responseText;
+                                type = "danger";
+                            } else {
+                                $('.tablecontent').html(data.responseText);
+                                setupDataTable();
+                            }
+                            pushNotification(message, message, type);
+                            $('.refresh i').removeClass("fa-spin");
+                        }
+                    });
+            });
+            $(document).on('click','.delete-template', function(){
+                var href = $(this).attr('data-location');
+                var template = $(this).attr('data-name');
+                var message = template+" Template delete started at " + Date();
+                var type = "info";
+                pushNotification(message, message, type);
+                var error = false;
+                $.ajax({
+                    url:href,
+                    type:"get",
+                    error:function(err){
+                        console.error(err);
+                        error = true;
+                    },
+                    success:function(data){
+
+                    },
+                    complete:function(data){
+                        var message = template+" template delete completed at " + Date();
+                        var type = "success";
+                        if (error === true) {
+                            message = template+" template delete failed at " + Date()+ " error: " + data.responseText;
+                            type = "danger";
+                        } else {
+                            $('.tablecontent').html(data.responseText);
+                            setupDataTable();
+                        }
+                        pushNotification(message, message, type);
+                        $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            });
+            $(document).on('click','.btn-upload-sample', function(){
+                $('#error_contents').html(''); // clear the errors
+                // hide the upload button
+                $(".btn-upload-sample").addClass("hide");
+                $("#working-upload-sample").removeClass("hide");
+                // empty the sample row field
+                $('#samplerow').html('');
+                var error = false;
+                var samplefile = $('#samplefile').val();
+                if (samplefile == '') {
+                    alert('Please select a file containing the sample data');
+                } else {
+                    var form_data = new FormData();
+                    form_data.append("samplefile", $('#samplefile').prop('files')[0]);
+                    $.ajax({
+                        url:"getsamplerow",
+                        type:"POST",
+                        data: form_data,
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        dataType: "text",
+                        error:function(err){
+                            console.error(err);
+                            error = true;
+                            $('#error_contents').html("Error occured while uploading the file it is too large");
+                        },
+                        success:function(data){
+
+                        },
+                        complete:function(data){
+                            $(".btn-upload-sample").removeClass("hide");
+                            $("#working-upload-sample").addClass("hide");
+                            if (error) {
+                                $('#error_contents').html(data.responseText);
+                            } else {
+                                try {
+                                    sample = JSON.parse(data.responseText);
+                                    $('#samplerow').val($.csv.fromObjects(sample));
+                                } catch(e) {
+                                    $('#error_contents').val("Error parsing sample file " + e + " " + data.responseText);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        function initTemplateWizard() {
+            wizardValidator = $('#templateWizardForm').validate({
+                submitHandler: function (form) {
+                    hideSubmitButtonShowWorking();
+                    // empty the error contents
+                    $('#error_contents').html('');
+                    var vals = $(form).serializeArray();
+                    var form_data = new FormData(form);
+                    var notify = 'createtemplate';
+                    var message = "Template " + ($(form).serialize()) + "  creation started at:" + Date();
+                    var type = "info";
+
+                    // get the hidden fields in the table, selects for datatype and processing plus the columnname hidden fields
+                    var template_mappings = JSON.stringify($('#mapping').DataTable().$('select, .columnname, .input-order, .input-target, .input-parameters').serializeObjectToJSON());
+                    // add the rules to the template_data
+                    form_data.append('rules', template_mappings);
+                    pushNotification(message, notify, type);
+                    $('.refresh i').addClass("fa-spin");
+                    var error = false;
+                    $.ajax({
+                        url: "createtemplate",
+                        data: form_data, // the formData function is available in almost all new browsers
+                        type: "post",
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        dataType: "html", // Change this according to your response from the server.
+                        error: function (err) {
+                            error = true;
+                        },
+                        success: function (data) {
+                        },
+                        complete: function (data) {
+                            showSubmitButtonHideWorking();
+                            var notify = message = "Template " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " created at: " + Date();
+                            var type = "success";
+                            if (error === true) {
+                                notify = message = "Template " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " creation failed at: " + Date()+ " error: " + data.responseText;
+                                type = "danger";
+                                // set the error message
+                                $('#error_contents').html(data.responseText);
+                            } else {
+                                $('.btn-secondary.cls').click();
+                                $('.tablecontent').html(data.responseText);
+                                setupDataTable();
+                                $('#templateWizardForm').clearForm();
+                                $('#mapping tbody').html(''); // clear the mapping fields
+                            }
+
+                            pushNotification(message, notify, type);
+                            $('.refresh i').removeClass("fa-spin");
+                        },
+                    });
+                }
+            });
+            $('#wizardCard').bootstrapWizard({
+                tabClass: 'nav nav-pills',
+                nextSelector: '.btn-next',
+                previousSelector: '.btn-back',
+                firstSelector: '.button-default',
+                lastSelector: '.finish',
+                onNext: function (tab, navigation, index) {
+                    /* TODO: Fix the validation for the first screen of the wizard */
+
+                    if (!$('#templateWizardForm').valid()) {
+                        return false;
+                    }
+                    if (index === 1) {
+                        // read the contents of the sample row and create a table to map the columns to their execution values
+                        try {
+                            sample_row_mapping = $.csv.toArrays($('#samplerow').val());
+                            var html = generateTemplateMappingTable(sample_row_mapping);
+                            $('#mapping tbody').empty();
+                            $('#mapping tbody').html(html);
+
+                            // remove the blank element of the processing values - can't seem to do it in the back end
+                            $("#template_processing option[value='']").remove();
+                            $("#template_processing").val(1);
+
+                            // clone the fields
+                            $('.processing').each(function (index, value) {
+                                var select = $('#template_processing').clone();
+                                select.attr('id', 'processing_' + index);
+                                select.attr('name', 'processing_' + index);
+                                $(this).html(select);
+                            });
+                            $('.datatype').each(function (index, value) {
+                                var select = $('#template_datatype').clone();
+                                select.attr('id', 'datatype_' + index);
+                                select.attr('name', 'datatype_' + index);
+                                $(this).html(select);
+                            });
+                            $('.parameters').each(function (index, value) {
+                                var parameter_input = $('#parameters').clone();
+                                parameter_input.attr('id', 'parameter_' + index);
+                                parameter_input.attr('name', 'parameter_' + index);
+                                parameter_input.val($("#parameter_" + index).val());
+                                $(this).html(parameter_input);
+                            });
+                            $('.target').each(function (index, value) {
+                                var target_input = $('#target').clone();
+                                target_input.attr('id', 'target_' + index);
+                                target_input.attr('name', 'target_' + index);
+                                target_input.val($("#columnname_" + index).val());
+                                $(this).html(target_input);
+                            });
+                            $('.ordering').each(function (index, value) {
+                                var ordering_input = $('#order').clone();
+                                ordering_input.attr('id', 'order_' + index);
+                                ordering_input.attr('name', 'order_' + index);
+                                ordering_input.attr('value', index);
+                                $(this).find('div').html(ordering_input);
+                            });
+                            // read the existing rules and set the mapping and data types
+                            if ($('#id').val() !== '') {
+                                var rules = JSON.parse($("#rules_val").html());
+                                $.each(rules, function(fieldName, value) {
+                                    // select the values for the data type and processing
+                                    $('#' + fieldName).val(value).prop('selected', true);
+                                });
+                            }
+                            setupDataTable('#mapping');
+
+                        }catch(e) {
+                            alert('An error occured while creating the mapping for the sample row ' + e);
+                            // show the previous tab
+                            return false;
+                        }
+                    }
+                },
+                onTabClick: function (tab, navigation, index) {
+                    return false;
+                },
+                onTabShow: function (tab, navigation, index) {
+                    if (index === 0) {
+                        $('.btn-back').hide();
+                        $('.finish').hide();
+                        $('.btn-next').show();
+                        // remove the datatables initialization
+                        $('#mapping').DataTable().destroy();
+                        $('#mapping').addClass('no-datatable');
+                    } else {
+                        $('.btn-back').show();
+                        $('.finish').show();
+                        $('.btn-next').hide();
+                    }
+                }
+            });
+        }
+
+    </script>
+{% endblock %}

@@ -1,0 +1,55 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title"><span class="create">Create</span> Table</h4>
+            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+        </div>
+        <form id="createTableForm">
+        <!-- Modal body -->
+        <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">Folders
+                        <star>*</star>
+                    </label>
+                    <select required id="type" name="type" class="form-control folders folders-edit" data-rule-required="true"
+                            data-msg-required="Please select the table folder">
+                        <option value="">----</option>
+                        {% for report in customReports %}
+                            <option value="{{ report.Prefix }}">{{ report.Prefix }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Table Name
+                        <star>*</star>
+                    </label>
+                    <input class="form-control tablename" type="text" id="tablename" name="tablename" value="{{ tables.table }}" data-rule-required="true"
+                           data-msg-required="Please select the name of the table"/>
+                    <input type="hidden" id="oldtable" value="{{ tables.table }}" name="oldtable" class="oldtable" data-msg-required="Please enter the table name"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Column Definition
+                        <star>*</star>
+                    </label>
+                    <textarea id="columns" placeholder="Provide comma separated column names with datatype. (eg: surname STRING,firstname STRING)"
+                              required class="form-control columns" rows="5" name="columns" data-rule-required="true" data-msg-required="Please enter the column definition for the table">{{ tables.definition }}</textarea>
+                </div>
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary create" >Create</button>
+        </div>
+        </form>
+
+    </div>
+</div>
+

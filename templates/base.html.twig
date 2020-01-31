@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {{ include('header.twig') }}
+    {% block custom_css %}
+    {% endblock %}
+</head>
+
+<body>
+<div class="wrapper">
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        {{ include('sidebar.twig') }}
+    <div class="main-panel">
+        {{ include('top-nav.twig') }}
+        {% endif %}
+
+        <div class="content">
+            {% block body %}{% endblock %}
+        </div>
+     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    </div>
+    {% endif %}
+    {{ include('footer.twig') }}
+</div>
+{% block custom_javascript %}
+{% endblock %}
+</body>
+</html>

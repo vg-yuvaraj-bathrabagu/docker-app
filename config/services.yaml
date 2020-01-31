@@ -1,0 +1,62 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: 'en'
+    install_config_file: "install.yaml"
+imports:
+    - { resource: 'config.yaml' }
+    - { resource: 'install/install.yaml' }
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\EventListener\LoginListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'security.interactive_login' }
+
+    #Cognito user authentication client
+    App\Bridge\AwsCognitoClient:
+        arguments:
+            $poolId: '%cognito_pool_id%'
+            $clientId: '%cognito_pool_client_id%'
+            $region: '%aws.region%'
+            $version: '%aws.version%'
+            $key: '%aws_credentials_key%'
+            $secret: '%aws_credentials_secret%'
+
+    cloudwatch_client:
+        class: Aws\CloudWatchLogs\CloudWatchLogsClient
+        arguments:
+            - credentials: { key: '%aws_credentials_key%', secret: '%aws_credentials_secret%' }
+              region: '%aws.region%'
+              version: "%aws.version%"
+
+    cloudwatch_handler:
+        class: Maxbanton\Cwh\Handler\CloudWatch
+        arguments:
+            - "@cloudwatch_client"
+            - "oncloudtime"              # groupName
+            - "%kernel.environment%" # streamName
+            - 30                     # retentionDays
+            - 10000                  # logsInBatch
+            - { mytag: "oncloudtime" }   # tags
+            - DEBUG                # logLevel

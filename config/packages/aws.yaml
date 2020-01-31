@@ -1,0 +1,12 @@
+aws:
+    version: "%aws.version%"
+    region: "%aws.region%"
+    credentials:
+        key: "%aws_credentials_key%"
+        secret: "%aws_credentials_secret%"
+    S3:
+        version: "%s3.version%"
+        bucket: "%s3_bucket%"
+        region: "%s3.region%"
+    Sqs:
+        queue_url: "%sqs_notificationQueue%"

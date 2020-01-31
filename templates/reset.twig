@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col-md-2">
+                            </div>
+                            <div class="col-md-8 text-center">
+                                <a class="numbers btn btn-info btn-simple" href="#" data-target="#resetDataModal"
+                                   data-toggle="modal">Reset Database</a>
+                            </div>
+                            <div class="col-md-2 pull-right text-right">
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-2">
+                <div class="card-content center-block">
+                    Click the button below to reset all the data. The following will occur:
+                    <ul>
+                        <li>
+                            Data entered for File Watcher, Hadoop, MPP, Queries, Simulator, Templates will be deleted
+                        </li>
+                        <li>
+                            Created tables from the athena database will be deleted
+                        </li>
+                        <li>
+                            Contents of user folders will be deleted
+                        </li>
+                        <li>
+                            Contents of shared folder will be deleted
+                        </li>
+                    </ul>
+                    <button class="btn btn-info" data-toggle="modal" data-target="#resetDataModal">Reset Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="resetDataModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reset Database Output</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="message">
+                    Are you sure you want to reset the data in this account?
+                    </div>
+                    <div class="reset-output">
+                    </div>
+                </div>
+
+                <div class="error" id="error_contents"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary reset-data">Yes</button>
+                    <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+{% block custom_javascript %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.reset-data').click(function(){
+            // clear the error message
+            $('#error_contents').html('');
+            var href = $(this).attr('data-location');
+            $('.reset-output').html('<i class="fa fa-refresh fa-5x fa-fw fa-spin ref"></i>').show();
+            $('.reset-data, .message').hide();
+            $(".btn-secondary.cls").html('Close');
+            var error = false;
+            $.ajax({
+                url:'/resetdata',
+                type:"get",
+                error:function(err){
+                    error = true;
+                },
+                success:function(data){
+
+                },
+                complete:function(data){
+                    if (error == true) {
+                        $(".reset-data, .message").show();
+                        $(".btn-secondary.cls").html('Yes');
+                        $(".btn-secondary.cls").html('No');
+                        // set the error message
+                        $('#error_contents').html(data.responseText);
+                        $('.reset-output').hide();
+                    } else {
+                        $('.reset-output').html(data.responseText);
+                        // reset the notification count
+                        changeNotificationCount(0);
+                    }
+                }
+            });
+        });
+    });
+    </script>
+{% endblock custom_javascript %}

@@ -1,0 +1,6 @@
+{
+    "root": "./docs",
+    "title": "OnCloudTime User Manual",
+    "description": "A cloud based big data processing tool",
+    "plugins": ["chapter-headings"]
+}

@@ -1,0 +1,4 @@
+<?php return array (
+  0 => 9223372036854775807,
+  1 => 'O:34:"Doctrine\\ORM\\Mapping\\ClassMetadata":12:{s:19:"associationMappings";a:0:{}s:11:"columnNames";a:1:{s:4:"name";s:4:"name";}s:13:"fieldMappings";a:1:{s:4:"name";a:9:{s:9:"fieldName";s:4:"name";s:4:"type";s:6:"string";s:5:"scale";i:0;s:6:"length";N;s:6:"unique";b:0;s:8:"nullable";b:0;s:9:"precision";i:0;s:2:"id";b:1;s:10:"columnName";s:4:"name";}}s:10:"fieldNames";a:1:{s:4:"name";s:4:"name";}s:15:"embeddedClasses";a:0:{}s:10:"identifier";a:1:{i:0;s:4:"name";}s:21:"isIdentifierComposite";b:0;s:4:"name";s:20:"App\\Entity\\User\\Role";s:9:"namespace";s:15:"App\\Entity\\User";s:5:"table";a:1:{s:4:"name";s:4:"role";}s:14:"rootEntityName";s:20:"App\\Entity\\User\\Role";s:11:"idGenerator";O:33:"Doctrine\\ORM\\Id\\AssignedGenerator":0:{}}',
+);

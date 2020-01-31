@@ -1,0 +1,120 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Project</th>
+                    <th>User</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Client Rate</th>
+                    <th>Contractor Rate</th>
+                    <th>Agency Rate</th>
+                    <th>Daily Rate</th>
+                    <th>Weekly Rate</th>
+                    <th>Monthly Rate</th>
+                    <th>Notes</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for projectrate in projectrates %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="editprojectrate?id={{projectrate.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewprojectrate?id={{projectrate.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                                <a href="#{{ projectrate.id }}-delete" data-target="#{{ projectrate.id }}-delete" data-toggle="modal" title="Delete Project Rate">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </a>
+                                <div class="modal fade" tabindex="-1" id="{{ projectrate.id }}-delete" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Delete Project Rate Confirmation</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the projectrate '{{ projectrate.project_title }}'?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn delete-projectrate btn-secondary" data-dismiss="modal" data-location="deleteprojectrate?id={{projectrate.id}}" data-query="{{ projectrate.project_title}}">Yes</button>
+                                                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{projectrate.id}}-project" data-target="#{{projectrate.id}}-project">
+                                {{ projectrate.project_title | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{projectrate.id}}-project">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Project</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ projectrate.project_title }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ projectrate.firstname  }} {{ projectrate.lastname  }}
+                        </td>
+                        <td>
+                            {{ projectrate.startdate|date(date_format) }}
+                        </td>
+                        <td>
+                            {{ projectrate.enddate ? projectrate.enddate|date(date_format)}}
+                        </td>
+                        <th>{{ projectrate.clientrate  }}</th>
+                        <th>{{ projectrate.contractorrate  }}</th>
+                        <th>{{ projectrate.agencyrate  }}</th>
+                        <th>{{ projectrate.dailyrate  }}</th>
+                        <th>{{ projectrate.weeklyrate  }}</th>
+                        <th>{{ projectrate.monthlyrate  }}</th>
+                        <th><a class="btn-link" data-toggle="modal" href="#{{projectrate.id}}-notes" data-target="#{{projectrate.id}}-notes">
+                                {{ projectrate.notes | truncate(tables_long_text_display_characters)}}
+                            </a>
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{projectrate.id}}-notes">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Notes</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ projectrate.notes }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal --></th>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

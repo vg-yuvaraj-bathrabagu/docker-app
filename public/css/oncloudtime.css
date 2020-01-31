@@ -1,0 +1,365 @@
+/**
+ * For color references use http://www.color-hex.com/ to get the hex equivalents
+ **/
+/** Stop the scroll like effect of the page **/
+body, .perfect-scrollbar-off .sidebar .sidebar-wrapper, .perfect-scrollbar-off .main-panel {
+    overflow: hidden;
+}
+
+body .wrapper, .wrapper.wrapper-full-page, body .wrapper > .main-panel {
+    height: 95vh;
+    min-height: 95vh;
+}
+/** Give the login page a white background **/
+.full-page:after, .wrapper, .content {
+    background: white;
+}
+
+/** Make the contents of the pages white especially for the dashboard */
+.main-panel, .navbar {
+    background-color: white;
+}
+
+/* Sidebar styling */
+/* Make the sidebar grey - this style works with the data-background-color value of brown */
+.sidebar[data-background-color="brown"]:after, .sidebar[data-background-color="brown"]:before,
+.off-canvas-sidebar[data-background-color="brown"]:after,
+.off-canvas-sidebar[data-background-color="brown"]:before {
+  background-color: white;
+}
+/* Color for inactive links */
+.sidebar[data-background-color="brown"] .nav li:not(.active) > a,
+.off-canvas-sidebar[data-background-color="brown"] .nav li:not(.active) > a {
+    color: #252422;
+}
+
+.menu li > a {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+/* Align the navigation bar-containing the notifications to the logo */
+.navbar {
+    background: white;
+    min-height: 90px; /* Increase to be aligned to the logo in sidebar */
+}
+/* Logo in the side-bar */
+.sidebar .logo, .off-canvas-sidebar .logo {
+    background: white;
+    min-height: 90px; /* Increase to fit logo in new design */
+    padding: 0;
+}
+
+/* Increase the height of the logo to fit in the sidebar */
+.lg {
+    height: 90px;
+    vertical-align: top;
+}
+
+/** increase the width of the sidebar to fit the names of the links*/
+.sidebar, .sidebar .sidebar-wrapper {
+    width: 200px;
+}
+/** The height of the main panel and sidebar must be the same for the line separating the two not to have any breaks **/
+.sidebar, .sidebar .sidebar-wrapper, .main-panel {
+    height: 100%; /* height of the copyright */
+    opacity: 1;
+}
+
+/* Matches the Logo grey */
+#top-menu-wrapper {
+    background-color: #444;
+}
+
+#top-menu-wrapper a {
+    color: white;
+}
+
+/* Reduce the font size of the text in the menus */
+#top-menu-nav > li > a > span {
+    font-size: 14px;
+}
+
+#top-menu-nav > li > a > i {
+    font-size: 18px;
+}
+
+/* Set the color of the settings drop down */
+#menu-settings a {
+    color: #66615B;
+}
+#menu-settings a:hover {
+    color: white;
+}
+
+/* Alignment of the context image */
+img.context {
+    height: 24px;
+}
+
+/** formatting for script output */
+/* heading */
+.modal-body h1 {
+    font-size: 1.2em;
+    background-color: #325694;
+    color: #fff;
+    min-height: 32px;
+    padding: 4px;
+}
+
+/* Body text contents */
+.modal-body p {
+    font-size: 1.1em;
+    color: #325694;
+}
+
+/* buttons in runner windows have to be larger - these are Simulator, FileWatcher, Queries */
+.runner > .btn-secondary {
+    max-width: 7.7em !important;
+}
+
+/** Force powerbi iframe to fit in the window */
+/* iframe's parent node */
+
+/* iframe itself */
+div#powerbi_dashboard_container > iframe {
+    display: block;
+    width: 100%;
+    height: 67vh;
+    min-height: 67vh;
+    border: none;
+    margin: 0 auto;
+}
+
+.explorationContainer, .exploreCanvas {
+    background-color: whitesmoke;
+}
+
+/* Logo on the login page */
+#login-logo {
+    width: 250px;
+}
+
+/** Copyright text at the bottom of the page */
+.copyright  {
+    color: #252422;
+    z-index: 1;
+    position: relative;
+    display: block;
+}
+
+/* Links on the queries and reports showing more detail in a popup. This is the same color as the blue on the icons */
+.btn-link {
+    color: #68B3C8;
+}
+
+/* remove the left padding of the left links */
+.table > tbody > tr > td .btn-link {
+    padding-left: 0;
+}
+.table > thead > tr > th {
+    white-space: nowrap;
+}
+
+/* Remove the vertical space at the top of the login page */
+.login-page > .content {
+    padding-top: 0;
+}
+
+/** The refresh icon */
+.refresh {
+    padding-top: 20px;
+    font-size: 1.5em;
+}
+
+/* Color for error messages */
+.error {
+    color: red;
+    margin-left: 5px;
+}
+/* the contents of the error messages - by default has no height, but maximizes to a height to display 10 lines */
+#error_contents {
+    overflow-y: scroll;
+    min-height: 0px;
+    max-height: 180px;
+}
+
+/* center align the pagination buttons at the bottom of each table */
+div.dataTables_wrapper div.dataTables_paginate {
+    text-align: center;
+}
+
+/* Minimum and Maximum size of pagination buttons */
+.btn-secondary, .btn-primary, .pagination > li.paginate_button.previous > a, .pagination > li.paginate_button.next > a {
+    min-width: 6.5714285em !important; /* 92px for default body size of 14px */
+    max-width: 6.5714285em !important;
+    text-align: center;
+}
+
+/* Pagination button styling */
+.pagination > li > a {
+    line-height: 1.57142em; /* 22px at 14px body font size */
+    margin: 0; /* 2px at 14px body size */
+    padding-top: 0.428571em; /* 6px at 14px body size */
+    border-radius: 1.4285em; /* 20px at 14px body size */
+}
+.pagination > li.paginate_button > a {
+    min-width: 2.4em !important; /*24px for 10px font size*/
+    max-width: 2.4em !important;
+    font-weight: 900;
+    border: none;
+    font-size: 0.71428em; /* 10px vs page size of 16px */
+    height: 2.4em; /* 32px for 10px font size */
+}
+
+.pagination > li.paginate_button.previous > a, .pagination > li.paginate_button.next > a {
+    min-width: 2.4em !important;
+    max-width: 2.4em !important;
+    font-weight: 900;
+    border: none;
+    height: 2.4em;
+}
+
+
+/** Force long text to wrap especially links */
+.rules .modal-body, sample-row .modal-body, .new-window-link .modal-body, .new-window-link a, .wrap-long-text {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+div.results-scrollable {
+    overflow-y: scroll;
+    overflow-x: scroll;
+    max-height: 400px;
+}
+/** Fixed height of modals with a scroll overflow for longer text **/
+.results-modal .modal-body {
+    height: 400px;
+    overflow-y: scroll;
+}
+/** The results modal being shorter has a smaller scrollable div */
+.results-modal div.results-scrollable {
+    max-height: 200px;
+}
+
+/** Notification menu make larger and make contents wrap to the width of the menu **/
+#settings-notifications {
+    height: 98px;
+}
+ul.notify {
+    width: 750px;
+}
+
+ul.notify > li > a {
+    white-space: normal;
+    color: white;
+}
+
+.numbers, .search-row {
+    height: 74px;
+    padding-top: 17px;
+}
+
+#mapping {
+    border-width: thin;
+}
+
+/* Template controls styling */
+.modal-dialog.template-modal {
+    width: 1100px;
+}
+.delimiter {
+    padding-left: 0px;
+}
+
+#mapping_table_container {
+    overflow-y: auto;
+    max-height: 375px;
+    padding-right: 20px;
+}
+
+.header-company-name {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Timesheet page */
+#timesheet_account_period {
+    font-size: 1.2em;
+    font-weight: 400;
+    line-height: 1.4em;
+    margin-bottom: 15px;
+}
+/* Full Calendar Styling */
+#timesheet_calendar .fc h2 {
+    font-size: 1.5em; /* Reduce the size of the month and year label */
+}
+#timesheet_calendar .fc-toolbar .fc-left {
+    min-width: 40px; /* forcing it into the space on the timesheet page */
+}
+
+#timesheet_calendar .fc td.fc-today {
+    font-weight: bolder; /* formatting for today's date */
+}
+
+#timesheet_calendar .fc td.fc-other-month {
+    color: #9A9A9A; /* Disabled grey kind of look */
+}
+
+#timesheet_calendar.fc .fc-head .fc-widget-header {
+    margin-top: 0px; /* Remove the padding between the days of the week and the navigation bar */
+}
+
+#timesheet_calendar .fc-bg td {
+    height: 20px !important;
+}
+
+#timesheet_calendar .fc-basic-view .fc-body .fc-row {
+    min-height: 2.5em;
+}
+
+#timesheet_calendar .fc-ltr .fc-basic-view .fc-day-number {
+    text-align: center;
+}
+
+#timesheet_calendar .fc-toolbar h2 {
+    font-size: 1.2em; /* reduce the font of the date header */
+}
+
+#timesheet_calendar .fc-day-header {
+    color: #429cb6;
+    text-align: left;
+}
+
+/* Timesheet information popups */
+.swal2-modal .swal2-title {
+    font-size: 1.2em;
+}
+
+.swal2-modal .swal2-content {
+    font-size: 14px;
+}
+
+/*
+ * add a required asterix for all fields in forms which use the Symfony form builder
+ */
+label.required:after {
+    content: " *";
+    color: red;
+}
+
+#nexusAnalysis .control-label {
+    margin-right: 10px;
+}
+
+/*
+ * Reduce the padding on the table columns to get better look for right alignment
+ */
+table.dataTable thead > tr > th.sorting_asc, table.dataTable thead > tr > th.sorting_desc, table.dataTable thead > tr > th.sorting, table.dataTable thead > tr > td.sorting_asc, table.dataTable thead > tr > td.sorting_desc, table.dataTable thead > tr > td.sorting {
+    padding-right: 10px;
+}
+
+/* Grey text color for the alert notifications */
+.alert-info, .alert-notice, .alert-success {
+    color: #66615b;
+}

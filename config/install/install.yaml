@@ -1,0 +1,17 @@
+parameters:
+  rdbms_user: root
+  rdbms_password: mysql
+  rdbms_dbname: oncloudtime
+  rdbms_host: localhost
+  aws_credentials_key: AKIAIZ6ENRM52CQMFSTA
+  aws_credentials_secret: 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
+  athena_directory: test
+  athena_database: test
+  athena_input: s3://yuva-bucket/
+  athena_output: s3://yuva-bucket/athena-output/
+  sqs_notificationQueue: https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva
+  s3_bucket: yuva-bucket
+  need_update: 'no'
+  sns_general_topic: arn:aws:sns:us-east-1:590297375119:test-sns
+  cognito_pool_id: us-east-1_f2elqUMPV
+  cognito_pool_client_id: 1ncuuvnku3u4hku6p11dnqiqgv

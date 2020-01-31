@@ -1,0 +1,20 @@
+{% if athenaoutput is defined and athenaoutput is not empty %}
+    <h1>Results Data Download</h1>{{ athenaoutput  | markdowntohtml | raw | nl2br }}
+    <h1>Query Output</h1>
+    <div class="results-scrollable">
+        {%  set output =  athenaoutput | reads3filecontents  %}
+        {%  if output is defined and output is not null %}
+            {{ output | csvtohtml | raw }}
+        {% endif %}
+    </div>
+{% endif %}
+{% if logs is defined %}
+    <h1>Log File URL</h1>{{ logs | markdowntohtml | raw | nl2br }}
+    <h1>Log File Output</h1>
+    {{ logs | reads3filecontents | markdowntohtml | raw | nl2br  }}
+{% endif %}
+{% if error is defined and error is not empty %}
+    <div class="error">
+        {{ error | raw }}
+    </div>
+{% endif %}

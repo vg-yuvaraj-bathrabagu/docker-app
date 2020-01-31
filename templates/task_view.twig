@@ -1,0 +1,28 @@
+<div class="form-group">
+    <label class="control-label">Title : </label>
+    <span class="help-block">{{ task.title }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Start Date: </label>
+    <span class="help-block">{{ task.startdate|date('Y-m-d') }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">End Date: </label>
+    <span class="help-block">{{ task.enddate|date('Y-m-d') }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Assignee: </label>
+    <span class="help-block">{{ task.assignee }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Project: </label>
+    <span class="help-block">{{ task.project }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Parent Task: </label>
+    <span class="help-block">{{ task.parent }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Is Timesheet Task: </label>
+    <span class="help-block">{{ task.istimesheettask? "Yes" : "No" }}</span>
+</div>

@@ -1,0 +1,104 @@
+# TODO: Look into enabling of nested parameters
+liip_monitor:
+    checks:
+        php_extensions: [mysqlnd]
+parameters:
+    activity.current.dashboardUrl: '<iframe id="powerbi_dashboard" width="800" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiZWQ0OGQ3NDktNDllMy00NDVlLTgwNjItYzYxZWE0ZDc1ZDdjIiwidCI6ImM3ZGZjNTk1LWU4OWUtNDQ4Ni1iNGM0LWI0NmRhZmFjMmU5NSIsImMiOjF9" frameborder="0" allowFullScreen="true"></iframe>'
+    activity.history.dashboardUrl: '<iframe id="powerbi_dashboard" width="800" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiZWQ0OGQ3NDktNDllMy00NDVlLTgwNjItYzYxZWE0ZDc1ZDdjIiwidCI6ImM3ZGZjNTk1LWU4OWUtNDQ4Ni1iNGM0LWI0NmRhZmFjMmU5NSIsImMiOjF9" frameborder="0" allowFullScreen="true"></iframe>'
+    company.name: "OnCloudTime"
+    rdbms.port: "3306"
+    rdbms.driver: "pdo_mysql"
+    rdbms.server_version: "5.6"
+    dashboard.powerbiUrl: '<iframe id="powerbi_dashboard" width="800" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiZWQ0OGQ3NDktNDllMy00NDVlLTgwNjItYzYxZWE0ZDc1ZDdjIiwidCI6ImM3ZGZjNTk1LWU4OWUtNDQ4Ni1iNGM0LWI0NmRhZmFjMmU5NSIsImMiOjF9" frameborder="0" allowFullScreen="true"></iframe>'
+    nexus.powerbiUrl: '<iframe id="powerbi_dashboard" width="800" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiNTcwMTI1NWUtNjcyZS00MTU4LWFiYWEtZDA4MDgxMTNiMWU3IiwidCI6ImM3ZGZjNTk1LWU4OWUtNDQ4Ni1iNGM0LWI0NmRhZmFjMmU5NSIsImMiOjF9" frameborder="0" allowFullScreen="true"></iframe>'
+    aws.region: us-east-1
+    aws.version: latest
+    log.level: info
+    s3.version: latest
+    s3.region: us-east-1
+    s3.presignduration: 7890000
+    session.lifetime.seconds: 3600
+    date.format: "m/d/Y"
+    shell:
+        accountCreateFile: admin/createaccount.sh
+        accountDeleteFile: admin/deleteaccount.sh
+        accountUpdateFile: admin/updateaccount.sh
+        adminResetFile: admin/reset.sh
+        appSetupFile: admin/setup.sh
+        athenaTableCreateFile: createathenatable.sh
+        athenaTableUpdateFile: updateathenatable.sh
+        conversionActivateFile: admin/activateconversion.sh
+        conversionCreateFile: admin/createconversion.sh
+        conversionDeleteFile: admin/deleteconversion.sh
+        conversionUpdateFile: admin/updateconversion.sh
+        fileuploadCreateFile: createfileupload.sh
+        fileuploadCopyToTemplate: copyfiletotemplatefolder.sh
+        fileuploadDelete: deletefileupload.sh
+        fileuploadRestore: restorefileupload.sh
+        filewatcherCreateFile: createfilewatcher.sh
+        filewatcherDeleteFile: deletefilewatcher.sh
+        filewatcherRunFile: runfilewatcher.sh
+        filewatcherUpdateFile: updatefilewatcher.sh
+        hadoopCreateFile: createhadoop.sh
+        hadoopStartFile: starthadoop.sh
+        hadoopStopFile: stophadoop.sh
+        mppCreateFile: creatempp.sh
+        mppStartFile: startmpp.sh
+        mppStopFile: stopmpp.sh
+        orcConversion: orcConversion.sh
+        parquetConversion: parquetConversion.sh
+        permissionsUpdateFile: admin/updatepermission.sh
+        projectAssignmentCreateFile: createprojectassignment.sh
+        projectAssignmentDeleteFile: deleteprojectassignment.sh
+        projectAssignmentUpdateFile: updateprojectassignment.sh
+        projectCreateFile: createproject.sh
+        projectDeleteFile: deleteproject.sh
+        projectUpdateFile: updateproject.sh
+        queryCreateFile: createquery.sh
+        queryDeleteFile: deletequery.sh
+        queryRunFile: runQuery.sh
+        queryUpdateFile: updatequery.sh
+        runNexusAnalysisFile: runNexusAnalysis.sh
+        getNexusAnalysisDates: getNexusAnalysisDates.sh
+        runNexusDataPreviewFile: runNexusDataPreview.sh
+        simulationCreateFile: createsimulation.sh
+        simulationDeleteFile: deletesimulation.sh
+        simulationRunFile: runsimulation.sh
+        simulationUpdateFile: updatesimulation.sh
+        tableSearchFile: tablesearchfiles.sh
+        taskCreateFile: createtask.sh
+        taskDeleteFile: deletetask.sh
+        taskUpdateFile: updatetask.sh
+        templateCreateFile: createtemplate.sh
+        templateDeleteFile: deletetemplate.sh
+        templateSyncFile: synctemplate.sh
+        templateUpdateFile: updatetemplate.sh
+        timesheetCreateFile: createtimesheet.sh
+        timesheetDeleteFile: deletetimesheet.sh
+        timesheetUpdateFile: updatetimesheet.sh
+        userChangePasswordFile: admin/changeuserpassword.sh
+        userCreateFile: admin/createuser.sh
+        userDeleteFile: admin/deleteuser.sh
+        userUpdateFile: admin/updateuser.sh
+        userForgotPasswordFile: admin/forgotpassword.sh
+    sns_topic_prefix: "oncloudtime-"
+    tables.long_text_display_characters: 20
+    tables.rows_per_page: 7
+    tables.templates_rows_per_page: 4
+    asset.image.login: logo-no-words.png
+    asset.image.sidebar: logo-no-words.png
+    nexus.template.samplerow: "State,Sales Price,Document Number,Document Date,Posting Date
+                               Alabama,420.33,INV303030030,12-15-18,12-15-18"
+    nexus.template.rules: '{"columnname_4":"postingdate","datatype_4":"String","processing_4":"1","parameter_4":"","target_4":"postingdate","order_4":"4","columnname_0":"state","datatype_0":"String","processing_0":"1","parameter_0":"","target_0":"state","order_0":"0","columnname_1":"salesprice","datatype_1":"Double","processing_1":"1","parameter_1":"","target_1":"salesprice","order_1":"1","columnname_2":"documentnumber","datatype_2":"String","processing_2":"1","parameter_2":"","target_2":"documentnumber","order_2":"2","columnname_3":"documentdate","datatype_3":"String","processing_3":"1","parameter_3":"","target_3":"documentdate","order_3":"3"}'
+    nexus.analysis.query: "SELECT s.state, nn.transactions, nn.totalsales, (CASE WHEN nn.transactions > salestransactionsthreshold THEN 'Yes' WHEN nn.transactions > nearingtransactioncountthreshold THEN 'Close' ELSE 'No' END) AS transaction_thresholds_met,  (CASE WHEN nn.totalsales > salesdollarsthreshold THEN 'Yes' WHEN nn.totalsales > nearingsalesthreshold THEN 'Close' ELSE 'No' END) as sales_thresholds_met, s.salestransactionsthreshold, s.salesdollarsthreshold, s.nearingtransactioncountthreshold, s.nearingsalesthreshold FROM stateguide s INNER JOIN (SELECT n.state, count(n.salesprice) as transactions, SUM(n.salesprice) AS totalsales FROM #table_name# n #date_filter_string# GROUP BY n.state) AS nn ON s.state = nn.state #state_filter_string#"
+    nexus.dataprofile.query: "SELECT state, COUNT(state) as transaction_count, SUM(salesprice) AS total_sales, date_format(date_parse(documentdate, '%%m/%%d/%%Y'), '%%m') as month, date_format(date_parse(documentdate, '%%m/%%d/%%Y'), '%%Y') as year_value FROM #table_name# #filter_string# GROUP BY state, date_format(date_parse(documentdate, '%%m/%%d/%%Y'), '%%m'), date_format(date_parse(documentdate, '%%m/%%d/%%Y'), '%%Y') ORDER BY state"
+    nexus.dropdowndates.query: "SELECT DISTINCT date_format(date_trunc('month', date_parse(documentdate, '%%m/%%d/%%Y')), '%%Y-%%m-%%d') as startdate, date_format(date_add('day', -1, date_add('month', 1, date_trunc('month', date_parse(documentdate, '%%m/%%d/%%Y')))), '%%Y-%%m-%%d') as enddate FROM #table_name# ORDER BY startdate"
+    sidebar.activetext.color: "#df4e71"
+    notification.success.color: "green"
+    notification.failed.color: "#df4e71"
+    notification.info.color: "blue"
+    cognito.userpool.groupname: "oncloudtimePoolGroup"
+    cognito.userpool.name: "oncloudtime-user-pool-dev"
+    cognito.userpool.iamrolename: "oncloudtime-iam-role-dev"
+    cognito.userpool.clientname: "oncloudtime-client-app"
+    cognito.userpool.defaultuserpassword: "oc-APP-001"

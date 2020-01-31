@@ -1,0 +1,104 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                        <th>Account</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for category in taskcategories %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="edittaskcategory?id={{category.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewtaskcategory?id={{category.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                                <a href="#{{ category.id }}-delete" data-target="#{{ category.id }}-delete" data-toggle="modal" title="Delete Task">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </a>
+                                <div class="modal fade" tabindex="-1" id="{{ category.id }}-delete" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Delete Category Confirmation</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the category '{{ category.title }}'?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn delete-category btn-secondary" data-dismiss="modal" data-location="deletetaskcategory?id={{category.id}}" data-query="{{ category.title}}">Yes</button>
+                                                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{category.id}}-title" data-target="#{{category.id}}-title">
+                                {{ category.title | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{category.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Title</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ category.title }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{category.id}}-description" data-target="#{{category.id}}-description">
+                                {{ category.description | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{category.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Description</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ category.description }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <td>{{ category.account.name}}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

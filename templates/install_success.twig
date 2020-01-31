@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-2">
+			<div class="text-center">
+				<img id="login-logo" src="{{  asset('img/'~asset_image_login) }}"  />
+			</div>
+			<div class="card card-wizard" id="wizardCard">
+
+					<div class="card-header text-center">
+						<h4 class="card-title">Installation Successful</h4>
+					</div>
+					<div class="card-content text-center">
+						<a href="login" class="finish btn btn-info btn-fill btn-wd" >Continue to login page</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock body %}

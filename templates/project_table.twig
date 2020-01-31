@@ -1,0 +1,107 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Title</th>
+                    <th>Project ID</th>
+                    <th>Budget</th>
+                    <th>Estimated Start</th>
+                    <th>Estimated End</th>
+                    <th>Type</th>
+                    <th>Sprint Count</th>
+                    <th>Sprint Length</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for project in projects %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="editproject?id={{project.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewproject?id={{project.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            {%  if project.builtin == 0 %}
+                                <a href="#{{ project.id }}-delete" data-target="#{{ project.id }}-delete" data-toggle="modal" title="Delete Project">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </a>
+                                <div class="modal fade" tabindex="-1" id="{{ project.id }}-delete" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Delete Project Confirmation</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the project '{{ project.title }}'?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn delete-project btn-secondary" data-dismiss="modal" data-location="deleteproject?id={{project.id}}" data-query="{{ project.title}}">Yes</button>
+                                                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{project.id}}-title" data-target="#{{project.id}}-title">
+                                {{ project.title | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{project.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Title</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ project.title }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ project.projectid }}
+                        </td>
+                        <td class="right">
+                            {{ project.budget|number_format(2) }}
+                        </td>
+                        <td>
+                            {{ project.estimatedstartdate|date(date_format) }}
+                        </td>
+                        <td>
+                            {{ project.estimatedenddate|date(date_format) }}
+
+                        </td>
+                        <td>
+                            {{ project.type }}
+                        </td>
+                        <td>
+                            {{ project.sprintcount }}
+                        </td>
+                        <td>
+                            {{ project.sprintduration }}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

@@ -1,0 +1,103 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Notes</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for tasktemplate in tasktemplates %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="edittasktemplate?id={{tasktemplate.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewtasktemplate?id={{tasktemplate.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="#{{ tasktemplate.id }}-delete" data-target="#{{ tasktemplate.id }}-delete" data-toggle="modal" title="Delete Project">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" id="{{ tasktemplate.id }}-delete" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Delete Task Template Confirmation</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete the task template '{{ tasktemplate.name}}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn delete-tasktemplate btn-secondary" data-dismiss="modal" data-location="deletetasktemplate?id={{tasktemplate.id}}" data-query="{{ tasktemplate.name}}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{tasktemplate.id}}-title" data-target="#{{tasktemplate.id}}-title">
+                                {{ tasktemplate.name | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{tasktemplate.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Name</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ tasktemplate.name }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ tasktemplate.code }}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{tasktemplate.id}}-notes" data-target="#{{tasktemplate.id}}-notes">
+                                {{ tasktemplate.notes | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{tasktemplate.id}}-notes">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Notes</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ tasktemplate.notes }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

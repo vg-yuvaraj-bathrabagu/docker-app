@@ -1,0 +1,677 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <form id="createUser">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">User</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+
+                <div class="row">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="nav-tabs-navigation">
+                                <div class="nav-tabs-wrapper">
+                                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#home" data-toggle="tab">General</a></li>
+                                        <li role="presentation"><a href="#profile" data-toggle="tab">Contact</a></li>
+                                        <li role="presentation"><a href="#HR" data-toggle="tab">HR</a></li>
+                                        <li role="presentation"><a href="#Payroll" data-toggle="tab">Payroll</a></li>
+                                        <li role="presentation"><a href="#Emergencycontact" data-toggle="tab">Emergency Contact</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="error" id="error_contents"></div>
+                            <div id="my-tab-content" class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="home">
+                                    <div class="form-group">
+                                        <label class="control-label" for="salutation">Salutation</label>
+                                        <div class="controls">
+                                            <select name="salutation" placeholder="" class="form-control">
+                                                <option value="all">All</option>
+                                                <option value="dr">Dr</option>
+                                                <option value="miss">Miss</option>
+                                                <option value="mr">Mr</option>
+                                                <option value="mrs">Mrs</option>
+                                                <option value="ms">Ms</option>
+                                                <option value="minor">Minor</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="first-name">First Name<star>*</star></label>
+                                        <div class="controls">
+                                            <input type="text" name="firstname" value="{{ user.firstname }}" placeholder="" class="form-control" data-rule-required="true"
+                                                   data-msg-required="Please enter the users' First Name" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="last-name">Last Name<star>*</star></label>
+                                        <div class="controls">
+                                            <input type="text" name="lastname" value="{{ user.lastname }}" placeholder=""  class="form-control" data-rule-required="true"
+                                                   data-msg-required="Please enter the users' Last Name"/>
+                                        </div>
+                                    </div>
+                                    {% if user.id is defined and user.id is empty %}
+                                    <div class="form-group">
+                                        <label class="control-label" for="password">Password<star>*</star></label>
+                                        <div class="controls">
+                                            <input id="password" type="password" name="password" placeholder="" class="form-control" data-rule-strongpassword="true" data-rule-required="true" data-rule-msg="Please enter the password for the user account" />
+                                        </div>
+                                    </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="confirmpassword">Confirm Password<star>*</star></label>
+                                            <div class="controls">
+                                                <input type="password" name="confirmpassword" placeholder="" class="form-control" data-rule-equalTo="#password"
+                                                       data-msg-equalTo="Please enter the same password for both fields" />
+                                            </div>
+                                        </div>
+                                    {%  endif %}
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Email<star>*</star></label>
+                                        <div class="controls">
+                                            <input type="emailaddress" name="emailaddress" placeholder="" value="{{ user.emailaddress }}"  class="form-control" data-rule-required="true"
+                                                   data-msg-required="Please enter the users' email"
+                                                   data-rule-email="true"
+                                                   data-msg-email="Please enter a valid email address" />
+                                        </div></div>
+                                    <div class="form-group {% if not is_granted('ROLE_ADMIN') %}hidden{% endif %}">
+                                        <label class="control-label" for="roles">Roles<star>*</star></label>
+                                        <div class="controls">
+                                            <!-- TODO: Add required validation for checkboxes on the roles -->
+                                            {% for role in roles %}
+                                                <!-- crude hack to hide the superadmin role -->
+                                                {%  if role.name != 'ROLE_SUPER_ADMIN'%}
+                                                    <label><input data-rule-roles="true" class="roles" type="checkbox" value="{{ role.name }}" name="roles[]" {% if user.roles[role.name] is defined %} checked {% endif %} /> &nbsp;&nbsp;{{ role.name }} &nbsp;&nbsp;</label>
+                                                {% endif %}
+
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="initials">File Upload Location</label>
+                                        <div class="controls">
+                                            <select id="fileuploadlocation" name="fileuploadlocation" placeholder="" class="form-control">
+                                                <option value="UserHome">User Home</option>
+                                                <option value="Shared">Shared</option>
+                                            </select>
+                                            <input type="hidden" id="fileuploadlocation_val" value="{{ user.fileuploadlocation }}"/>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="initials">Initials</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.initials }}" name="initials" placeholder=""  class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="gender">Gender</label>
+                                        <div class="controls">
+                                            <select name="gender" placeholder="" class="form-control">
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="jobtitle">Job Title</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.jobtitle }}" name="jobtitle" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="blccode">BLC Code</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.blccode }}" name="blccode" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="jobcategory">Employee Job Category</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.jobcategory }}" name="jobcategory" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="department">Department</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.department }}" name="department" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="joblocation">Location</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.joblocation }}" name="joblocation" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="personalemailaddress">Personal Email Address</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.personalemailaddress }}" name="personalemailaddress" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="usertype">User Type</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.usertype }}" name="usertype" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="employeecategory">User Category</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.employeecategory }}" name="employeecategory" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="status">Status</label>
+                                        <div class="controls">
+                                            <input type="text" value="NA" name="status" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="weekstart">Week start from</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.status }}" name="weekstart" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="hourlywage">Hourly Wage($)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.hourlywage }}" name="hourlywage" placeholder=""  class="form-control" data-rule-number="true" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="photo">Photo</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.photo }}" name="photo" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="onvacation">On Vacation</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.onvacation }}" name="onvacation" placeholder=""  class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="category"><star>*</star> Required fields</div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="profile">
+                                    <div class="form-group">
+                                        <label class="control-label" for="mobilenumber">Phone Mobile Number</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.mobilenumber }}" name="mobilenumber" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="homephone">Home Phone</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.homephone }}" name="homephone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="officeline1">Office Line</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.officeline1 }}" name="officeline1" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="faxnumber">Fax Number</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.faxnumber }}" name="faxnumber" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="address1">Address Line 1</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.address1 }}" name="address1" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="address2">Address Line 2</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.address2 }}" name="address2" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="stateorprovince">State/Province</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.stateorprovince }}" name="stateorprovince" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="postalorzipcode">Postal/Zip Code</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.postalcode }}" name="postalcode" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="city">City</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.city }}" name="city" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="country">Country</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.country }}" name="country" placeholder=""  class="form-control" />
+                                        </div></div><div class="form-group">
+                                        <label class="control-label" for="companyname">Company Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.companyname }}" name="companyname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="companyaddress">Company Address</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.companyaddress }}" name="companyaddress" placeholder=""  class="form-control" />
+                                        </div></div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="HR">
+                                    <div class="form-group">
+                                        <label class="control-label" for="ssn">Social Security #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ssn }}" name="ssn" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="ein">Employer Identification Number</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ein }}" name="ein" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="tsgbadgenumber">TSG Badge Number</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.tsgbadgenumber }}" name="tsgbadgenumber" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="employeetype">Employee Type</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.employeetype }}" name="employeetype" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="birthdate">Birth Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.birthdate }}" name="birthdate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="hiredate">Hire Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.hiredate }}" name="hiredate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="employeestartdate">Employee Start Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.employeestartdate }}" name="employeestartdate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="employeeenddate">Employee End Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.employeeenddate }}" name="employeeenddate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="releasedate">Release Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.releasedate }}" name="releasedate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="lastreviewdate">Last Review Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.lastreviewdate }}" name="lastreviewdate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="nextreviewdate">Next Review Date</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.nextreviewdate }}" name="nextreviewdate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="supervisorname">Supervisor Names</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.supervisorname }}" name="supervisorname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="supervisoremail">Supervisor Email</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.supervisoremail }}" name="supervisoremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="supervisorofficeline">Supervisor Office Line</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.supervisorofficeline }}" name="supervisorofficeline" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="approver">Approver</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.approver }}" name="approver" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="approveremail">Approver MailID(s)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.approveremail }}" name="approveremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="invoiceapprover">Invoice Approver</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.invoiceapprover }}" name="invoiceapprover" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="invoiceapproveremail">Invoice Approver MailID(s)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.invoiceapproveremail }}" name="invoiceapproveremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="businessmeetingapprover">Business Meeting Approver</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.businessmeetingapprover }}" name="businessmeetingapprover" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="businessmeetingapproveremail">Business Meeting Approver MailID(s)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.businessmeetingapproveremail }}" name="businessmeetingapproveremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="travelexpenseapprover">Travel Expense Approver</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.travelexpenseapprover }}" name="travelexpenseapprover" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="travelexpenseapproveremail">Travel Expense Approver MailID(s)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.travelexpenseapproveremail }}" name="travelexpenseapproveremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="odcapprover">ODC Approver</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.odcapprover }}" name="odcapprover" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="odcapproveremail">ODC Approver MailID(s)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.odcapproveremail }}" name="odcapproveremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="billsapprover">Bills Approver</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.billsapprover }}" name="billsapprover" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="billsapproveremail">Bills Approver MailID(s)</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.billsapproveremail }}" name="billsapproveremail" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="permissiontemplate">Permission Template</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.permissiontemplate }}" name="permissiontemplate" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="canviewemployeeresources">Can view Employee Resources</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.canviewemployeeresources }}" name="canviewemployeeresources" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="canviewpublicholidays">Can view Public Holidays</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.canviewpublicholidays }}" name="canviewpublicholidays" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="canviewpayrolldates">Can view Payroll Dates</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.canviewpayrolldates }}" name="canviewpayrolldates" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="canviewtravelpolicy">Can view Travel Policy</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.canviewtravelpolicy }}" name="canviewtravelpolicy" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="canview401kinformation">Can view 401k Information</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.canview401kinformation }}" name="canview401kinformation" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="canviewreferenceinformation">Can view Reference Information	</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.canviewreferenceinformation }}" name="canviewreferenceinformation" placeholder=""  class="form-control" />
+                                        </div></div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="Payroll">
+                                    <div class="form-group">
+                                        <label class="control-label" for="payrollfrequency">Payroll Frequency</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.payrollfrequency }}" name="payrollfrequency" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="invoicecategory">Invoice Category</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.invoicecategory }}" name="initials" placeholder=""  class="form-control" />
+                                        </div></div>
+
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumhoursperday">Maximum Hours per Day</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumhoursperday }}" name="maximumhoursperday" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumhoursperweek">Maximum Hours per Week</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumhoursperweek }}" name="maximumhoursperweek" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="vacationdaysallowed">Vacation Days Allowed</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.vacationdaysallowed }}" name="vacationdaysallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumvacationdays">Maximum Vacation Days	</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumvacationdays }}" name="maximumvacationdays" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="personaldaysallowed">Personal Days Allowed</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.personaldaysallowed }}" name="personaldaysallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumpersonaldays">Maximum Personal Days</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumpersonaldays }}" name="maximumpersonaldays" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="paidholidaysallowed">Paid Holiday Allowed</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.paidholidaysallowed }}" name="paidholidaysallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumpaidholidays">Maximum Paid Holiday Allowed</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumpaidholidays }}" name="maximumpaidholidays" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="sickdaysallowed">Sick Days Allowed</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.sickdaysallowed }}" name="sickdaysallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumsickdays">Maximum Sick Days</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumsickdays }}" name="maximumsickdays" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="saturdayworkallowed">Can work on Saturday</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.saturdayworkallowed }}" name="saturdayworkallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="sundayworkallowed">Can work on Sunday</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.sundayworkallowed }}" name="sundayworkallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="publicholidayworkallowed">Can work on Public Holidays</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.publicholidayworkallowed }}" name="publicholidayworkallowed" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="employeebenefitsbillable">Employee Benefits Billable</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.employeebenefitsbillable }}" name="employeebenefitsbillable" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="maximumsocialsecurity">Maximum Social Security</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.maximumsocialsecurity }}" name="maximumsocialsecurity" placeholder=""  class="form-control" data-rule-number="true"/>
+                                        </div></div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="Emergencycontact">
+                                    <h6>First Emergency Contact</h6>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">First Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_firstname }}" name="ec1_firstname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Last Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_lastname }}" name="ec1_lastname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Street Address</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_streetaddress }}" name="ec1_streetaddress" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">City</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_city }}" name="ec1_city" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">State</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_state }}" name="ec1_state" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Zip Code</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_zipcode }}" name="ec1_zipcode" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Home Phone #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_homephone }}" name="ec1_homephone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Work Phone #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_workphone }}" name="ec1_workphone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Cell Phone or Pager #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_cellphone }}" name="ec1_cellphone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Relationship</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec1_relationship }}" name="ec1_relationship" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <h6>Second Emergency Contact</h6>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">First Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_firstname }}" name="ec2_firstname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Last Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_lastname }}" name="ec2_lastname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Street Address</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_streetaddress }}" name="ec2_streetaddress" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">City</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_city }}" name="ec2_city" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">State</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_state }}" name="ec2_state" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Zip Code</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_zipcode }}" name="ec2_zipcode" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Home Phone #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_homephone }}" name="ec2_homephone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Work Phone #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_workphone }}" name="ec2_workphone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Cell Phone or Pager #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_cellphone }}" name="ec2_cellphone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Relationship</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec2_relationship }}" name="ec2_relationship" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <h6>Third Emergency Contact</h6>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">First Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_firstname }}" name="ec3_firstname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Last Name</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_lastname }}" name="ec3_lastname" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Street Address</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_streetaddress }}" name="ec3_streetaddress" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">City</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_city }}" name="ec3_city" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">State</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_state }}" name="ec3_state" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Zip Code</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_zipcode }}" name="ec3_zipcode" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Home Phone #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_homephone }}" name="ec3_homephone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Work Phone #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_workphone }}" name="ec3_workphone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Cell Phone or Pager #</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_cellphone }}" name="ec3_cellphone" placeholder=""  class="form-control" />
+                                        </div></div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="email">Relationship</label>
+                                        <div class="controls">
+                                            <input type="text" value="{{ user.ec3_relationship }}" name="ec3_relationship" placeholder=""  class="form-control" />
+                                        </div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+            <input type="hidden" name="id" value="{{ user.id }}"/>
+            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary create" >Submit</button>
+            <button id="working" class="btn btn-simple hide">
+                <i class="fa fa-refresh fa-spin fa-3x"></i>
+            </button>
+        </div>
+        </form>
+    </div>
+</div>

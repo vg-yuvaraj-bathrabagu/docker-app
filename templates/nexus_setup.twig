@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    <div class="text-center">
+                        <span class="numbers btn btn-info btn-simple">Nexus Setup</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+
+            {%  if error is defined %}
+                <div id="error_contents" class="error" style="max-height: 600px;">
+                    {{ message | raw}}
+                </div>
+            {%  else %}
+                {{ message | raw}}
+            {% endif %}
+            {% if showsetuplink is defined and showsetuplink %}
+                <br/><a class="btn-fill btn-primary btn" href="{{ path('nexussetup')}}"> Setup</a>
+            {% endif  %}
+
+        </div>
+    </div>
+{% endblock body %}

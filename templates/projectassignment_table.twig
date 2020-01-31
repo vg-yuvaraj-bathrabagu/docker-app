@@ -1,0 +1,128 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Project</th>
+                    <th>Task</th>
+                    <th>User</th>
+                    <th>Description</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Approver</th>
+                    <th>Approver Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for projectassignment in projectassignments %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            {% if is_granted('ROLE_TIMESHEET_ASSIGNMENT') %}
+                            <a class="edit" href="javascript:void(0);" data-location="editprojectassignment?id={{projectassignment.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            {%  endif %}
+                            <a class="view" href="javascript:void(0);" data-location="viewprojectassignment?id={{projectassignment.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            {% if is_granted('ROLE_TIMESHEET_ASSIGNMENT') and projectassignment.builtin == 0 %}
+                            <a href="#{{ projectassignment.id }}-delete" data-target="#{{ projectassignment.id }}-delete" data-toggle="modal" title="Delete Project">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" id="{{ projectassignment.id }}-delete" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Delete Project Assigment Confirmation</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete the project assignment for '{{ projectassignment.firstname }} {{ projectassignment.lastname }}' to '{{ projectassignment.title}}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn delete-projectassignment btn-secondary" data-dismiss="modal" data-location="deleteprojectassignment?id={{projectassignment.id}}" data-query="{{ projectassignment.title}}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{projectassignment.id}}-title" data-target="#{{projectassignment.id}}-title">
+                                {{ projectassignment.title | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{projectassignment.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Project</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ projectassignment.title }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{projectassignment.id}}-task" data-target="#{{projectassignment.id}}-task">
+                                {{ projectassignment.task | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{projectassignment.id}}-task">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Task</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ projectassignment.task }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ projectassignment.firstname }} {{ projectassignment.lastname }}
+                        </td>
+                        <td>
+                            {{ projectassignment.description }}
+                        </td>
+                        <td>
+                            {{ projectassignment.startdate|date('Y-m-d') }}
+                        </td>
+                        <td>
+                            {{ projectassignment.enddate ? projectassignment.enddate|date('Y-m-d')}}
+
+                        </td>
+                        <td>
+                            {{ projectassignment.approvername }}
+                        </td>
+                        <td>
+                            {{ projectassignment.approveremail }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

@@ -1,0 +1,30 @@
+monolog:
+    handlers:
+        app:
+            level: "%log.level%"
+            type: stream
+            path: "%kernel.logs_dir%/oncloudtime-%kernel.environment%.log"
+            channels: [app]
+        main:
+            type: fingers_crossed
+            action_level: "%log.level%"
+            handler: nested
+            excluded_404s:
+                # regex: exclude all 404 errors from the logs
+                - ^/
+        nested:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: "%log.level%"
+        container_logs:
+            type: stream
+            path: "php://stderr"
+            level: "%log.level%"
+        console:
+            type:   console
+            process_psr_3_messages: false
+            channels: ["!event", "!doctrine"]
+        cloudwatch:
+            type: service
+            id: cloudwatch_handler
+            level: info

@@ -1,0 +1,12 @@
+# config/routes.yml
+controllers:
+    resource: "../src/Controller/"
+    type: annotation
+
+# Default secured logout
+logout:
+    path: /logout
+
+_monitor:
+    resource: "@LiipMonitorBundle/Resources/config/routing.xml"
+    prefix: /monitor/health

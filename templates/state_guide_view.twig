@@ -1,0 +1,28 @@
+<div class="form-group">
+    <label class="control-label">State : </label>
+    <span class="help-block">{{ stateguide.state }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Code : </label>
+    <span class="help-block">{{ stateguide.code }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Effective Date : </label>
+    <span class="help-block">{{ stateguide.effectivedate | date(date_format) }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Sales Transaction Threshold : </label>
+    <span class="help-block">{{ stateguide.salestransactionsthreshold ? stateguide.salestransactionsthreshold|number_format(0) }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Sales Dollar Threshold : </label>
+    <span class="help-block">{{ stateguide.salesdollarsthreshold ? stateguide.salesdollarsthreshold|number_format(2) }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Nearing Sales Transaction Threshold : </label>
+    <span class="help-block">{{ stateguide.nearingtransactioncountthreshold ? stateguide.nearingtransactioncountthreshold|number_format(0) }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Nearing Sales Dollars Threshold : </label>
+    <span class="help-block">{{ stateguide.nearingsalesthreshold ? stateguide.nearingsalesthreshold|number_format(2) }}</span>
+</div>

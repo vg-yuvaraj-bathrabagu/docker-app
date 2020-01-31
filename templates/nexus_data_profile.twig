@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    <div class="text-center">
+                        <span class="numbers btn btn-info btn-simple">Data Profile</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <form id="nexusAnalysis" class="form-inline">
+                <div class="col-xs-3 text-center">
+                    {{ form_row(form.state, {'full_name': 'state'}) }}
+                </div>
+                <div class="col-xs-4">
+                    {{ form_row(form.startdate, {'full_name': 'startdate'}) }}
+                </div>
+                <div class="col-xs-4">
+                    {{ form_row(form.enddate, {'full_name': 'enddate'}) }}
+                </div>
+                <div class="text-left col-xs-1">
+                    <button id="run-nexus-analysis" type="submit" class="btn btn-primary btn-fill submit text-center">Run</button>
+                    <button id="working" class="btn btn-simple hide pull-right">
+                        <i class="fa fa-refresh fa-spin fa-3x"></i>
+                    </button>
+                </div>
+                <input type="hidden" name="tablename" value="{{ tablename }}">
+                <input type="hidden" name="output" value="{{ output }}">
+                {{ form_rest(form) }}
+            </form>
+        </div>
+        <div id="error_contents" class="error col-md-11">
+        </div>
+        <div id="dataprofile-results">
+            <i></i>
+        </div>
+    </div>
+{% endblock body %}
+{% block custom_javascript %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#nexusAnalysis').validate({
+            submitHandler: function (form) {
+                hideSubmitButtonShowWorking();
+                // clear the error message and the previous results
+                $('#error_contents, #dataprofile-results').html('');
+                var vals = $(form).serializeArray();
+                var message = "Nexus data profile started at: " + Date();
+                var notify = 'rundataprofile';
+                var type = "info";
+                pushNotification(message, message, type);
+                $('.refresh i').addClass("fa-spin");
+                var error = false;
+                $.ajax({
+                    url:"rundataprofile",
+                    data: new FormData(form),// the formData function is available in almost all new browsers.
+                    type:"post",
+                    contentType:false,
+                    processData:false,
+                    cache:false,
+                    dataType:"html", // Change this according to your response from the server.
+                    error:function(err){
+                        error = true;
+                    },
+                    success:function(data){
+                        console.log(data);
+                    },
+                    complete:function(data){
+                        showSubmitButtonHideWorking();
+                        var message = notify = "Nexus data profile completed at: " + Date();
+                        var type = "success";
+                        if (error === true) {
+                            notify = message = "Nexus data profile failed at: " + Date();
+                            type = "danger";
+                            // set the error message
+                            $('#error_contents').html(data.responseText);
+                        } else {
+                            $('#dataprofile-results').html(data.responseText);
+                            setupDataTable();
+
+                            // add the JS to enable download
+                            $("#download-results").click(function(){
+                                $.fileDownload($(this).attr('data-location'));
+                            });
+                        }
+
+                        pushNotification(message, message, type);
+                        $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            }
+        });
+     });
+</script>
+{% endblock %}

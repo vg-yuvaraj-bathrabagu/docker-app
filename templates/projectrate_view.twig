@@ -1,0 +1,64 @@
+<div class="form-group">
+    <label class="control-label">Project : </label>
+    <span class="help-block">{{ projectrate.project.title }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">User : </label>
+    <span class="help-block">{{ projectrate.user.names }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Client Rate: </label>
+    <span class="help-block">{{ projectrate.clientrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Contractor Rate : </label>
+    <span class="help-block">{{ projectrate.contractorrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Agency Rate: </label>
+    <span class="help-block">{{ projectrate.agencyrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Overtime Rate: </label>
+    <span class="help-block">{{ projectrate.overtimerate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Premium Rate: </label>
+    <span class="help-block">{{ projectrate.premiumrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Double Rate: </label>
+    <span class="help-block">{{ projectrate.doublerate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Triple Rate: </label>
+    <span class="help-block">{{ projectrate.triplerate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Daily Rate: </label>
+    <span class="help-block">{{ projectrate.dailyrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Weekly Rate: </label>
+    <span class="help-block">{{ projectrate.weeklyrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Monthly Rate: </label>
+    <span class="help-block">{{ projectrate.monthlyrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Monthly Rate: </label>
+    <span class="help-block">{{ projectrate.monthlyrate }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Start Date : </label>
+    <span class="help-block">{{ projectrate.startdate |date(date_format)}}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">End Date : </label>
+    <span class="help-block">{{ projectrate.enddate ? projectrate.enddate|date(date_format) }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Notes: </label>
+    <span class="help-block">{{ projectrate.notes }}</span>
+</div>

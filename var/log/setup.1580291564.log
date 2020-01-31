@@ -1,0 +1,50 @@
+++ dirname /data/personal/docker-app/shell/admin/setup.sh
++ script_full_path=/data/personal/docker-app/shell/admin
++ source /data/personal/docker-app/shell/admin/../.aws_config
+++ export AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ export AWS_SECRET_ACCESS_KEY=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
+++ AWS_SECRET_ACCESS_KEY=q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA
++ echo root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580291564.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
+root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580291564.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
++ echo 'Starting installation'
+Starting installation
++ aws s3api create-bucket --bucket yuva-bucket --region us-east-1
+{
+    "Location": "/yuva-bucket"
+}
++ echo 'S3 bucket created'
+S3 bucket created
++ athena_log_file_absolute_path=/data/personal/docker-app/var/log/setup.1580291564.log.athena
++ aws athena --region us-east-1 start-query-execution --query-string 'CREATE DATABASE IF NOT EXISTS test' --result-configuration OutputLocation=s3://yuva-bucket/athena-output/ --output text
+++ cat /data/personal/docker-app/var/log/setup.1580291564.log.out
+++ awk '{print $1}'
++ query_execution_id=a835da84-ba65-4d65-9e86-2381aa37892b
+++ date '+%Y-%m-%d %H:%M'
++ START='2020-01-29 15:22'
++ count=0
++ true
+++ date '+%Y-%m-%d %H:%M'
++ NOW='2020-01-29 15:22'
+++ aws --region us-east-1 athena get-query-execution --query-execution-id a835da84-ba65-4d65-9e86-2381aa37892b
+++ sed 's: ::g'
+++ grep State
++ query_status='"State":"SUCCEEDED",'
++ query_status_exit_code=0
++ echo 'The query execution exit code is 0 and "State":"SUCCEEDED",'
+The query execution exit code is 0 and "State":"SUCCEEDED",
++ '[' 0 = 0 ']'
++ case $query_status in
++ break
+++ date '+%Y-%m-%d %H:%M'
++ END='2020-01-29 15:22'
++ echo 'Athena output file /data/personal/docker-app/var/log/setup.1580291564.log.athena'
+Athena output file /data/personal/docker-app/var/log/setup.1580291564.log.athena
++ aws athena --region us-east-1 get-query-results --query-execution-id a835da84-ba65-4d65-9e86-2381aa37892b --no-paginate --output json
++ echo 'Athena directory created'
+Athena directory created
++ '[' 1 = 1 ']'
++ echo 'Resetting the database'
+Resetting the database
++ mysql -h localhost --user=root --password=mysql oncloudtime
+ERROR 1062 (23000) at line 907: Duplicate entry 'bb1de4ca-e7ee-49e9-8096-f3fa45082e2b' for key 'unique_app_user_uuid'

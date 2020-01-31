@@ -1,0 +1,108 @@
+<!-- Modal body -->
+<div class="row">
+    <div class="col-md-3">
+        <label>Account:</label> {{ user.getAccount().getName()}}<br/>
+        Timesheet for: {{ user.names }}<br />
+        Approver: John Doe<br />
+        <div class="form-group">
+            <label>Comments</label>
+            {{ timesheet.comments}}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <table class="table no-datatable">
+            <thead>
+            <tr>
+                <th colspan="2">
+                    <b>PTO Balances</b>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+                <td>
+                    <b>V</b>
+                </td>
+                <td>5 HRS</td>
+            </tr>
+            <tr>
+                <td>
+                    <b>P</b>
+                </td>
+                <td>20 HRS</td>
+            </tr>
+            <tr>
+                <td>
+                    <b>S</b>
+                </td>
+                <td>30 HRS</td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div class="col-md-3">
+        <table class="table no-datatable">
+            <thead>
+            <tr>
+                <th colspan="2"><b>Hours Worked</b></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+                <td><b>CURRENT:</b></td>
+                <td>40 HRS</td>
+            </tr>
+            <tr>
+                <td><b>MTD:</b></td>
+                <td>80 HRS</td>
+            </tr>
+            <tr>
+                <td><b>YTD:</b></td>
+                <td>240 HRS</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-3 pull-right">
+        Calendar Goes Here
+    </div>
+</div>
+<div class="row">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Project</th>
+            <th>Task</th>
+            <th>Sub-task</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thur</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for task in timesheetdetails %}
+            {% for timesheetdetail in task %}
+                <tr>
+                    <td>{{ timesheetdetail.title }}
+                    </td>
+                    <td>{{ timesheetdetail.task }}
+                    </td>
+                    <td>
+                    </td>
+                    {% for day in  1..7 %}
+                        <td>{{ timesheetdetail[day] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        {%  endfor %}
+        </tbody>
+
+    </table>
+</div>

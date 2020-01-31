@@ -1,0 +1,71 @@
+<link href="{{ asset('css/jstreestyle.css') }}" rel="stylesheet"/>
+
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="hidden" class="reload close" aria-hidden="true"><i class="fa fa-refresh fa-fw"></i></button>
+                 <h4 class="modal-title">Query Directories</h4>
+
+            </div>
+            <div class="modal-body"><div class="te"><div id="container"></div></div><div class="loader centered" style="display:none"><i class="fa fa-refresh fa-2x fa-fw fa-spin"></i></div></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Copy</button>
+            </div>
+
+
+<script src="{{ asset('js/jquery-3.1.1.min.js')}}"></script>
+<script src="{{ asset('js/jstree.js')}}"></script>
+<script src="{{ asset('js/bootstrap-notify.js')}}"></script>
+
+<script>
+$(function() {
+  $('#container').jstree({
+    'core' : {
+      'data' : {
+        "url" : "templatefolders",
+        "dataType" : "json" // needed only if you do not supply JSON headers
+      }
+    }
+  });
+      $(document).on('click', '.btn-primary', function() {
+        var instance = $('#container').jstree(true);
+        var copyPath = instance.get_selected();
+        var files = $('#files').val();
+        $('.loader').toggle(1000);
+        $('.te').toggle(1000);
+        var message = files+" Copy to template input  started at: " + Date();
+        var type = "info";
+        pushNotification(message, message, type);
+        error = false
+        $.ajax({
+          url:"copy",
+          data: {"path": copyPath[0], "file" : files},// the formData function is available in almost all new browsers.
+          type:"post",
+           // Change this according to your response from the server.
+          error:function(err){
+             error = true;
+          },
+          success:function(data){
+
+          },
+          complete:function(data){
+          var message = files+" Copy to Template Input completed at: " + Date();
+          var type = "success";
+          if (error === true) {
+            message = "Copy to Template Input failed at: " + Date();
+            type = "danger";
+          }
+          pushNotification(message, message, type);
+          $('.loader').toggle(1000);
+          $('.te').toggle(1000);
+          $('.close').click();
+          }
+        });
+    });
+    $(document).on('click', '.reload', function(){
+      var instance = $('#container').jstree(true);
+      instance.refresh();
+    });
+});
+</script>

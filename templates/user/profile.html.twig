@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                        <h4>Your Profile</h4>
+
+                        <p>Username: <em>{{ msgphp_user.current.nickname }}</em></p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn edit" data-location="edituser?id={{user.id}}">Edit Profile</button>
+                        <button type="button" class="btn changepassword" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="changePasswordModal">
+        {{  include('user/changepassword_form.twig') }}
+    </div>
+    <div class="modal fade" id="editUserAccountModal">
+        {{ include('user_form.twig') }}
+    </div>
+{% endblock %}
+{% block custom_javascript %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(document).on('click','.edit', function(){
+                var href = $(this).attr('data-location');
+                $('#editUserAccountModal').load(href,function(){
+                    $('#editUserAccountModal').modal({show:true});
+                });
+            });
+
+            $(document).on('click', '#createUser', function(){
+                $('#createUser').validate({
+                    submitHandler: function (form) {
+                        hideSubmitButtonShowWorking();
+                        $('#error_contents').html('');
+                        var vals = $(form).serializeArray();
+                        var message = "User " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " creation started at: " + Date();
+                        var notify = 'createuser';
+                        var type = "info";
+                        pushNotification(message, message, type);
+                        $('.refresh i').addClass("fa-spin");
+                        var error = false;
+                        pushNotification(message, notify, type);
+                        //$('.refresh i').addClass("fa-spin");
+                        //var error = false;
+                        $.ajax({
+                            url: "createuser",
+                            data: new FormData(form),// the formData function is available in almost all new browsers.
+                            type: "post",
+                            contentType: false,
+                            processData: false,
+                            cache: false,
+                            // Change this according to your response from the server.
+                            error: function (err) {
+                                error = true;
+                            },
+                            success: function (data) {
+
+                            },
+                            complete: function (data) {
+                                showSubmitButtonHideWorking();
+                                var notify = message = "User created at: " + Date();
+                                var type = "success";
+                                if (error === true) {
+                                    notify = message = "User creation failed at: " + Date();
+                                    type = "danger";
+                                    // set the error message
+                                    $('#error_contents').html(data.responseText);
+                                } else {
+                                    $('.btn-secondary.cls').click()
+                                    $('.tablecontent').html(data.responseText);
+                                    setupDataTable();
+                                    $('#createUser').clearForm()
+                                }
+                                pushNotification(message, message, type);
+
+                                $('.refresh i').removeClass("fa-spin");
+                            }
+                        });
+                    }
+                });
+            });
+
+            $(document).on('click','.changepassword', function(){
+                $('#changepassword').validate({
+                    submitHandler: function (form) {
+                        hideSubmitButtonShowWorking();
+                        // clear any errors
+                        $('#error_contents').html('');
+                        var vals = $(form).serializeArray();
+                        var user = '{{ [msgphp_user.current.firstname, msgphp_user.current.lastname] | join (" ") }}';
+                        var message = user + " User password change started at: " + Date();
+                        var type = "info";
+                        pushNotification(message, message, type);
+                        var error = false;
+                        $.ajax({
+                            url: "changepassword",
+                            data: new FormData(form),// the formData function is available in almost all new browsers.
+                            type: "post",
+                            contentType:false,
+                            processData:false,
+                            cache:false,
+                            dataType:"html", // Change this according to your response from the server.
+                            error: function (err) {
+                                console.error(err);
+                                error = true;
+                            },
+                            success: function (data) {
+
+                            },
+                            complete: function (data) {
+                                showSubmitButtonHideWorking();
+                                var message = user + " password change completed at: " + Date();
+                                var type = "success";
+                                if (error === true) {
+                                    message = user + "  password change failed at: " + Date();
+                                    type = "danger";
+                                    // set the error message
+                                    $('#error_contents').html(data.responseText);
+                                } else {
+                                    $('.btn-secondary.cls').click();
+                                }
+                                pushNotification(message, message, type);
+                                // proceed to logout page
+                                window.location.href = '{{ path("logout")}}';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

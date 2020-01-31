@@ -1,0 +1,7 @@
+{% if output is defined %}
+    {{ output | raw | nl2br  }}
+{% endif %}
+{% if error is defined %}
+<h2 class="error">File Watcher Error</h2>
+    {{ error | raw | nl2br  }}
+{% endif %}

@@ -1,0 +1,1133 @@
+Index: templates/taskqueue_view.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/taskqueue_view.twig	(date 1547898216000)
++++ templates/taskqueue_view.twig	(date 1547898216000)
+@@ -0,0 +1,20 @@
++<div class="form-group">
++    <label class="control-label">Title : </label>
++    <span class="help-block">{{ taskqueue.title }}</span>
++</div>
++<div class="form-group">
++    <label class="control-label">Type : </label>
++    <span class="help-block">{{ taskqueue.category }}</span>
++</div>
++<div class="form-group">
++    <label class="control-label">Folder : </label>
++    <span class="help-block">{{ taskqueue.bucket }}</span>
++</div>
++<div class="form-group">
++    <label class="control-label">Description : </label>
++    <span class="help-block">{{ taskqueue.description }}</span>
++</div>
++<div class="form-group">
++    <label required class="control-label">Report Code : </label>
++    <span class="help-block">{{ taskqueue.querystring }}</span>
++</div>
+Index: src/Repository/TaskQueueRepository.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Repository/TaskQueueRepository.php	(date 1547895694000)
++++ src/Repository/TaskQueueRepository.php	(date 1547895694000)
+@@ -0,0 +1,40 @@
++<?php
++
++namespace App\Repository;
++
++use App\Entity\TaskQueue;
++use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
++use Doctrine\Common\Persistence\ManagerRegistry;
++
++class TaskQueueRepository extends ServiceEntityRepository
++{
++    public function __construct(ManagerRegistry $registry)
++    {
++        parent::__construct($registry, TaskQueue::class);
++    }
++
++    public function getAll($accountid) {
++        // TODO: This function returns an array with empty results
++        $qb = $this->getEntityManager()->createQueryBuilder();
++        $qb->select('a')
++            ->from('App\\Entity\\TaskQueue', 'a')
++            ->where("a.account = ".$accountid);
++        $query = $qb->getQuery();
++
++        return $query->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
++    }
++
++    public function getUuidFromId($id) {
++        $qb = $this->getEntityManager()->createQueryBuilder();
++        $qb->select('a.uuid')
++            ->from('App\\Entity\\TaskQueue', 'a')
++            ->where("a.id = ".$id);
++        $query = $qb->getQuery();
++
++        $result = $query->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_SCALAR);
++
++        return $result[0]['uuid'];
++    }
++
++
++}
+Index: templates/taskqueue_table.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/taskqueue_table.twig	(date 1547966098000)
++++ templates/taskqueue_table.twig	(date 1547966098000)
+@@ -0,0 +1,209 @@
++<div class="card">
++    <div class="card-content">
++        <div class="table-responsive">
++            <table class="table ">
++                <thead>
++                <tr>
++                    <th>Action</th>
++                    <th>Contracts</th>
++                    <th>Attachments</th>
++                    <th>Category Type</th>
++                    <th>Task</th>
++                    <th>Identifier</th>
++                    <th>Start Date</th>
++                    <th>End Date</th>
++                    <th>Status</th>
++                </tr>
++                </thead>
++                <tbody>
++                {% set increment = 0 %}
++
++                {% for taskqueue in taskqueues %}
++
++                    {% set increment = increment + 1 %}
++                    <tr>
++                        <td>
++                            <a class="edit" href="javascript:void(0);" data-location="edittaskqueue?id={{taskqueue.id}}" >
++                                <i class="ti-pencil" aria-hidden="true"></i>
++                            </a>
++                            <a class="view" href="javascript:void(0);" data-location="viewtaskqueue?id={{taskqueue.id}}">
++                                <i class="ti-eye" aria-hidden="true"></i>
++                            </a>
++                            <a href="#{{ taskqueue.id }}-delete" data-target="#{{ taskqueue.id }}-delete" data-toggle="modal" title="Delete Model">
++                                <i class="fa fa-trash-o" aria-hidden="true"></i>
++                            </a>
++                            <div class="modal fade" tabindex="-1" id="{{ taskqueue.id }}-delete" role="dialog">
++                                <div class="modal-dialog">
++                                    <!-- Modal content-->
++                                    <div class="modal-content">
++                                        <div class="modal-header">
++                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
++                                            <h4 class="modal-title">Delete Model Confirmation</h4>
++                                        </div>
++                                        <div class="modal-body">
++                                            Are you sure you want to delete the taskqueue '{{ taskqueue.title }}'?
++                                        </div>
++                                        <div class="modal-footer">
++                                            <button type="button" class="btn delete-taskqueue btn-secondary" data-dismiss="modal" data-location="deletetaskqueue?id={{taskqueue.id}}" data-query="{{ taskqueue.title}}">Yes</button>
++                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                            <a href="#{{ taskqueue.id }}-run-background" data-target="#{{ taskqueue.id }}-run-background" data-toggle="modal" title="Run in Background">
++                                <i class="fa fa-server" aria-hidden="true"></i>
++                            </a>
++                            <div class="modal fade" tabindex="-1" id="{{ taskqueue.id }}-run-background" role="dialog">
++                                <div class="modal-dialog">
++                                    <!-- Modal content-->
++                                    <div class="modal-content">
++                                        <div class="modal-header">
++                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
++                                            <h4 class="modal-title">Run Model in Background</h4>
++                                        </div>
++                                        <div class="modal-body">
++                                            Are you sure you want to run the taskqueue '{{ taskqueue.title }}' in the background?
++                                        </div>
++                                        <div class="modal-footer">
++                                            <button type="button" class="btn run-background btn-secondary" data-dismiss="modal" data-location="runtaskqueue?id={{taskqueue.id}}&type=background" data-query="{{ taskqueue.title}}">Yes</button>
++                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                            <a class="run-interactive" href="javascript:void(0);" data-location="runtaskqueue?id={{taskqueue.id}}&type=interactive" data-query="{{ taskqueue.title}}" title="Run Interactively">
++                                <i class="ti-control-play" aria-hidden="true"></i>
++                            </a>
++                        </td>
++                        <td>
++                            <a class="btn-link" data-toggle="modal" href="#{{taskqueue.id}}-title" data-target="#{{taskqueue.id}}-title">
++                                {{ taskqueue.title | truncate(tables_long_text_display_characters) }}
++                            </a>
++
++                            <div class="modal fade" tabindex="-1" role="dialog" id="{{taskqueue.id}}-title">
++                                <div class="modal-dialog" role="document">
++                                    <div class="modal-content">
++                                        <div class="modal-header">
++                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
++                                            <h4 class="modal-title">Title</h4>
++                                        </div>
++                                        <div class="modal-body">
++                                            {{ taskqueue.title }}
++                                        </div>
++                                        <div class="modal-footer">
++                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
++                                        </div>
++                                    </div><!-- /.modal-content -->
++                                </div><!-- /.modal-dialog -->
++                            </div><!-- /.modal -->
++                        </td>
++                        <td>
++                            {{ taskqueue.category }}
++                        </td>
++                        <td>
++                            <a class="btn-link" data-toggle="modal" href="#{{taskqueue.id}}-bucket" data-target="#{{taskqueue.id}}-bucket">
++                                {{ taskqueue.bucket | truncate(tables_long_text_display_characters) }}
++                            </a>
++
++                            <div class="modal fade" tabindex="-1" role="dialog" id="{{taskqueue.id}}-bucket">
++                                <div class="modal-dialog" role="document">
++                                    <div class="modal-content">
++                                        <div class="modal-header">
++                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
++                                            <h4 class="modal-title">Folder</h4>
++                                        </div>
++                                        <div class="modal-body">
++                                            {{ taskqueue.bucket }}
++                                        </div>
++                                        <div class="modal-footer">
++                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
++                                        </div>
++                                    </div><!-- /.modal-content -->
++                                </div><!-- /.modal-dialog -->
++                            </div><!-- /.modal -->
++                        </td>
++                        <td>
++                            <a class="btn-link" data-toggle="modal" href="#{{taskqueue.id}}-description" data-target="#{{taskqueue.id}}-description">
++                                {{ taskqueue.description | truncate(tables_long_text_display_characters) }}
++                            </a>
++
++                            <div class="modal fade" tabindex="-1" role="dialog" id="{{taskqueue.id}}-description">
++                                <div class="modal-dialog" role="document">
++                                    <div class="modal-content">
++                                        <div class="modal-header">
++                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
++                                            <h4 class="modal-title">Description</h4>
++                                        </div>
++                                        <div class="modal-body">
++                                            {{ taskqueue.description }}
++                                        </div>
++                                        <div class="modal-footer">
++                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
++                                        </div>
++                                    </div><!-- /.modal-content -->
++                                </div><!-- /.modal-dialog -->
++                            </div><!-- /.modal -->
++                        </td>
++                        <td>
++                            <a type="button" class="btn-link" data-toggle="modal" href="#{{taskqueue.id}}-querystring" data-target="#{{taskqueue.id}}-querystring">
++                                {{ taskqueue.querystring | truncate(tables_long_text_display_characters) }}
++                            </a>
++
++                            <div class="modal fade" tabindex="-1" role="dialog" id="{{taskqueue.id}}-querystring">
++                                <div class="modal-dialog" role="document">
++                                    <div class="modal-content">
++                                        <div class="modal-header">
++                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
++                                            <h4 class="modal-title">Code</h4>
++                                        </div>
++                                        <div class="modal-body">
++                                            {{ taskqueue.querystring }}
++                                        </div>
++                                        <div class="modal-footer">
++                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
++                                        </div>
++                                    </div><!-- /.modal-content -->
++                                </div><!-- /.modal-dialog -->
++                            </div><!-- /.modal -->
++
++                        </td>
++                        <td class="text-nowrap">
++                            {% if taskqueue.statusresult is empty %}
++                                <span style="color: {{ taskqueue.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ taskqueue.status }}
++                            {% else  %}
++                                <a class="btn-link" data-toggle="modal" href="#{{taskqueue.id}}-statusresult" data-target="#{{taskqueue.id}}-statusresult">
++                                    <span style="color: {{ taskqueue.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ taskqueue.status }}
++                                </a>
++                                <div class="modal fade" tabindex="-1" role="dialog" id="{{taskqueue.id}}-statusresult">
++                                    <div class="modal-dialog" role="document">
++                                        <div class="modal-content">
++                                            <div class="modal-header">
++                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
++                                                <h4 class="modal-title">Status Result</h4>
++                                            </div>
++                                            <div class="modal-body new-window-link">
++                                                <h1>Log File URL</h1> {{ taskqueue.statusresult | markdowntohtml | raw | nl2br }} <br>
++
++                                                {{ taskqueue.statusresult | reads3filecontents | markdowntohtml | raw | nl2br }}
++                                            </div>
++                                            <div class="modal-footer">
++                                                <button type="button" class="btn" data-dismiss="modal">Close</button>
++                                            </div>
++                                        </div><!-- /.modal-content -->
++                                    </div><!-- /.modal-dialog -->
++                                </div><!-- /.modal -->
++                            {% endif %}
++                        </td>
++                        <td class="text-nowrap">
++                            {{ taskqueue.date|date('Y-m-d  H:i:s') }}
++                        </td>
++                        <td>
++
++                        </td>
++                    </tr>
++                {% endfor %}
++                </tbody>
++            </table>
++        </div>
++    </div><!--  end card  -->
++</div>
+\ No newline at end of file
+Index: src/Form/TaskQueueType.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Form/TaskQueueType.php	(date 1548097797000)
++++ src/Form/TaskQueueType.php	(date 1548097797000)
+@@ -0,0 +1,44 @@
++<?php
++
++namespace App\Form;
++
++use App\Entity\Project;
++use App\Entity\TaskAssignment;
++use App\Entity\TaskQueue;
++use App\Entity\User\AppUser;
++use Doctrine\ORM\EntityRepository;
++use Symfony\Bridge\Doctrine\Form\Type\EntityType;
++use Symfony\Component\Form\AbstractType;
++use Symfony\Component\Form\FormBuilderInterface;
++use Symfony\Component\OptionsResolver\OptionsResolver;
++
++class TaskQueueType extends AbstractType
++{
++    public function buildForm(FormBuilderInterface $builder, array $options)
++    {
++        $builder->add("project", EntityType::class, [
++                "class" => Project::class,
++                'placeholder' => 'Select Project',
++                'required' => false,
++                "query_builder" => function (EntityRepository $er) use($options) {
++                    return $er->createQueryBuilder("t")->where("t.account = ".$options['account']." AND t.builtin = 0");
++                }
++            ]);
++        $builder->add("user", EntityType::class, [
++            "class" => AppUser::class,
++            'placeholder' => 'Select User',
++            'required' => false,
++            "query_builder" => function (EntityRepository $er) use($options) {
++                return $er->createQueryBuilder("t")->where("t.account = ".$options['account']);
++            }
++        ]);
++    }
++
++    public function configureOptions(OptionsResolver $resolver)
++    {
++        $resolver->setDefaults([
++            'data_class' => TaskQueue::class,
++            'account' => null,
++        ]);
++    }
++}
+Index: src/Entity/TaskQueue.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Entity/TaskQueue.php	(date 1548075750000)
++++ src/Entity/TaskQueue.php	(date 1548075750000)
+@@ -0,0 +1,159 @@
++<?php
++
++namespace App\Entity;
++
++use Doctrine\ORM\Mapping as ORM;
++
++/**
++ * Task Queue
++ *
++ * @ORM\Table(name="taskqueue")
++ * @ORM\Entity(repositoryClass="App\Repository\TaskQueueRepository")
++ */
++class TaskQueue
++{
++    /**
++     * @var integer
++     *
++     * @ORM\Column(name="id", type="bigint", nullable=false)
++     * @ORM\Id
++     * @ORM\GeneratedValue(strategy="IDENTITY")
++     */
++    protected $id;
++    /**
++     * @var integer
++     *
++     * @ORM\ManyToOne(targetEntity="App\Entity\Account")
++     * @ORM\JoinColumn(name="accountid", referencedColumnName="id")
++     */
++    protected $account;
++    /**
++     * @var integer
++     *
++     * @ORM\ManyToOne(targetEntity="App\Entity\User\AppUser")
++     * @ORM\JoinColumn(name="assigneeid", referencedColumnName="id")
++     */
++    protected $assignee;
++    /**
++     * @var \DateTime
++     *
++     * @ORM\Column(name="startdate", type="datetime", nullable=false)
++     */
++    protected $startdate;
++    /**
++     * @var \DateTime
++     *
++     * @ORM\Column(name="enddate", type="datetime", nullable=false)
++     */
++    protected $enddate;
++
++    /**
++     * @var string
++     *
++     * @ORM\Column(name="uuid", type="string", nullable=false)
++     */
++    protected $uuid;
++
++    /**
++     * @var string
++     *
++     * @ORM\Column(name="status", type="string", nullable=false)
++     */
++    protected $status;
++
++
++    public function toArray() {
++        return ['id' => $this->id,
++            'assignee' => $this->assignee,
++            'account' => $this->account,
++            'startdate' => $this->startdate,
++            'enddate' => $this->enddate,
++            'uuid' => $this->uuid,
++            'status' => $this->status,
++        ];
++    }
++
++    public function toString() {
++        return (string)$this->id;
++    }
++
++    /**
++     * @return int
++     */
++    public function getAccount(): ?int
++    {
++        return $this->account;
++    }
++
++    /**
++     * @param int $account
++     */
++    public function setAccount(int $account): void
++    {
++        $this->account = $account;
++    }
++
++    /**
++     * @return int
++     */
++    public function getId(): ?int
++    {
++        return $this->id;
++    }
++
++    /**
++     * @param int $id
++     */
++    public function setId(int $id): void
++    {
++        $this->id = $id;
++    }
++
++    /**
++     * @return \DateTime
++     */
++    public function getStartdate(): ?\DateTime
++    {
++        return $this->startdate;
++    }
++
++    /**
++     * @param \DateTime $startdate
++     */
++    public function setStartdate(\DateTime $startdate): void
++    {
++        $this->startdate = $startdate;
++    }
++
++    /**
++     * @return \DateTime
++     */
++    public function getEnddate(): ?\DateTime
++    {
++        return $this->enddate;
++    }
++
++    /**
++     * @param \DateTime $enddate
++     */
++    public function setEnddate(\DateTime $enddate): void
++    {
++        $this->enddate = $enddate;
++    }
++
++    /**
++     * @return string
++     */
++    public function getUuid(): ?string
++    {
++        return $this->uuid;
++    }
++
++    /**
++     * @param string $uuid
++     */
++    public function setUuid(string $uuid): void
++    {
++        $this->uuid = $uuid;
++    }
++}
+Index: templates/taskqueue_form.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/taskqueue_form.twig	(date 1547966404000)
++++ templates/taskqueue_form.twig	(date 1547966404000)
+@@ -0,0 +1,65 @@
++<div class="modal-dialog">
++    <div class="modal-content">
++        <form id="createTask" method="post">
++            <!-- Modal Header -->
++            <div class="modal-header">
++                <h4 class="modal-title"><span class="create">Create</span> Model</h4>
++                <button type="button" class="close" data-dismiss="modal">&times;</button>
++            </div>
++
++            <!-- Modal body -->
++            <div class="modal-body">
++                <div class="form-group">
++                    <label class="control-label">Title
++                        <star>*</star>
++                    </label>
++                    <input value="{{ simulation.title }}" class="form-control" type="text" name="title"
++                           data-rule-required="true" data-msg-required="Please enter the title"/>
++                </div>
++                <div class="form-group">
++                    <label class="control-label">Type
++                        <star>*</star>
++                    </label>
++                    <select id="name" name="type" class="form-control" data-rule-required="true"
++                            data-msg-required="Please enter the type of watcher">
++                        <option value="">----</option>
++                        <option value="SNS">SNS</option>
++                        <option value="SQS">SQS</option>
++                        <option value="SNS/SQS">SNS/SQS</option>
++                        <option value="Other">Other</option>
++                    </select>
++                    <input type="hidden" id="name_val" value="{{ simulation.category }}"/>
++                </div>
++                <div class="form-group">
++                    <label class="control-label">Description
++                        <star>*</star>
++                    </label>
++                    <textarea class="form-control" rows="3" name="description" data-rule-required="true"
++                              data-msg-required="Please enter the description">{{ simulation.description }}</textarea>
++                </div>
++                <div class="form-group">
++                    <label required class="control-label">Code
++                        <star>*</star>
++                    </label>
++                    <textarea class="form-control querystring" rows="3" name="querystring" data-rule-required="true"
++                              data-msg-required="Please enter the code">{{ simulation.querystring }}</textarea>
++                </div>
++                <div class="category">
++                    <star>*</star>
++                    Required fields
++                </div>
++                <div class="error" id="error_contents"></div>
++                <input type="hidden" name="id" value="{{ simulation.id }}"/>
++            </div>
++
++            <!-- Modal footer -->
++            <div class="modal-footer">
++                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
++                <button type="submit" class="btn btn-primary create">Create</button>
++                <button id="working" class="btn btn-simple hide pull-right">
++                    <i class="fa fa-refresh fa-spin fa-3x"></i>
++                </button>
++            </div>
++        </form>
++    </div>
++</div>
+\ No newline at end of file
+Index: src/Controller/TaskQueueController.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Controller/TaskQueueController.php	(date 1548099934000)
++++ src/Controller/TaskQueueController.php	(date 1548099934000)
+@@ -0,0 +1,183 @@
++<?php
++/**
++ * Taskqueue Submissions
++ */
++
++namespace App\Controller;
++
++use App\Entity\Taskqueue;
++use App\Helper\Utils;
++use App\Repository\ProjectAssignmentRepository;
++use App\Repository\TaskQueueRepository;
++use Aws\Sqs\SqsClient;
++use League\Csv\Reader;
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\HttpFoundation\Response;
++use Symfony\Component\Routing\Annotation\Route;
++
++class TaskQueueController extends BaseController {
++
++    use Utils;
++
++    /**
++     * @Route("/taskqueue", name="taskqueue")
++     */
++    public function taskqueue(Request $request, TaskQueueRepository $taskqueueRepository, ProjectAssignmentRepository $taskAssignmentRepository) {
++        $taskqueue = new Taskqueue();
++        return $this->render('taskqueue.twig', ['taskqueues' => $taskqueueRepository->getAll($this->getAccountId()), "taskqueue" => $taskqueue->toArray(), "projectassignments" => $taskAssignmentRepository->getAll($this->getAccountId(), '', $request->get('weekstartdate')), 'userid' => $this->getUserId()]);
++    }
++
++    /**
++     * @Route("/newtaskqueue")
++     */
++    public function new(Request $request, TaskQueueRepository $taskqueueRepository, ProjectAssignmentRepository $taskAssignmentRepository) {
++        $taskqueue = new Taskqueue();
++        return $this->render('taskqueue_form.twig', ["projectassignments" => $taskAssignmentRepository->getAll($this->getAccountId(), $request->get('userid'), $request->get('weekstartdate')), 'weekstartdate' => $request->get('weekstartdate'), 'weekenddate' => $request->get('weekenddate'),  "taskqueue" => $taskqueue->toArray(), 'userid' => $this->getUserId()]);
++    }
++
++    /**
++     * @Route("/taskqueue/refresh")
++     */
++    public function refresh(TaskQueueRepository $taskqueueRepository) {
++        $taskqueue = new Taskqueue();
++        return $this->render('taskqueue_table.twig', ['taskqueues' => $taskqueueRepository->getAll($this->getAccountId()), "taskqueue" => $taskqueue->toArray()]);
++    }
++
++    /**
++     * @Route("/edittaskqueue", methods={"GET"})
++     */
++    public function edit(Request $request) {
++        $taskqueue = $this->getDoctrine()->getRepository(Taskqueue::class)->find($request->query->get("id"));
++
++        return $this->render("taskqueue_form.twig", ['taskqueue'=> $taskqueue->toArray()]);
++    }
++    /**
++     * @Route("/viewtaskqueue", methods={"GET"})
++     */
++    public function view(Request $request, TaskQueueRepository $taskqueueRepository) {
++        $taskqueue = $taskqueueRepository->find($request->query->get("id"));
++
++        return $this->render("taskqueue_view.twig", ['taskqueue'=> $taskqueue->toArray()]);
++    }
++
++    /**
++     * @Route("/createtaskqueue", methods={"POST"})
++     */
++    public function create(Request$request, TaskQueueRepository $taskqueueRepository, SqsClient $queue) {
++        $translator = $this->get('translator');
++        $id = $request->request->get('id');
++        $uuid = '';
++        $username = $this->getLoggedInUsername($this->getUser());
++
++        $message_code = "create";
++        if (empty($id)) {
++            $shell = $this->getParameter('shell')['taskqueueCreateFile'];
++        } else {
++            $shell = $this->getParameter('shell')['taskqueueUpdateFile'];
++            $message_code = "update";
++        }
++        $userid = $request->request->get('userid');
++
++        $params['userid'] = $userid;
++        $params['start'] = $request->request->get('start');
++        $params['end'] = $request->request->get('end');
++        $params['accountid'] = $this->getAccountId();
++        $params[] = $this->getSQLStatementForTaskqueueDetails( $request->request->get('detail'));
++
++        if (empty($id)) {
++            // then its a create hence uuid
++            $uuid = $this->getUuid();
++            $params[] = $uuid;
++        } else {
++            $params[] = $id;
++            $uuid = $taskqueueRepository->getUuidFromId($id);
++            $params[] = $uuid;
++        }
++
++        $params[] = $this->getParameter('s3.region');
++        $params[] = $this->getParameter('s3_bucket');
++        $params[] = $this->getParameter('s3.presignduration');
++        $params[] = $this->getLoggedInUsername($this->getUser());
++        $log_file_name = $username.".".time().".".$message_code."taskqueue.".$uuid.".log";
++
++        $params[] = $this->getShellScriptLogFileAbsolutePath($log_file_name);
++        $params[] = $this->getPathToS3UploadFolderForUserAction($this->getUser())."taskqueue/";
++        $params['logfilename'] = $log_file_name;
++
++        $process =  $this->getDatabaseShellScriptProcess($shell, $params, $log_file_name);
++        $process->run();
++
++        // add the array of taskqueue details for processing
++        $params['taskqueue_detail_data'] = $request->request->get('detail');
++
++        if ($process->isSuccessful()) {
++            $queueData = $this->buildQueueData("taskqueue", json_encode(array_merge(['message' => $message = $translator->trans("taskqueue.".$message_code.".success")], $this->getArrayWithoutNumericKeys($params))), $this->getUser(), $uuid);
++            $queue->sendMessage($queueData);
++
++            return $this->render("taskqueue_table.twig", ['taskqueues'=> $taskqueueRepository->getAll($this->getAccountId())]);
++        } else {
++            return new Response("Error creating Taskqueue".$this->getShellScriptLogFileContents($log_file_name), 500);
++        }
++    }
++
++    /**
++     * Transform the taskqueue details entered into an SQL statement that can be executed.
++     *
++     * The data format is data[projectid][date][hours]
++     *
++     * @param $data
++     *
++     */
++    private function getSQLStatementForTaskqueueDetails($data) {
++        $query_string = "";
++        foreach ($data as $projectid => $time) {
++            $projectassignmentid = $time['projectassignmentid'];
++            // remove the project assignment id to leave only the working time
++            unset($time['projectassignmentid']);
++            foreach ($time as $workday => $hours) {
++                if (empty($hours)) {
++                    $hours = 0;
++                }
++                $query_string.= "INSERT INTO taskqueue_detail (`userid`, `accountid`, `projectid`, `taskqueueid`, `projectassignmentid`, `workday`, `hours`) 
++                                VALUES(".$this->getUserId().",".$this->getAccountId().",".$projectid.", @taskqueue_id, ".$projectassignmentid.", '".$workday."',".$hours.");";
++
++            }
++        }
++
++        return $query_string;
++    }
++
++    /**
++     * @Route("/deletetaskqueue", methods={"GET"})
++     */
++    public function delete(Request $request, TaskQueueRepository $taskqueueRepository, SqsClient $queue) {
++        $shell = $this->getParameter('shell')['taskqueueDeleteFile'];
++        $translator = $this->get('translator');
++        $id = $request->query->get('id');
++        $username = $this->getLoggedInUsername($this->getUser());
++
++        if (empty($id)) {
++            return new Response($translator->trans("taskqueue.delete.noid"), 500);
++        }
++
++        $params[] = $id;
++        $uuid = $taskqueueRepository->getUuidFromId($id);
++        $params[] = $uuid;
++        $params[] = $this->getPathToS3UploadFolderForUserAction($this->getUser())."taskqueue/";
++        $params[] = $this->getParameter('s3.region');
++        $params[] = $this->getParameter('s3_bucket');
++        $log_file_name = $username.".".time().".deletetaskqueue.".$uuid.".log";
++        $process =  $this->getDatabaseShellScriptProcess($shell, $params, $log_file_name);
++        $process->run();
++
++        $message = $translator->trans("taskqueue.delete.success");
++        if ($process->isSuccessful()) {
++            $queueData = $this->buildQueueData("taskqueue", json_encode(['message' => $message, 'Taskqueue' => $id, 'logfilename' => $log_file_name]), $this->getUser(), $uuid);
++            $queue->sendMessage($queueData);
++
++            return $this->render("taskqueue_table.twig", ['taskqueues'=> $taskqueueRepository->getAll($this->getAccountId())]);
++        } else {
++            return new Response("Error deleting the Taskqueue ".$this->getShellScriptLogFileContents($log_file_name), 500);
++        }
++    }
++}
+\ No newline at end of file
+Index: templates/taskqueue.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/taskqueue.twig	(date 1547966245000)
++++ templates/taskqueue.twig	(date 1547966245000)
+@@ -0,0 +1,345 @@
++{% extends 'base.html.twig' %}
++{% block body %}
++<div class="container-fluid">
++    <div class="row">
++        <div class="col-md-12">
++            <div class="card">
++            <div class="card-content">
++                <div class="row">
++                    <div class="col-md-4 search-row">
++                        <form class="form-inline navbar-search-form navbar-search-form-filter" role="search">
++                            <div class="form-group">
++                                <div class="input-group">
++                                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
++                                    <input type="text" value="" class="form-control search" placeholder="Search...">
++                                </div>
++                            </div>&nbsp;&nbsp;
++                            <div class="form-group">
++                                <div id="status-filter-container" class="input-group">
++                                </div>
++                                <div id="contract-filter-container" class="input-group"></div>
++                            </div>
++                        </form>
++                    </div>
++                    <div class="col-md-6 text-center">
++                        <a class="numbers btn btn-info btn-simple" href="#" data-target="#createTaskQueueModal" data-toggle="modal">Task Queue</a>
++                    </div>
++                    <div class="col-md-2 pull-right text-right">
++                        <a class="icon-big btn btn-info btn-simple" href="#" data-target="#createTaskQueueModal" data-toggle="modal">
++                        <i class="fa fa-plus"></i></a>
++                        <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
++                                            class="fa fa-refresh"></i></a>
++                    </div>
++                </div>
++                <div class="clearfix"></div>
++            </div>
++          </div>
++        </div>
++    </div>
++    <div class="row">
++        <div class="col-md-12">
++            <div class="refresh-big hide text-center">
++                <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>
++            </div>
++            <div class="tablecontent">
++                {{ include('taskqueue_table.twig') }}
++            </div>
++        </div>
++    </div>
++</div>
++ <div class="modal fade" id="myModal" role="dialog">
++    <div class="modal-dialog">
++        <!-- Modal content-->
++        <div class="modal-content">
++            <div class="modal-header">
++                <button type="button" class="close" data-dismiss="modal">&times;</button>
++                <h4 class="modal-title">TaskQueue</h4>
++            </div>
++            <div class="modal-body">
++
++            </div>
++            <div class="modal-footer">
++                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
++            </div>
++        </div>
++    </div>
++</div>
++<div class="modal fade results-modal" id="runTaskQueue" role="dialog">
++    <div class="modal-dialog modal-lg">
++        <!-- Modal content-->
++        <div class="modal-content">
++            <div class="modal-header">
++                <button type="button" class="close cls" data-dismiss="modal">&times;</button>
++                <h4 class="modal-title">TaskQueue Results</h4>
++            </div>
++            <div class="modal-body new-window-link">
++                <i class="fa fa-refresh fa-2x fa-fw fa-spin ref"></i>
++            </div>
++            <div class="modal-footer">
++                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
++            </div>
++        </div>
++    </div>
++</div>
++<div class="modal fade" id="createTaskQueueModal">
++
++</div>
++{% endblock body %}
++{% block custom_javascript %}
++<script type="text/javascript">
++    // TODO: Ensure that all AJAX calls are made from references to non-boostrap classes like btn-primary
++$(document).ready(function() {
++    $('.small-ref').trigger("click");
++    $('.small-ref').click(function () {
++        $('.refresh i').addClass("fa-spin");
++        //var error = false;
++        $.ajax({
++            url: "taskqueue/refresh",
++            type: "get",
++            dataType: "html", // Change this according to your response from the server.
++            error: function (err) {
++                error = true;
++            },
++            success: function (data) {
++                $('.refresh i').removeClass("fa-spin");
++                $('.tablecontent').html(data);
++                setupTaskQueueDataTable();
++                $('.refresh i').removeClass("fa-spin");
++            }
++        });
++    });
++
++    $(document).on('click','.edit', function(){
++        var href = $(this).attr('data-location');
++        $('#createTaskQueueModal').load(href,function(){
++            $('#createTaskQueueModal').modal({show:true});
++            $(".create").html('Update');
++            $('#name').val($('#name_val').val()).prop('selected', true);
++        });
++    });
++
++    $(document).on('click','.run-interactive', function(){
++        $('.btn-secondary.cls').html('Cancel');
++        var href = $(this).attr('data-location');
++        var taskqueue = $(this).attr('data-query');
++        var notify = message = taskqueue+ " TaskQueue Execution started at: "+ Date();
++        var type = "info";
++        pushNotification(message, notify, type);
++        $('#runTaskQueue').modal({show:true});
++        $('#runTaskQueue .modal-body').load(href,function(){
++            // change the button to Close
++            $('.btn-secondary.cls').html('Close');
++            var notify = message = taskqueue+ " TaskQueue Execution completed at: "+ Date();
++            var type = "success";
++            pushNotification(message, notify, type);
++            // update the list of file watchers to show the status of the most recent run
++            $('.small-ref').click();
++            // setup all links in containers with the new-window-link class to open in a new window
++            $('.new-window-link a').attr('target', '_blank');
++        });
++
++    });
++
++    $(document).on('click','.run-background', function(){
++        var href = $(this).attr('data-location');
++        var taskqueue = $(this).attr('data-query');
++
++        var type = "info";
++        var notify = message = taskqueue+ " TaskQueue background execution started at: "+ Date();
++        var type = "info";
++        pushNotification(message, message, type);
++        var error = false;
++        $.ajax({
++              url:href,
++              type:"get",
++              error:function(err){
++                error = true;
++              },
++              success:function(data){
++
++              },
++              complete:function(data){
++                var type = "success";
++                if (error === true) {
++                  message = taskqueue+" TaskQueue background execution failed at: " + Date()+ " error: " + data.responseText;
++                  type = "danger";
++                  pushNotification(message, message, type);
++                }
++
++                $('.refresh i').removeClass("fa-spin");
++                if (error !== true) {
++                    $('.tablecontent').html(data.responseText);
++                }
++                setupTaskQueueDataTable();
++            }
++        });
++    });
++
++    $(document).on('click','.cls', function(){
++        if (!$('.ref').length){
++            $('#runTaskQueue .modal-body').html('<i class="fa fa-refresh fa-2x fa-fw fa-spin ref"></i>');
++        }
++    });
++
++    $(document).on('click','.view', function(){
++        var href = $(this).attr('data-location');
++        $('#myModal .modal-body').load(href,function(){
++            $('#myModal').modal({show:true});
++        });
++    });
++
++    $(document).on('click','.delete-taskqueue', function(){
++        var href = $(this).attr('data-location');
++        var taskqueue = $(this).attr('data-query');
++            var message = taskqueue+" TaskQueue deletion started at: " + Date();
++            var type = "info";
++            pushNotification(message, message, type);
++            var error = false;
++            $.ajax({
++              url:href,
++              type:"get",
++              error:function(err){
++                    console.error(err);
++                error = true;
++              },
++              success:function(data){
++
++              },
++              complete:function(data){
++                var message = taskqueue+" TaskQueue deletion completed at: " + Date();
++                var type = "success";
++                if (error === true) {
++                  message = taskqueue+" TaskQueue deletion failed at: " + Date()+ " error: " + data.responseText;
++                  type = "danger";  
++                }
++                pushNotification(message, message, type);
++                $('.btn-secondary.cls').click();
++                $('.refresh i').removeClass("fa-spin");
++                if (error !== true) {
++                    $('.tablecontent').html(data.responseText);
++                }
++                setupTaskQueueDataTable();
++            }
++
++        });
++    });
++
++    $(document).on('click','#createTaskQueue', function() {
++        $('#createTaskQueue').validate({
++            submitHandler: function (form) {
++                hideSubmitButtonShowWorking();
++                // clear the error message
++                $('#error_contents').html('');
++                var vals = $(form).serializeArray();
++                var message = "TaskQueue " + getSerializedFormDataAsCommaDelimitedString($(form).serialize())+ " creation started at: " + Date();
++                var notify = 'createtaskqueue';
++                var type = "info";
++                pushNotification(message, message, type);
++                $('.refresh i').addClass("fa-spin");
++                var error = false;
++                $.ajax({
++                  url:"createtaskqueue",
++                  data: new FormData(form),// the formData function is available in almost all new browsers.
++                  type:"post",
++                  contentType:false,
++                  processData:false,
++                  cache:false,
++                  dataType:"html", // Change this according to your response from the server.
++                  error:function(err){
++                    error = true;
++                  },
++                  success:function(data){
++                      console.log(data);
++                  },
++                  complete:function(data){
++                        showSubmitButtonHideWorking();
++                        var message = notify = "TaskQueue " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " created at: " + Date();
++                        var type = "success";
++                        if (error === true) {
++                          notify = message = "TaskQueue " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " failed at: " + Date()+ " error: " + data.responseText;
++                          type = "danger";
++                            // set the error message
++                            $('#error_contents').html(data.responseText);
++                        } else {
++                            $('.btn-secondary.cls').click();
++                            $('.tablecontent').html(data.responseText);
++                            setupTaskQueueDataTable();
++                            $('#createTaskQueue').clearForm();
++                        }
++                        pushNotification(message, message, type);
++                        $('.refresh i').removeClass("fa-spin");
++                    }
++                });
++            }
++        });
++    });
++
++    /**
++     * Setup Datatables configuration for the Task Queue page which includes a filter on the folder column
++     */
++    function setupTaskQueueDataTable(selector = '.table:not(.no-datatable)') {
++        /* Data Table plugin integration - the no-datatable class stops this styling from being applied*/
++        var table = $(selector).DataTable({
++            'dom': '<"top">tp',
++            "pagingType" : "simple_numbers",
++            "pageLength": {{ tables_rows_per_page }},
++            "order": [],
++            language: {
++                paginate: {
++                    next: '&gt;', // or '>'
++                    previous: '&lt;' // or '<'
++                }
++            },
++            initComplete: function () {
++                // columns use a 0 based column index
++                this.api().columns(2).every( function () {
++                    var column = this;
++                    var status_select = $('<select id="status-filter" class="form-control"><option value="">Status</option></select>')
++                        .on( 'change', function () {
++                            var val = $.fn.dataTable.util.escapeRegex(
++                                $(this).val()
++                            );
++
++                            column
++                                .search( val ? '^'+val+'$' : '', true, false )
++                                .draw();
++                        } );
++
++                    column.data().unique().sort().each( function ( d, j ) {
++                        status_select.append( '<option value="'+d+'">'+d+'</option>' )
++                    } );
++                    // add the select to the span
++                    $('#status-filter-container').html(status_select);
++                    var contract_select = $('<select id="contract-filter" class="form-control"><option value="">Contracts</option></select>')
++                        .on( 'change', function () {
++                            var val = $.fn.dataTable.util.escapeRegex(
++                                $(this).val()
++                            );
++
++                            column
++                                .search( val ? '^'+val+'$' : '', true, false )
++                                .draw();
++                        } );
++
++                    column.data().unique().sort().each( function ( d, j ) {
++                        contract_select.append( '<option value="'+d+'">'+d+'</option>' )
++                    } );
++                    // add the select to the span
++                    $('#contract-filter-container').html(contract_select);
++                } );
++            }
++        });
++
++        $('.search').on('keyup', function(){
++            table.search(this.value).draw();
++        });
++        // This is copied as is from the paper-dashboard.js library as part of trying to remove its functionality
++        // We put modals out of wrapper to working properly
++        $('.modal').appendTo("body");
++        // setup all links in containers with the new-window-link class to open in a new window
++        $('.new-window-link a').attr('target', '_blank');
++    }
++
++});
++</script>
++{% endblock %}
+\ No newline at end of file

@@ -1,0 +1,14 @@
+++ dirname /data/personal/docker-app/shell/admin/setup.sh
++ script_full_path=/data/personal/docker-app/shell/admin
++ source /data/personal/docker-app/shell/admin/../.aws_config
+++ export AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ export AWS_SECRET_ACCESS_KEY=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
+++ AWS_SECRET_ACCESS_KEY=q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA
++ echo root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580281897.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
+root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580281897.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
++ echo 'Starting installation'
+Starting installation
++ aws s3api create-bucket --bucket yuva-bucket --region us-east-1
+
+('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))

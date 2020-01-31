@@ -1,0 +1,51 @@
+{
+    "name": "msgphp/domain",
+    "type": "library",
+    "license": "MIT",
+    "description": "A base domain layer to rapidly built other domain layers",
+    "keywords": ["entity"],
+    "authors": [
+        {
+            "name": "Roland Franssen",
+            "email": "franssen.roland@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "MsgPhp\\Domain\\": ""
+        },
+        "exclude-from-classmap": ["/Tests/"]
+    },
+    "require": {
+        "php": "^7.1.0"
+    },
+    "require-dev": {
+        "api-platform/core": "^2.2",
+        "doctrine/doctrine-bundle": "^1.8",
+        "doctrine/orm": "^2.6",
+        "elasticsearch/elasticsearch": "^6.0",
+        "psr/container": "^1.0",
+        "ramsey/uuid": "^3.7",
+        "ramsey/uuid-doctrine": "^1.4",
+        "simple-bus/message-bus": "^3.0",
+        "symfony/config": "^3.4|^4.0",
+        "symfony/dependency-injection": "^3.4|^4.0",
+        "symfony/http-kernel": "^3.4|^4.0",
+        "symfony/messenger": "^4.1",
+        "symfony/phpunit-bridge": "^3.4|^4.0",
+        "symfony/property-access": "^3.4|^4.0",
+        "symfony/var-dumper": "^3.4|^4.0"
+    },
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.x-dev"
+        }
+    }
+}

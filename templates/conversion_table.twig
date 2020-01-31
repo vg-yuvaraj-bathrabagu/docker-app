@@ -1,0 +1,130 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>URL</th>
+                    <th>Parameters</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for conversion in conversions %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="editconversion?id={{ conversion.id }}">
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewconversion?id={{ conversion.id }}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            {% if (conversion.isactive == 0) %}
+                                <a href="javascript:void(0);" title="Activate Conversion"
+                                   class="btn btn-info btn-simple btn-xs activate" data-location="activateconversion?id={{ conversion.id }}&isactive=1" data-name="{{ conversion.name }}">
+                                    <i class="ti-control-play"></i>
+                                </a>
+                            {% endif %}
+                            {% if (conversion.isactive == 1)%}
+                                <a href="javascript:void(0);" title="Deactivate Conversion"
+                                   class="btn btn-success btn-simple btn-xs deactivate" data-location="activateconversion?id={{ conversion.id }}&isactive=0"
+                                   data-name="{{ conversion.name }}">
+                                    <i class="ti-control-stop"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ conversion.name }}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{conversion.id}}-title" data-target="#{{conversion.id}}-title">
+                                {{ conversion.description | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{conversion.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Description</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ conversion.description }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ conversion.type }}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{conversion.id}}-url" data-target="#{{conversion.id}}-url">
+                                {{ conversion.url | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{conversion.id}}-url">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">URL</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ conversion.url }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{conversion.id}}-parameters" data-target="#{{conversion.id}}-parameters">
+                                {{ conversion.parameters | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{conversion.id}}-parameters">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Parameters</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ conversion.parameters }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {%  if conversion.isactive == 0 %}
+                                <span style="color: red"><i class="fa fa-circle" aria-hidden="true"></i> </span> Inactive
+                            {%  else  %}
+                                <span style="color: green"><i class="fa fa-circle" aria-hidden="true"></i> </span> Active
+                            {%  endif %}
+                        </td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

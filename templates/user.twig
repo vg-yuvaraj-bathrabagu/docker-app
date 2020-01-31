@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <div class="col-md-2">
+                            {{ include('search.twig') }}
+                        </div>
+                        <div class="col-md-8 text-center">
+                            <a class="numbers btn btn-info btn-simple btn-modal-open" href="#" data-target="#createUserModal" data-toggle="modal">User</a>
+                        </div>
+                        <div class="col-md-2 pull-right text-right">
+                            <a class="icon-big btn btn-info btn-simple btn-modal-open" href="#" data-target="#createUserModal" data-toggle="modal">
+                                <i class="fa fa-plus"></i></a>
+                            <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
+                                        class="fa fa-refresh"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="refresh-big hide text-center">
+                <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>
+            </div>
+            <div class="tablecontent">
+                {{ include('user_table.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createUserModal">
+{{ include('user_form.twig') }}
+</div>
+{% endblock body %}
+{% block custom_javascript %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $(document).on('click', '.btn-modal-open, .edit', function(){
+        $('#tabs a:first').tab('show');
+    });
+    $(document).on('click', '#createUser', function(){
+        $('#createUser').validate({
+            submitHandler: function (form) {
+                hideSubmitButtonShowWorking();
+                $('#error_contents').html('');
+                var vals = $(form).serializeArray();
+                var message = "User creation started at: " + Date();
+                var notify = 'createuser';
+                var type = "info";
+                pushNotification(message, message, type);
+                $('.refresh i').addClass("fa-spin");
+                var error = false;
+                pushNotification(message, notify, type);
+                //$('.refresh i').addClass("fa-spin");
+                //var error = false;
+                $.ajax({
+                    url: "createuser",
+                    data: new FormData(form),// the formData function is available in almost all new browsers.
+                    type: "post",
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    // Change this according to your response from the server.
+                    error: function (err) {
+                        error = true;
+                    },
+                    success: function (data) {
+
+                    },
+                    complete: function (data) {
+                        showSubmitButtonHideWorking();
+                        var notify = message = "User created at: " + Date();
+                        var type = "success";
+                        if (error === true) {
+                            notify = message = "User creation failed at: " + Date();
+                            type = "danger";
+                            // set the error message
+                            $('#error_contents').html(data.responseText);
+                        } else {
+                            $('.btn-secondary.cls').click()
+                            $('.tablecontent').html(data.responseText);
+                            setupDataTable();
+                            $('#createUser').clearForm()
+                        }
+                        pushNotification(message, message, type);
+
+                        $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click','.edit', function(){
+        var href = $(this).attr('data-location');
+        $('#createUserModal').load(href,function(){
+            $('#createUserModal').modal({show:true});
+            $('#fileuploadlocation').val($('#fileuploadlocation_val').val()).prop('selected', true);
+        });
+    });
+
+    // hack to load a template form instance - this is different from other
+    // forms since clearing the form is not enough
+    $(document).on('click', '.btn-secondary.cls, .close', function() {
+        $('#createUserModal').load("blankuser",function(){
+        });
+    });
+
+    $(document).on('click','.delete-query', function(){
+        var href = $(this).attr('data-location');
+        var user = $(this).attr('data-query');
+        var message = " User deletion started at: " + Date();
+        var type = "info";
+        pushNotification(message, message, type);
+        var error = false;
+        $.ajax({
+            url:href,
+            type:"get",
+            error:function(err){
+                console.error(err);
+                error = true;
+            },
+            success:function(data){
+
+            },
+            complete:function(data){
+                var message = " User deletion completed at: " + Date();
+                var type = "success";
+                if (error === true) {
+                    message = " User deletion failed at: " + Date();
+                    type = "danger";
+                }
+                pushNotification(message, message, type);
+                $('.refresh i').removeClass("fa-spin");
+                if (error == true) {
+
+                } else {
+                    $('.tablecontent').html(data.responseText);
+                    setupDataTable();
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

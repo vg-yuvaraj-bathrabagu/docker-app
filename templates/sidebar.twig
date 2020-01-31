@@ -1,0 +1,335 @@
+<div class="sidebar" data-background-color="brown" data-active-color="danger">
+    <!--
+        Tip 1: you can change the color of the sidebar's background using: data-background-color="white | brown"
+        Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+    -->
+    <div class="logo">
+        <a href="{{ path('dashboard') }}"><img class="lg img-responsive center-block" src="{{ asset('img/'~asset_image_sidebar) }}"/></a>
+    </div>
+
+    <div class="sidebar-wrapper">
+        <ul class="nav menu">
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') %}
+                <li>
+                    <a data-toggle="collapse" href="#setup">
+                        <i class="ti-panel"></i>
+                        <p>Setup<b class="caret"></b></p>
+                    </a>
+                    <div class="collapse" id="setup">
+                        <ul class="nav menu">
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <li>
+                                <a href="{{ path('accounts')}}" class="accounts">
+                                    <i class="ti-settings"></i>
+                                    <span class="sidebar-normal">Accounts</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                            <li>
+                                <a href="{{ path('users')}}" class="users">
+                                    <i class="ti-user"></i>
+                                    <span class="sidebar-normal">Users</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_CONVERSION') %}
+                            <li>
+                                <a href="{{ path('conversion')}}" class="conversion">
+                                    <i class="fa fa-exchange"></i>
+                                    <span class="sidebar-normal">Conversions</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') and not is_granted('ROLE_SUPER_ADMIN') %}
+                            <li>
+                                <a href="{{ path('reset')}}" class="reset">
+                                    <i class="fa fa-recycle"></i>
+                                    <span class="sidebar-normal">Reset Data</span>
+                                </a>
+                            </li>
+                            {%  endif %}
+                        </ul>
+                    </div>
+                </li>
+            {% endif %}
+            <li>
+                <a href="{{ path('dashboard')}}" class="dashboard">
+                    <i class="ti-dashboard"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
+            {% if is_granted('ROLE_HADOOP') %}
+            <li>
+                <a href="{{ path('hadoop')}}" class="hadoop">
+                    <i class="ti ti-cloud"></i>
+                    <p>Hadoop</p>
+                </a>
+            </li>
+            {% endif %}
+            {% if is_granted('ROLE_DATABASE')%}
+            <li>
+                <a href="{{ path('mpp')}}" class="mpp">
+                    <i class="ti-server"></i>
+                    <p>Database</p>
+                </a>
+            </li>
+            {% endif %}
+            {% if is_granted('ROLE_TEMPLATE') or is_granted('ROLE_FILE_WATCHER') or is_granted('ROLE_FILE_UPLOAD') or is_granted('ROLE_MODEL') %}
+            <li>
+                <a data-toggle="collapse" href="#files">
+                    <i class="ti-files"></i>
+                    <p>
+                        File<b class="caret"></b>
+                    </p>
+                </a>
+                <div class="collapse" id="files">
+                    <ul class="nav menu">
+                        {% if is_granted('ROLE_TEMPLATE')%}
+                        <li>
+                            <a href="{{ path('templates')}}" class="templates">
+                                <i class="ti-clipboard"></i>
+                                <span class="sidebar-normal">Template</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if is_granted('ROLE_FILE_WATCHER')%}
+                        <li>
+                            <a href="{{ path('watcher')}}" class="watcher">
+                                <i class="ti-eye"></i>
+                                <span class="sidebar-normal">Watcher</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_FILE_UPLOAD')%}
+                        <li>
+                            <a href="{{ path('upload')}}" class="upload">
+                                <i class="ti-upload"></i>
+                                <span class="sidebar-normal">Upload</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_MODEL')%}
+                        <li>
+                            <a href="{{ path('model')}}" class="model">
+                                <i class="fa fa-copy"></i>
+                                <span class="sidebar-normal">Model</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </li>
+            {% endif %}
+            {% if is_granted('ROLE_ACTIVITY_CURRENT') or is_granted('ROLE_ACTIVITY_HISTORY') %}
+            <li>
+                <a data-toggle="collapse" href="#activity">
+                    <i class="fa fa-inbox"></i>
+                    <p>Activity
+                        <b class="caret"></b>
+                    </p>
+                </a>
+                <div class="collapse" id="activity">
+                    <ul class="nav menu">
+                        {% if is_granted('ROLE_ACTIVITY_CURRENT') %}
+                        <li>
+                            <a href="{{ path('activitycurrent')}}" class="activitycurrent">
+                                <i class="fa"></i>
+                                <span class="sidebar-normal">Current</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_ACTIVITY_HISTORY') %}
+                        <li>
+                            <a href="{{ path('activityhistory')}}" class="activityhistory">
+                                <i class="fa"></i>
+                                <span class="sidebar-normal">History</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+            </li>
+            {% endif %}
+            {% if is_granted('ROLE_PROJECT') or  is_granted('ROLE_TIMESHEET_ASSIGNMENT') or is_granted('ROLE_TIMESHEET_SUBMISSION') or is_granted('ROLE_PROJECT_RATE') or is_granted('ROLE_TASK') %}
+                <li>
+                    <a data-toggle="collapse" href="#timesheet">
+                        <i class="fa fa-clock-o"></i>
+                        <p>Timesheet&nbsp;<b class="caret"></b></p>
+                    </a>
+                    <div class="collapse" id="timesheet">
+                        <ul class="nav menu">
+                            {% if is_granted('ROLE_PROJECT') %}
+                                <li>
+                                    <a href="{{ path('project')}}" class="project">
+                                        <i class="fa fa-list-alt"></i>
+                                        <span class="sidebar-normal">Projects</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_PROJECT_RATE') %}
+                                <li>
+                                    <a href="{{ path('projectrate')}}" class="projectrate">
+                                        <i class="fa fa-money"></i>
+                                        <span class="sidebar-normal">Rates</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_TASK') %}
+                                <li>
+                                    <a href="{{ path('task')}}" class="task">
+                                        <i class="fa fa-tasks"></i>
+                                        <span class="sidebar-normal">Tasks</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_TIMESHEET_ASSIGNMENT') or is_granted('ROLE_TIMESHEET_SUBMISSION') %}
+                                <li>
+                                    <a href="{{ path('projectassignment')}}" class="projectassignment">
+                                        <i class="fa fa-user-plus"></i>
+                                        <span class="sidebar-normal">Assignment</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_TIMESHEET_SUBMISSION') %}
+                                <li>
+                                    <a href="{{ path('timesheet')}}" class="timesheet">
+                                        <i class="fa fa-th"></i>
+                                        <span class="sidebar-normal">Submission</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+            {% endif %}
+            {% if is_granted('ROLE_NEXUS_ADMIN') or  is_granted('ROLE_NEXUS_ANALYSIS') or is_granted('ROLE_NEXUS_FILE_UPLOAD') or is_granted('ROLE_NEXUS_REPORT') %}
+                <li>
+                    <a data-toggle="collapse" href="#nexus">
+                        <i class="fa fa-exchange"></i>
+                        <p>Nexus<b class="caret"></b></p>
+                    </a>
+                    <div class="collapse" id="nexus">
+                        <ul class="nav menu">
+                            {% if is_granted('ROLE_NEXUS_ADMIN') %}
+                                <li>
+                                    <a href="{{ path('nexusinitalize')}}" class="nexusinitalize">
+                                        <i class="fa fa-cog"></i>
+                                        <span class="sidebar-normal">Setup</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_NEXUS_ADMIN') %}
+                                <li>
+                                    <a href="{{ path('nexusmetadata')}}" class="nexusmetadata">
+                                        <i class="fa fa-list-alt"></i>
+                                        <span class="sidebar-normal">Metadata</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_NEXUS_FILE_UPLOAD') %}
+                                <li>
+                                    <a href="{{ path('nexusfileupload')}}" class="nexusfileupload">
+                                        <i class="fa fa-cloud-upload"></i>
+                                        <span class="sidebar-normal">File Upload</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_NEXUS_ADMIN') %}
+                                <li>
+                                    <a href="{{ path('dataprofile')}}" class="dataprofile">
+                                        <i class="fa fa-newspaper-o"></i>
+                                        <span class="sidebar-normal">Data Profile</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_NEXUS_ANALYSIS') %}
+                                <li>
+                                    <a href="{{ path('nexusanalysis')}}" class="nexusanalysis">
+                                        <i class="fa fa-pie-chart"></i>
+                                        <span class="sidebar-normal">Analysis</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if is_granted('ROLE_NEXUS_REPORT') %}
+                                <li>
+                                    <a href="{{ path('nexusreport')}}" class="nexusreport">
+                                        <i class="fa fa-area-chart"></i>
+                                        <span class="sidebar-normal">Report</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </li>
+            {% endif %}
+            {% if is_granted('ROLE_TASK_CATEGORY') or is_granted('ROLE_TASK_QUEUE') or is_granted('ROLE_TASK_TEMPLATE') %}
+            <li>
+                <a data-toggle="collapse" href="#taskqueue">
+                    <i class="fa fa-list-ul"></i>
+                    <p>Tasks
+                        <b class="caret"></b>
+                    </p>
+                </a>
+                <div class="collapse" id="taskqueue">
+
+                    <ul class="nav menu">
+                        {% if is_granted('ROLE_TASK_CATEGORY') %}
+                            <li>
+                                <a href="{{ path('taskcategory')}}" class="taskcategory">
+                                    <i class="fa fa-th-list"></i>
+                                    <span class="sidebar-normal">Categories</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_TASK_QUEUE') %}
+                            <li>
+                                <a href="{{ path('taskqueue')}}" class="taskqueue">
+                                    <i class="fa fa-list-ol"></i>
+                                    <span class="sidebar-normal">Task Queue</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_TASK_TEMPLATE') %}
+                        <li>
+                            <a href="{{ path('tasktemplate')}}" class="tasktemplate">
+                                <i class="fa fa-flag-checkered"></i>
+                                <span class="sidebar-normal">Task Template</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </li>
+            {%  endif %}
+            {% if is_granted('ROLE_QUERIES')%}
+            <li>
+                <a data-toggle="collapse" href="#report">
+                    <i class="ti-trello"></i>
+                    <p>Reports
+                        <b class="caret"></b>
+                    </p>
+                </a>
+                <div class="collapse" id="report">
+
+                    <ul class="nav menu">
+                        {% if is_granted('ROLE_QUERIES')%}
+                        <li>
+                            <a href="{{ path('queries')}}" class="queries">
+                                <i class="fa fa-database"></i>
+                                <span class="sidebar-normal">Queries</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </li>
+            {%  endif %}
+        </ul>
+    </div>
+</div>
+
+

@@ -1,0 +1,65 @@
+{# TODO: Clean up the array referencing in this page #}
+{% set Rows = results['Rows'] | slice(1) %}
+{% set colors = {"Yes":"text-success", "No":"text-danger", "Close":"text-warning"} %}
+    <div>
+        <div class="card-content">
+            <div class="table-responsive table-striped table-bordered">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>State</th>
+                        <th class="text-right">Sales Transactions</th>
+                        <th class="text-right">Total Sales</th>
+                        <th class="text-center">Transaction<br/> Thresholds Met?</th>
+                        <th class="text-center">Sales <br/>Thresholds Met?</th>
+                        <th class="text-right">Transaction Threshold</th>
+                        <th class="text-right">Sales Threshold</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in Rows %}
+                        {% for data in row %}
+                            <tr>
+                                <td nowrap="nowrap">
+                                    {{ data[0]['VarCharValue'] }}
+                                </td>
+                                <td class="text-right">
+                                    {{ data[1]['VarCharValue']| number_format(0) }}
+                                </td>
+                                <td class="text-right">
+                                    {{ data[2]['VarCharValue']| number_format(2) }}
+                                </td>
+                                <td class="{{ colors[data[3]['VarCharValue']] }} text-center">
+                                    {{ data[3]['VarCharValue'] }}
+                                </td>
+                                <td class="{{ colors[data[4]['VarCharValue']] }} text-center">
+                                    {{ data[4]['VarCharValue'] }}
+                                </td>
+                                <td class="text-right">
+                                    {% if data[5]['VarCharValue'] is defined %}
+                                        {{ data[5]['VarCharValue'] | number_format(0) }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    {% if data[6]['VarCharValue'] is defined %}
+                                        {{ data[6]['VarCharValue'] | number_format(2) }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="form-group">
+                <div class="col-md-12 text-center small">
+                    {% if output_file is defined and output_file is not empty %}
+                        <button id="download-results" type="button" data-location="{{ path('download', {'filename':output_file, 'downloadfilename': 'nexus-analysis' ~ analysisdetail ~ '.csv'}) }}" class="btn btn-large btn-info btn-wd"><i class="fa fa-download"></i> Download Analysis Results</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div><!--  end card  -->

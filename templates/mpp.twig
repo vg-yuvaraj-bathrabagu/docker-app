@@ -1,0 +1,247 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col-md-2">
+                                {{ include('search.twig') }}
+                            </div>
+                            <div class="col-md-8 text-center">
+                                <a class="numbers btn btn-info btn-simple" href="#" data-target="#myModal" data-toggle="modal">MPP Database</a>
+                            </div>
+                            <div class="col-md-2 pull-right text-right">
+                                <a class="icon-big btn btn-info btn-simple" href="#" data-target="#myModal" data-toggle="modal">
+                                    <i class="fa fa-plus"></i></a>
+                                <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
+                                            class="fa fa-refresh"></i></a>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="refresh-big hide text-center">
+                    <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>
+                </div>
+                <div class="tablecontent">
+                    {{ include('mpp_table.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <form id="MPPform" method="post">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Create New MPP Database</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="card-content MPP-form">
+                            <div class="progress" style="display: none;">
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0"
+                                     aria-valuemin="0" aria-valuemax="100">
+                                    <span class="sr-only">60% Complete</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Nodes
+                                    <star>*</star>
+                                </label>
+                                <input class="form-control"
+                                       name="nodes"
+                                       id="file"
+                                       type="text"
+                                       required="true"
+                                       data-rule-required="true"
+                                       data-msg-required="Please enter the nodes"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Category
+                                    <star>*</star>
+                                </label>
+                                <input class="form-control"
+                                       name="category"
+                                       id="file"
+                                       type="text"
+                                       required="true"
+                                       data-rule-required="true"
+                                       data-msg-required="Please enter the category"/>
+                            </div>
+                            <div class="category">
+                                <star>*</star>
+                                Required fields
+                            </div>
+                        </div>
+                        <div class="error" id="error_contents">
+
+                        </div>
+                        <div class="card-footer">
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary submit">Create</button>
+                        <button id="working" class="btn btn-simple hide pull-right">
+                            <i class="fa fa-refresh fa-spin fa-3x"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock body %}
+{% block custom_javascript %}
+    <script type="text/javascript">
+        $().ready(function () {
+            $('.small-ref').click(function () {
+                $('.refresh i').addClass("fa-spin");
+                $.ajax({
+                    url: "mpp/refresh",
+                    type: "get",
+                    dataType: "html",  // Change this according to your response from the server.
+                    error: function (err) {
+                        error = true;
+                        alert(err);
+                    },
+                    success: function (data) {
+                        $('.refresh i').removeClass("fa-spin");
+                        $('.tablecontent').html(data);
+                        setupDataTable();
+                    }
+                });
+            });
+            $('#MPPform').validate({
+                submitHandler: function (form) {
+                    hideSubmitButtonShowWorking();
+                    var vals = $(form).serializeArray();
+                    var notify = message = "MPP " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + "  Creation started at:" + Date();
+                    var type = "info";
+
+                    pushNotification(message, notify, type);
+                    $('.refresh i').addClass("fa-spin");
+                    var error = false;
+                    $.ajax({
+                        url: "creatempp",
+                        data: new FormData(form),// the formData function is available in almost all new browsers
+                        type: "post",
+                        contentType: false,
+                        processData: false,
+                        cache: false,
+                        dataType: "html", // Change this according to your response from the server.
+                        error: function (err) {
+                            error = true;
+                        },
+                        success: function (data) {
+
+                        },
+                        complete: function (data) {
+                            showSubmitButtonHideWorking();
+                            var notify = message = "MPP " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " created at: " + Date();
+                            var type = "success";
+                            if (error === true) {
+                                notify = message = "MPP " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " creation failed at: " + Date();
+                                type = "danger";
+                                // set the error message
+                                $('#error_contents').html(data.responseText);
+                            } else {
+                                $('.btn-secondary.cls').click();
+                                $('.tablecontent').html(data.responseText);
+                                setupDataTable();
+                                $('#MPPform').clearForm();
+                            }
+                            pushNotification(message, notify, type);
+                            $('.refresh i').removeClass("fa-spin");
+                        },
+                    });
+                }
+            });
+
+            $('.toggle').click(function () {
+                $('.MPP-form').toggle('10000');
+                $('.submit').toggle('10000')
+                $("i", this).toggleClass("fa fa-caret-square-o-up fa fa-caret-square-o-down");
+            });
+            $(document).on('click', '.start', function () {
+                var id = $(this).attr('data-id');
+                var cat = $(this).attr('data-cat');
+                var error = false;
+                var notify = message = "MPP " + cat + " Start started at: " + Date();
+                var type = "info";
+                pushNotification(message, notify, type);
+                $('.refresh i').addClass("fa-spin");
+                $.ajax({
+                    url: "startmpp",
+                    data: {'id': id},
+                    type: 'post',
+                    // Change this according to your response from the server.
+                    error: function (err) {
+                        error = true;
+                    },
+                    success: function (data) {
+                    },
+                    complete: function (data) {
+                        var notify = message = "MPP " + cat + " Started at: " + Date();
+                        var type = "success";
+                        if (error === true) {
+                            notify = message = "MPP " + cat + " start failed at: " + Date() + " error: " + data.responseText;
+                            type = "danger";
+                        } else {
+                            $('.tablecontent').html(data.responseText);
+                            setupDataTable();
+                        }
+                        pushNotification(message, notify, type);
+                        $('.refresh i').removeClass("fa-spin");
+                    },
+                });
+            });
+
+            $(document).on('click', '.stop', function () {
+                    var cat = $(this).attr('data-cat');
+                    var notify = message = "MPP " + cat + " Stop started at:" + Date();
+                    var type = "info";
+                    pushNotification(message, notify, type);
+                    var id = $(this).attr('data-id');
+                    var error = false;
+                    $('.refresh i').addClass("fa-spin");
+                    $.ajax({
+                        url: "stopmpp",
+                        data: {'id': id},
+                        type: 'post',
+                        // Change this according to your response from the server.
+                        error: function (err) {
+                            error = true;
+                        },
+                        success: function (data) {
+
+                        },
+                        complete: function (data) {
+                            var notify = message = "MPP " + cat + " Stopped at: " + Date();
+                            var type = "success";
+                            if (error === true) {
+                                notify = message = "MPP " + cat + " Stop failed at: " + Date() + " error: " + data.responseText;
+                                type = "danger";
+                            } else {
+                                $('.tablecontent').html(data.responseText);
+                                setupDataTable();
+                            }
+                            pushNotification(message, notify, type);
+                            $('.refresh i').removeClass("fa-spin");
+                        },
+                    });
+            });
+        });
+
+    </script>
+{% endblock %}

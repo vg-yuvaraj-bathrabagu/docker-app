@@ -1,0 +1,61 @@
+<nav id="top-menu-wrapper" class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse navbar-left">
+                        <ul id="top-menu-nav" class="nav navbar-nav center-block top-menu">
+                            {%  if is_granted('ROLE_TEMPLATE') %}
+                            <li class="text-center">
+                                <a href="{{ path('templates') }}" class="templates"><i class="ti-clipboard"></i><br/><span>Template</span></a>
+                            </li>
+                            {% endif %}
+                            {%  if is_granted('ROLE_FILE_UPLOAD') %}
+                            <li class="text-center">
+                                <a href="{{ path('upload')}}" class="upload"><i class="ti-upload"></i><br/><span>Upload</span></a>
+                            </li>
+                            {%  endif %}
+                            {%  if is_granted('ROLE_QUERIES') %}
+                            <li class="text-center">
+                                <a href="{{ path('queries')}}" class="queries"><i class="fa fa-database"></i><br/><span>Queries</span></a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ACTIVITY_CURRENT') %}
+                            <li class="text-center">
+                                <a href="{{ path('activitycurrent')}}" class="activitycurrent"><i class="fa fa-inbox"></i><br/><span>Activity</span></a>
+                            </li>
+                            {%  endif %}
+                            {% if is_granted('ROLE_TASK_QUEUE') %}
+                            <li class="text-center">
+                                <a href="{{ path('taskqueue')}}" class="taskqueue"><i class="fa fa-list-ol"></i><br/><span>Task Queue</span></a>
+                            </li>
+                            {% endif %}
+                        </ul>
+
+                    </div>
+                    <div class="collapse navbar-collapse" id="settings-notifications">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown notificationDrop dropdown-notifications">
+                                <a href="#notifications" class="dropdown-toggle btn-rotate" data-toggle="dropdown">
+                                    <i data-count="0" class="ti-bell notification-icon" id="notification-count"></i>
+                                    <p class="hidden-md hidden-lg">
+                                        Notifications
+                                        <b class="caret"></b>
+                                    </p>
+                                </a>
+                                <ul class="dropdown-menu notify">
+
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <ul class="dropdown-menu settings" id="menu-settings">
+                                    <li><a href="{{ path('profile')}}"> My Profile </a>
+                                    <li><a href="logout"> Log Out </a>
+                                </ul>
+                                <a href="#settings" class="dropdown-toggle btn-rotate" data-toggle="dropdown">
+                                         {{ [msgphp_user.current.firstname, msgphp_user.current.lastname, '[AS]'] | join (' ') }}&nbsp;&nbsp;
+                                    <i class="ti-settings"></i>
+                                    <br/><b><span class="header-company-name">{{ msgphp_user.current.getAccount().getName()}}</span></b>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>

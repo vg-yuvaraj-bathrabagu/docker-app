@@ -1,0 +1,170 @@
+<div class="card">
+        <div class="card-content">
+		<div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                    	<th>Action</th>
+						<th>Template</th>
+						<th>Folder</th>
+                        <th>Name</th>
+						<th>Size</th>
+						{% if show_status is defined and show_status == 'true' %}
+						<th>Status</th>
+						{% endif %}
+						<th>Date Created</th>
+                        {% if is_granted('ROLE_ADMIN') %}
+							<th>Uploaded By</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+
+					{% for file in files %}
+						{%  if file.size != 0 %}
+							<tr>
+								<td>
+									<!-- only let the user who uploaded the file in the first instance to be the one who can delete it -->
+									<!-- also folders in trash cannot be deleted by admin -->
+									{%  if (((file.uploadedby == app.user.username and ('shared/' not in file.folder)) or (is_granted('ROLE_DELETE_SHARED_DATA') and ('shared/' in file.folder))) or is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) and ('trash/' not in file.folder) %}
+										<a href="#{{ file.id }}-delete" data-target="#{{ file.id }}-delete" data-toggle="modal" title = "Delete File">
+
+											<i class="fa fa-trash-o" aria-hidden="true"></i>
+										</a>
+										<div class="modal fade" tabindex="-1" id="{{ file.id }}-delete" role="dialog">
+											<div class="modal-dialog">
+												<!-- Modal content-->
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close cls" data-dismiss="modal">&times;</button>
+														<h4 class="modal-title">Delete Confirmation</h4>
+													</div>
+													<div class="modal-body">
+														Are you sure you want to delete the file '{{ file.name }}'?
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary del" data-dismiss="modal" data-file="{{file.id}}" data-file-name="{{ file.name }}">Yes</button>
+														<button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									{% endif %}
+									<!-- only let the user who uploaded the file in the first instance to be the one who can restore it -->
+									<!-- also folders in trash cannot be deleted by admin -->
+                                    {%  if (is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_RESTORE_USER_DATA') or (is_granted('ROLE_RESTORE_SHARED_DATA') and ('shared/' in file.folder))) and ('trash/' in file.folder) %}
+										<a href="#{{ file.id }}-restore" data-target="#{{ file.id }}-restore" data-toggle="modal" title = "Restore File">
+
+											<i class="fa fa-recycle" aria-hidden="true"></i>
+										</a>
+										<div class="modal fade" tabindex="-1" id="{{ file.id }}-restore" role="dialog">
+											<div class="modal-dialog">
+												<!-- Modal content-->
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close cls" data-dismiss="modal">&times;</button>
+														<h4 class="modal-title">Restore Confirmation</h4>
+													</div>
+													<div class="modal-body">
+														Are you sure you want to restore the file '{{ file.name }}' from trash?
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary restore" data-dismiss="modal" data-file="{{file.id}}" data-file-name="{{ file.name }}">Yes</button>
+														<button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+													</div>
+												</div>
+											</div>
+										</div>
+                                    {% endif %}
+									<!-- files in the shared folder cannot be shared again -->
+
+										{% if (((is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) and ('shared/' not in file.folder)) and file.trash == 0 and file.templatetype == 'Core')  %}
+											<a href="#{{ file.id }}-copytosharedfolder" data-target="#{{ file.id }}-copytosharedfolder" data-toggle="modal" title="Copy to Shared Folder">
+												<i class="fa fa-files-o" aria-hidden="true"></i>
+											</a>
+											<div class="modal fade" tabindex="-1" id="{{ file.id }}-copytosharedfolder" role="dialog">
+												<div class="modal-dialog">
+													<!-- Modal content-->
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close cls" data-dismiss="modal">&times;</button>
+															<h4 class="modal-title">Copy to Shared Folder</h4>
+														</div>
+														<div class="modal-body">
+															Are you sure you want to copy the file '{{ file.name }} to the shared folder'?
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary copytosharedfolder" data-dismiss="modal" data-file="{{file.id}}" data-file-name="{{ file.name }}" data-template-name="{{ file.templatename }}">Yes</button>
+															<button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+														</div>
+													</div>
+												</div>
+											</div>
+									{% endif %}
+								</td>
+
+								<td>
+
+                                    {{ file.templatename }}
+								</td>
+								<td>
+                                    {%  if 'shared/' in file.folder  %}
+										Shared
+									 {%  elseif 'trash/' in file.folder  %}
+										 Trash
+                                    {% else %}
+										User
+                                    {%  endif %}
+								</td>
+								<td>
+									{{ file.name|join }}
+								</td>
+
+								<td>
+									{{  file.size | human_filesize }}
+								</td>
+								{% if show_status is defined and show_status == 'true' %}
+									<td class="text-nowrap">
+										{% if file.statusresult is empty %}
+											<span style="color: {{ file.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ file.status }}
+										{% else  %}
+											<a class="btn-link" data-toggle="modal" href="#{{file.id}}-statusresult" data-target="#{{file.id}}-statusresult">
+												<span style="color: {{ file.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ file.status }}
+											</a>
+											<div class="modal fade" tabindex="-1" role="dialog" id="{{file.id}}-statusresult">
+												<div class="modal-dialog" role="document">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title">Status</h4>
+														</div>
+														<div class="modal-body new-window-link">
+
+															{{ file.statusresult | markdowntohtml | raw | nl2br }}
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn" data-dismiss="modal">Close</button>
+														</div>
+													</div><!-- /.modal-content -->
+												</div><!-- /.modal-dialog -->
+											</div><!-- /.modal -->
+										{% endif %}
+									</td>
+								{% endif %}
+								<td class="text-nowrap">
+                                    {{ file.date|date('Y-m-d  H:i:s') }}
+								</td>
+                                {% if is_granted('ROLE_ADMIN') %}
+									<td>{{ file.firstname}}&nbsp;{{ file.lastname}}</td>
+                                {% endif %}
+							</tr>
+                        {%  endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+		</div>
+    </div><!--  end card  -->
+
+<!-- Modal -->
+
+</div>

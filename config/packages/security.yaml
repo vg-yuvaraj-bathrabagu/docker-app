@@ -1,0 +1,76 @@
+security:
+    encoders:
+        MsgPhp\User\Infra\Security\SecurityUser: bcrypt
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        cognito:
+            id: App\Security\CognitoUserProvider
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            anonymous: true
+            provider: cognito
+            guard:
+               authenticators:
+                   - App\Security\CognitoAuthenticator
+
+            # activate different ways to authenticate
+
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+            logout:
+                path:   /logout
+                target: /
+            # https://symfony.com/doc/current/security/form_login_setup.html
+            form_login:
+                login_path: /login
+                check_path: /login
+                default_target_path: /dashboard
+                username_parameter: email
+                password_parameter: password
+                use_referer: true
+
+            access_denied_url: /dashboard
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_ADMIN: ROLE_USER
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: /monitor/health, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /install, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /installsuccess, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /updateconfig, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /setupconfiguration, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /login, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /forgot-password, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /forgot_password, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: /reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY}
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/profile, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/accounts, roles: ROLE_ADMIN}
+        - { path: ^/users, roles: ROLE_ADMIN}
+        - { path: ^/hadoop, roles: ROLE_HADOOP}
+        - { path: ^/mpp, roles: ROLE_DATABASE}
+        - { path: ^/templates, roles: ROLE_TEMPLATE}
+        - { path: ^/watcher, roles: ROLE_FILE_WATCHER}
+        - { path: ^/upload, roles: [ROLE_FILE_UPLOAD,ROLE_NEXUS_FILE_UPLOAD ]}
+        - { path: ^/simulator, roles: ROLE_MODEL}
+        - { path: ^/queries, roles: ROLE_QUERIES}
+        - { path: ^/tables, roles: ROLE_TABLES}
+        - { path: ^/taskcategory, roles: ROLE_TASK_CATEGORY}
+        - { path: ^/taskqueue, roles: ROLE_TASK_QUEUE}
+        - { path: ^/task, roles: ROLE_TASK}
+        - { path: ^/timesheet, roles: ROLE_TIMESHEET_SUBMISSION}
+        - { path: ^/projectrates, roles: ROLE_PROJECT_RATES}
+        - { path: ^/projectassignment, roles: [ROLE_TIMESHEET_SUBMISSION,ROLE_TIMESHEET_ASSIGNMENT]}
+        - { path: ^/project, roles: ROLE_PROJECT}
+        - { path: /phpinfo, roles: ROLE_ADMIN}
+        - { path: ^/*, roles: IS_AUTHENTICATED_FULLY }

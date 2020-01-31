@@ -1,0 +1,193 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-2">
+                    {{ include('search.twig') }}
+                    </div>
+                    <div class="col-md-8 text-center">
+                        <a class="numbers btn btn-info btn-simple" href="#" data-toggle="modal">Metadata</a>
+                    </div>
+                    <div class="col-md-2 pull-right text-right">
+                        <a class="icon-big btn btn-info btn-simple" href="#" data-toggle="modal">
+                        <i class="fa fa-plus"></i></a>
+                        <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
+                                            class="fa fa-refresh"></i></a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="refresh-big hide text-center">
+                <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>
+            </div>
+            <div class="tablecontent">
+                {{ include('state_guide_table.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+ <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">State Guide</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createState GuideModal">
+</div>
+{% endblock body %}
+{% block custom_javascript %}
+<script type="text/javascript">
+    // TODO: Ensure that all AJAX calls are made from references to non-boostrap classes like btn-primary
+$(document).ready(function() {
+    // open the first tab
+    $(document).on('click', '.btn-modal-open, .edit, .btn-simple', function(){
+        $('#tabs a:first').tab('show');
+    });
+    $('.small-ref').click(function () {
+        $('.refresh i').addClass("fa-spin");
+        //var error = false;
+        $.ajax({
+            url: "project/refresh",
+            type: "get",
+            dataType: "html", // Change this according to your response from the server.
+            error: function (err) {
+                error = true;
+            },
+            success: function (data) {
+                $('.refresh i').removeClass("fa-spin");
+                $('.tablecontent').html(data);
+                setupDataTable();
+                $('.refresh i').removeClass("fa-spin");
+            }
+        });
+    });
+
+    $(document).on('click','.edit', function(){
+        var href = $(this).attr('data-location');
+        $('#createState GuideModal').load(href,function(){
+            $('#createState GuideModal').modal({show:true});
+            $(".create").html('Update');
+
+            // select the saved type
+            $('#type').val($('#type_val').val()).prop('selected', true);
+            // trigger a change on the type to show the fields
+            $("#type").trigger("change");
+        });
+    });
+
+    $(document).on('click','.view', function(){
+        var href = $(this).attr('data-location');
+        $('#myModal .modal-body').load(href,function(){
+            $('#myModal').modal({show:true});
+        });
+    });
+
+
+    $(document).on('click','.delete-project', function(){
+        var href = $(this).attr('data-location');
+        var simulator = $(this).attr('data-query');
+            var message = simulator+" State Guide deletion started at: " + Date();
+            var type = "info";
+            pushNotification(message, message, type);
+            var error = false;
+            $.ajax({
+              url:href,
+              type:"get",
+              error:function(err){
+                    console.error(err);
+                error = true;
+              },
+              success:function(data){
+
+              },
+              complete:function(data){
+                var message = simulator+" State Guide deletion completed at: " + Date();
+                var type = "success";
+                if (error === true) {
+                  message = simulator+" State Guide deletion failed at: " + Date()+ " error: " + data.responseText;
+                  type = "danger";  
+                }
+                pushNotification(message, message, type);
+                $('.btn-secondary.cls').click();
+                $('.refresh i').removeClass("fa-spin");
+                if (error !== true) {
+                    $('.tablecontent').html(data.responseText);
+                }
+                setupDataTable();
+            }
+
+        });
+    });
+
+    $(document).on('click','#createState Guide', function() {
+        $('#createState Guide').validate({
+            submitHandler: function (form) {
+                hideSubmitButtonShowWorking();
+                // clear the error message
+                $('#error_contents').html('');
+                var vals = $(form).serializeArray();
+                var message = "State Guide " + getSerializedFormDataAsCommaDelimitedString($(form).serialize())+ " creation started at: " + Date();
+                var notify = 'createproject';
+                var type = "info";
+                pushNotification(message, message, type);
+                $('.refresh i').addClass("fa-spin");
+                var error = false;
+                $.ajax({
+                  url:"createproject",
+                  data: new FormData(form),// the formData function is available in almost all new browsers.
+                  type:"post",
+                  contentType:false,
+                  processData:false,
+                  cache:false,
+                  dataType:"html", // Change this according to your response from the server.
+                  error:function(err){
+                    error = true;
+                  },
+                  success:function(data){
+                      console.log(data);
+                  },
+                  complete:function(data){
+                        showSubmitButtonHideWorking();
+                        var message = notify = "State Guide " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " created at: " + Date();
+                        var type = "success";
+                        if (error === true) {
+                          notify = message = "State Guide " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " failed at: " + Date()+ " error: " + data.responseText;
+                          type = "danger";
+                            // set the error message
+                            $('#error_contents').html(data.responseText);
+                        } else {
+                            $('.btn-secondary.cls').click();
+                            $('.tablecontent').html(data.responseText);
+                            setupDataTable();
+                            $('#createState Guide').clearForm();
+                        }
+                        pushNotification(message, message, type);
+                        $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

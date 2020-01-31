@@ -1,0 +1,95 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createWatcher" method="post">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Watcher</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Title
+                        <star>*</star>
+                    </label>
+                    <input value="{{ filewatcher.title }}" class="form-control" type="text" name="title"
+                           data-rule-required="true" data-msg-required="Please enter the title"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Type
+                        <star>*</star>
+                    </label>
+                    <select id="name" name="type" class="form-control" data-rule-required="true"
+                            data-msg-required="Please enter the type of watcher">
+                        <option value="">----</option>
+                        <option value="SNS">SNS</option>
+                        <option value="SQS">SQS</option>
+                        <option value="SNS/SQS">SNS/SQS</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <input type="hidden" id="name_val" value="{{ filewatcher.category }}"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Description
+                        <star>*</star>
+                    </label>
+                    <textarea class="form-control" rows="3" name="description" data-rule-required="true"
+                              data-msg-required="Please enter the description">{{ filewatcher.description }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label required class="control-label">Code
+                        <star>*</star>
+                    </label>
+                    <textarea class="form-control querystring" rows="3" name="querystring" data-rule-required="true"
+                              data-msg-required="Please enter the code">{{ filewatcher.querystring }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">S3 folder
+                    </label><span id="helpBlock" class="help-block">Leave this field blank for the default folder to be generated</span>
+                    <input value="{{ filewatcher.bucket }}" class="form-control" type="text" name="bucket"/>
+                </div>
+                <div class="form-group">
+                    <label required class="control-label">Security Policy
+                    </label>
+                    <textarea class="form-control security-policy" rows="3" name="securitypolicy" >{{ filewatcher.securitypolicy }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label required class="control-label">Schedule
+                    </label>
+                    <textarea class="form-control" rows="3" name="schedule" >{{ filewatcher.schedule }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">
+                        Model
+                    </label>
+                    {{ form_widget(form.simulationid, {'full_name': 'simulationid'}) }}
+                    <input type="hidden" id="simulationid_val" value="{{ filewatcher.simulationid }}"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">
+                        Template
+                    </label>
+                    {{ form_widget(form.templateid, {'full_name': 'templateid'}) }}
+                    <input type="hidden" id="templateid_val" value="{{ filewatcher.templateid }}"/>
+                </div>
+
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+                <div class="error" id="error_contents"></div>
+                <input type="hidden" id="id" name="id" value="{{ filewatcher.id }}"/>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

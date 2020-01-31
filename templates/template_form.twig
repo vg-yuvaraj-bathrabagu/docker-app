@@ -1,0 +1,208 @@
+<div class="modal-dialog template-modal modal-lg" role="document">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><span class="create">Create</span> Template</h4>
+        </div>
+        <div class="modal-body">
+            <div class="card card-wizard" id="wizardCard">
+                <form id="templateWizardForm">
+                    <div class="card-content">
+                        <ul class="nav nav-justified">
+                            <li><a href="#tab1" data-toggle="tab">Summary Information</a></li>
+                            <li><a href="#tab2" data-toggle="tab">Column Mapping</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane" id="tab1">
+                                <div class="row">
+                                    <div class="col-md-6 col-md-offset-1">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Name<star>*</star>
+                                            </label>
+                                            {%  if template.id is empty %}
+                                            <input class="form-control"
+                                                   type="text"
+                                                   name="name"
+                                                   data-rule-required="true"
+                                                   data-msg-required="Please enter the template name" data-rule-lettersnumbersspacesanddashes="true" data-msg-lettersnumbersspacesanddashes="The template name can only contain letters, numbers, spaces and dashes"/>
+                                            {% else  %}
+                                                {{  template.name }}
+                                                <input type="hidden" name="name" value="{{ template.name }}"/>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 col-md-offset-1">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Format <star>*</star>
+                                            </label>
+                                            {%  if template.id is empty %}
+                                                {{ form_widget(form.format, {'full_name': 'format'}) }}
+                                            {%  else %}
+                                                {{ template.format }}
+                                                <input type="hidden" id="format" name="format" value="{{ template.format }}"/>
+                                            {%  endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Delimiter <star>*</star>
+                                            </label>
+                                            {%  if template.id is empty %}
+                                                {{ form_widget(form.delimiter, {'full_name': 'delimiter'}) }}
+                                            {%  else %}
+                                                {{ template.delimiter }}
+                                            <input type="hidden" id="delimiter" name="delimiter" value="{{ template.delimiter }}"/>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 col-md-offset-1">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Table Name<star>*</star>
+                                            </label>
+                                            {%  if template.id is empty %}
+                                            <!-- TODO: Validate that it only contains numbers, letters and underscore characters, should not begin with an underscore -->
+                                            <input class="form-control"
+                                                   type="text"
+                                                   name="tablename"
+                                                   data-rule-required="true"
+                                                   data-rule-lettersandnumbersonly="true"
+                                                   data-msg-required="Please enter the name of the table"
+                                                   data-msg-lettersandnumbersonly="The table name can only contain letters and numbers"/>
+                                            {% else %}
+                                                {{ template.tablename }}
+                                                <input type="hidden" id="tablename" name="tablename" value="{{ template.tablename }}"/>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {%  if template.id is empty and is_granted('ROLE_ADMIN') %}
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">
+                                                        Type <star>*</star>
+                                                    </label>
+
+                                                    {{ form_widget(form.type, {'full_name': 'type'}) }}
+                                                    <input type="hidden" id="type_val" value="{{ template.type }}"/>
+                                                </div>
+                                            </div>
+                                    {%  else  %}
+                                        <input type="hidden" name="type" value="{{ template.type }}"/>
+                                    {%  endif %}
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-7 col-md-offset-1">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Model
+                                            </label>
+                                            {{ form_widget(form.simulationid, {'full_name': 'simulationid'}) }}
+                                            <input type="hidden" id="simulationid_val" value="{{ template.simulationid }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-7 col-md-offset-1">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Sample Data File<star>*</star>
+                                            </label>
+                                            <div class="input-group">
+                                                <input class="form-control" type="file" id="samplefile" name="samplefile"/>
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-info btn-upload-sample btn-fill btn-wd">Upload</button>
+                                                </span>
+                                            </div>
+                                            <button id="working-upload-sample" class="btn btn-simple hide">
+                                                <i class="fa fa-refresh fa-spin fa-3x"></i>
+                                            </button>
+                                            <span id="samplefile-help" class="help-block">Select the sample file and upload it to get sample data for mapping</span>
+                                            <div class="error" id="error_contents"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-10 col-md-offset-1">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Sample Data<star>*</star>
+                                            </label>
+                                            <textarea class="form-control"
+                                                   type="text"
+                                                   name="samplerow"
+                                                      id="samplerow"
+                                                   data-rule-required="true"
+                                                      rows="3"
+                                                      data-msg-required="Please enter sample data with a header and row">{{ template.samplerow }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="tab-pane" id="tab2">
+                                <div class="row" id="mapping_table_container">
+                                    <div class="col-md-10">
+                                        <table class="table table-bordered no-datatable" id="mapping">
+                                            <thead>
+                                                <th>Source</th>
+                                                <th>Sample Data</th>
+                                                <th>Data Type</th>
+                                                <th>Processing</th>
+                                                <th>Parameters</th>
+                                                <th>Target</th>
+                                                <th>Ordering</th>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="error" id="error_contents">
+
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-default btn-fill btn-wd btn-back pull-left">Back</button>
+                        <button type="button" class="btn btn-info btn-fill btn-wd btn-next pull-right">Next</button>
+                        <button type="submit" class="finish btn btn-info btn-fill btn-wd btn-finish pull-right">Finish</button>
+                        <button id="working" class="btn btn-simple hide pull-right">
+                            <i class="fa fa-refresh fa-spin fa-3x"></i>
+                        </button>
+                        <button type="button" class="btn-secondary cls hidden" data-dismiss="modal"></button>
+                        <input type="hidden" id="id" name="id" value="{{template.id}}" />
+                        <input type="hidden" id="delimiter" name="delimiter" value="{{ template.delimiter }}" />
+                        <div class="clearfix"></div>
+                    </div>
+                </form>
+                <div class="hidden">
+                    {{ form_widget(form.processing) }}
+                    {{ form_widget(form.datatype) }}
+                    <input type="text" id="target" class="form-control input-target" data-rule-lettersandnumbersonly="true" data-msg-lettersandnumbersonly="The target name can only contain letters and numbers" />
+                    <input type="text" id="parameters" class="form-control input-parameters" data-rule-lettersnumbersspacesdashesdotandcommas="true" data-msg-lettersnumbersspacesdashesdotandcommas="The parameters can only contain letters, numbers, spaces, dot, dashes and commas" />
+                    <input type="order" id="order" maxlength="4" class="form-control input-order" data-rule-digits="true" data-msg-digits="Only digits can be entered for the order"  />
+                    <div id="rules_val">
+                        {{  template.rules }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

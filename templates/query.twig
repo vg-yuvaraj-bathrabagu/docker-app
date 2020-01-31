@@ -1,0 +1,264 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-2">
+                    {{ include('search.twig') }}
+                    </div>
+                    <div class="col-md-8 text-center">
+                        <a class="numbers btn btn-info btn-simple" href="#" data-target="#createQueryModal" data-toggle="modal">Query</a>
+                    </div>
+                    <div class="col-md-2 pull-right text-right">
+                        <a class="icon-big btn btn-info btn-simple" href="#" data-target="#createQueryModal" data-toggle="modal">
+                        <i class="fa fa-plus"></i></a>
+                        <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
+                                            class="fa fa-refresh"></i></a>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="refresh-big hide text-center">
+                <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>
+            </div>
+            <div class="tablecontent">
+                {{ include('query_table.twig') }}
+            </div>
+        </div>
+</div>
+ <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Query</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade results-modal" id="runQuery" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Query Results</h4>
+            </div>
+            <div class="modal-body new-window-link">
+                <i class="fa fa-refresh fa-2x fa-fw fa-spin ref"></i>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createQueryModal">
+{{  include('query_form.twig') }}
+</div>
+{% endblock body %}
+{% block custom_javascript %}
+<script type="text/javascript">
+    // TODO: Ensure that all AJAX calls are made from references to non-boostrap classes like btn-primary
+$(document).ready(function() {
+    $('.small-ref').click(function () {
+        $('.refresh i').addClass("fa-spin");
+        //var error = false;
+        $.ajax({
+            url: "queries/refresh",
+            type: "get",
+            dataType: "html", // Change this according to your response from the server.
+            error: function (err) {
+                error = true;
+            },
+            success: function (data) {
+                $('.refresh i').removeClass("fa-spin");
+                $('.tablecontent').html(data);
+                setupDataTable();
+            }
+        });
+    });
+
+    $(document).on('click','.edit', function(){
+        var href = $(this).attr('data-location');
+        $('#createQueryModal').load(href,function(){
+            $('#createQueryModal').modal({show:true});
+            $(".create").html('Update');
+            $('#category').val($('#category_val').val()).prop('selected', true);
+            $('#query_type').val($('#type_val').val()).prop('selected', true);
+        });
+    });
+
+    $(document).on('click','.run-interactive', function(){
+        $('.btn-secondary.cls').html('Cancel');
+        var href = $(this).attr('data-location');
+        var query = $(this).attr('data-query');
+        var notify = message = query+ " Query Execution started at: "+ Date();
+        var type = "info";
+        pushNotification(message, notify, type);
+        $('#runQuery').modal({show:true});
+        $('#runQuery .modal-body').load(href,function(){
+            // change the button to Close
+            $('.btn-secondary.cls').html('Close');
+            var notify = message = query+ " Query Execution completed at: "+ Date();
+            var type = "success";
+            pushNotification(message, notify, type);
+            // update the list of file watchers to show the status of the most recent run
+            $('.small-ref').click();
+            // setup all links in containers with the new-window-link class to open in a new window
+            $('.new-window-link a').attr('target', '_blank');
+        });
+
+    });
+
+    $(document).on('click','.run-background', function(){
+        var href = $(this).attr('data-location');
+        var query = $(this).attr('data-query');
+        var type = "info";
+            var notify = message = query+ " Query background execution started at: "+ Date();
+            var type = "info";
+            pushNotification(message, message, type);
+            var error = false;
+            $.ajax({
+              url:href,
+              type:"get",
+              error:function(err){
+                error = true;
+              },
+              success:function(data){
+
+              },
+              complete:function(data){
+                var type = "success";
+                if (error === true) {
+                  message = query+" Query background execution failed at: " + Date()+ " error: " + data.responseText;
+                  type = "danger";
+                  pushNotification(message, message, type);
+                }
+
+                $('.refresh i').removeClass("fa-spin");
+                if (error !== true) {
+                    $('.tablecontent').html(data.responseText);
+                }
+                setupDataTable();
+            }
+
+        });
+
+    });
+
+    $(document).on('click','.cls', function(){
+        if (!$('.ref').length){
+            $('#runQuery .modal-body').html('<i class="fa fa-refresh fa-2x fa-fw fa-spin ref"></i>');
+        }
+    });
+
+    $(document).on('click','.view', function(){
+        var href = $(this).attr('data-location');
+        $('#myModal .modal-body').load(href,function(){
+            $('#myModal').modal({show:true});
+        });
+    });
+
+    $(document).on('click','.delete-query', function(){
+        var href = $(this).attr('data-location');
+        var query = $(this).attr('data-query');
+            var message = query+" Query deletion started at: " + Date();
+            var type = "info";
+            pushNotification(message, message, type);
+            var error = false;
+            $.ajax({
+              url:href,
+              type:"get",
+              error:function(err){
+                    console.error(err);
+                error = true;
+              },
+              success:function(data){
+
+              },
+              complete:function(data){
+                var message = query+" Query deletion completed at: " + Date();
+                var type = "success";
+                if (error === true) {
+                  message = query+" Query deletion failed at: " + Date()+ " error: " + data.responseText;
+                  type = "danger";  
+                }
+                pushNotification(message, message, type);
+                $('.refresh i').removeClass("fa-spin");
+                if (error !== true) {
+                    $('.tablecontent').html(data.responseText);
+                }
+                setupDataTable();
+            }
+
+        });
+    });
+
+    $(document).on('click','#createQuery', function(){
+        $('#createQuery').validate({
+            submitHandler: function (form) {
+                hideSubmitButtonShowWorking();
+                // clear the error message
+                $('#error_contents').html('');
+                var vals = $(form).serializeArray();
+                var message = "Query " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " creation started at: " + Date();
+                var notify = 'createquery';
+                var type = "info";
+                pushNotification(message, message, type);
+                $('.refresh i').addClass("fa-spin");
+                var error = false;
+                $.ajax({
+                  url:"createquery",
+                  data: new FormData(form),// the formData function is available in almost all new browsers.
+                  type:"post",
+                  contentType:false,
+                  processData:false,
+                  cache:false,
+                  dataType:"html", // Change this according to your response from the server.
+                  error:function(err){
+                    error = true;
+                  },
+                  success:function(data){
+                      console.log(data);
+                  },
+                  complete:function(data){
+                    showSubmitButtonHideWorking();
+                    var message = notify = "Query " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " created at: " + Date();
+                    var type = "success";
+                    if (error === true) {
+                      notify = message = "Query " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " failed at: " + Date()+ " error: " + data.responseText;
+                      type = "danger";
+                      // set the error message
+                      $('#error_contents').html(data.responseText);
+                    } else {
+                        $('.btn-secondary.cls').click(); // close the modal
+                        $('.tablecontent').html(data.responseText);
+                        setupDataTable();
+                        $('#createQuery').clearForm();
+                    }
+
+                    pushNotification(message, message, type);
+                    $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

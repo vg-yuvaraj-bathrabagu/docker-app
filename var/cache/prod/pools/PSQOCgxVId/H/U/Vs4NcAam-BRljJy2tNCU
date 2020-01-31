@@ -1,0 +1,4 @@
+<?php return array (
+  0 => 9223372036854775807,
+  1 => 'a:2:{i:0;O:27:"Doctrine\\ORM\\Mapping\\Entity":2:{s:15:"repositoryClass";N;s:8:"readOnly";b:0;}i:1;O:41:"Doctrine\\ORM\\Mapping\\AssociationOverrides":1:{s:5:"value";a:1:{i:0;O:40:"Doctrine\\ORM\\Mapping\\AssociationOverride":5:{s:4:"name";s:4:"user";s:11:"joinColumns";N;s:9:"joinTable";N;s:10:"inversedBy";s:5:"roles";s:5:"fetch";N;}}}}',
+);

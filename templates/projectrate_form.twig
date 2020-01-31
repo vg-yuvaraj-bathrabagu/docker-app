@@ -1,0 +1,47 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createProjectRate" method="post" novalidate>
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Project</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                {{ form_row(form.project) }}
+                {{ form_row(form.user) }}
+                {{ form_row(form.clientrate) }}
+                {{ form_row(form.contractorrate) }}
+                {{ form_row(form.agencyrate) }}
+                {{ form_row(form.overtimerate) }}
+                {{ form_row(form.premiumrate) }}
+                {{ form_row(form.doublerate) }}
+                {{ form_row(form.triplerate) }}
+                {{ form_row(form.dailyrate) }}
+                {{ form_row(form.weeklyrate) }}
+                {{ form_row(form.monthlyrate) }}
+                {{ form_row(form.startdate) }}
+                {{ form_row(form.enddate) }}
+                {{ form_row(form.notes) }}
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+                {{ form_rest(form) }}
+                <div class="error" id="error_contents"></div>
+                <input type="hidden" id="project_val" value="{{ form.vars.value.project is null ?: form.vars.value.project.id }}"/>
+                <input type="hidden" id="user_val" value="{{ form.vars.value.user is null ?: form.vars.value.user.id }}"/>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

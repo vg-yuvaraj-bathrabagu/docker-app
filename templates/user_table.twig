@@ -1,0 +1,108 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Is Admin?</th>
+                    <th>Roles</th>
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                        <th>Account</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for user in users %}
+                    {%  set role_list = [] %}
+                    {% for role in user.roles %}
+                        {% set role_list = role_list|merge([role.role_name])  %}
+                    {% endfor %}
+
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="edituser?id={{user.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewuser?id={{user.id}}">
+                                            <i class="ti-eye" aria-hidden="true"></i>
+                                        </a>
+                            <a class="delete-user" href="#{{ user.id }}-delete" data-target="#{{ user.id }}-delete" data-toggle="modal" title="Delete User">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ user.id }}-delete" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Delete User</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete the user '{{ attribute(user, 'credential.email') }}' with names '{{ user.firstname }} {{ user.lastname }}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn delete-query btn-secondary" data-dismiss="modal" data-location="deleteuser?id={{user.id}}" data-query="{{ attribute(user, 'credential.email') }}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {{ user.firstname }}
+                        </td>
+                        <td>
+                            {{ user.lastname }}
+                        </td>
+                        <td>
+                            {{ attribute(user, 'credential.email') }}
+                        </td>
+                        <td>
+                            {% if ('ROLE_SUPER_ADMIN' in role_list) or ('ROLE_ADMIN' in role_list) %}
+                            Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </td>
+                        <td>
+
+
+                            <a class="btn-link" data-toggle="modal" href="#{{user.id}}-roles" data-target="#{{user.id}}-roles">
+                                {{ role_list | join(", ") | truncate(tables_long_text_display_characters) }}
+                            </a>
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{user.id}}-roles">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Roles</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ role_list | join("<br/>") | raw}}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <td>{{ user.account.name}}</td>
+                        {% endif %}
+
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>
+
+</div>

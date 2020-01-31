@@ -1,0 +1,134 @@
+<div class="card">
+    <div class="card-header">
+
+    </div>
+    <div class="card-content table-responsive table-full-width">
+        <table class="table" data-pagination="true" data-page-size="{{ tables_rows_per_page }}">
+            <thead>
+            <tr>
+                <th>Actions</th>
+                <th>Module</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Comments</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set increment = 0 %}
+
+            {% for report in customReports %}
+                {% set increment = increment + 1 %}
+                <tr>
+                    <td>
+                        {% if (report.status != 'Started') %}
+                            <a href="javascript:void(0);" title="Start Hadoop"
+                               class="btn btn-info btn-simple btn-xs start" data-id="{{ report.id }}"
+                               data-cat='{{ report.category }}'>
+                                <i class="ti-control-play"></i>
+                            </a>
+                        {% endif %}
+                        {% if (report.status == 'Started') %}
+                            <a href="#{{ report.id }}-stop" data-target="#{{ report.id }}-stop" data-toggle="modal" title="Stop Hadoop"
+                               class="btn btn-success btn-simple btn-xs" data-id="{{ report.id }}">
+                                <i class="ti-control-stop"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ report.id }}-stop" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Stop Hadoop</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to to stop the Hadoop instance'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary stop" data-dismiss="modal" data-id="{{report.id}}" data-cat='{{ report.category }}'>Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    <td>{{ report.module }}</td>
+                    <td>
+                        <a class="btn-link" data-toggle="modal" href="#{{report.id}}-description" data-target="#{{report.id}}-description">
+                            {{ report.description | truncate(tables_long_text_display_characters)}}
+                        </a>
+                        <div class="modal fade" tabindex="-1" role="dialog" id="{{report.id}}-description">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Description</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ report.description }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </td>
+                    <td>{{ report.category }}</td>
+                    <td class="text-nowrap">
+                        {% if report.statusresult is empty %}
+                            <span style="color: {{ report.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ report.status }}
+                        {% else  %}
+                            <a class="btn-link" data-toggle="modal" href="#{{report.id}}-statusresult" data-target="#{{report.id}}-statusresult">
+                                <span style="color: {{ report.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ report.status }}
+                            </a>
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{report.id}}-statusresult">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Status Result</h4>
+                                        </div>
+                                        <div class="modal-body new-window-link">
+                                            <h1>Log File URL</h1>{{ report.statusresult | markdowntohtml | raw | nl2br }}<br>
+                                            <h1>Log File Content</h1>
+                                            {{ report.statusresult | reads3filecontents | markdowntohtml | raw | nl2br }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn-link" data-toggle="modal" href="#{{report.id}}-comments" data-target="#{{report.id}}-comments">
+                            {{ report.comments | truncate(tables_long_text_display_characters)}}
+                        </a>
+                        <div class="modal fade" tabindex="-1" role="dialog" id="{{report.id}}-comments">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Comments</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ report.comments }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </td>
+                    <td class="text-nowrap">{{ report.ts_begin.date|date("Y-m-d H:i:s") }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+

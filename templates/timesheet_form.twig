@@ -1,0 +1,171 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <form id="createTimesheet" method="post">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span class="create">Create</span> Timesheet</h4>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div id="timesheet_account_period" class="row text-info">
+                            <div class="col-md-5">
+                                <b>Account: </b>{{ user.getAccount().getName()}}
+                            </div>
+                            <div class="col-md-7 text-left">
+                                <b>Period: </b>{{ weekstartdate }} - {{ weekenddate }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <b>Timesheet for:</b> {{ user.names }}<br />
+                                <b>Approver:</b> John Doe<br /><br />
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <textarea name="comments" class="form-control">{{ timesheet.comments}}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <table class="table no-datatable">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="2" id="timesheet_pto_balances">
+                                            <b>PTO Balances <i class="fa fa-info-circle" aria-hidden="true"></i></b>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr>
+                                        <td>
+                                            <b>V</b>
+                                        </td>
+                                        <td>&nbsp;&nbsp;5 HRS</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b>P</b>
+                                        </td>
+                                        <td>20 HRS</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b>S</b>
+                                        </td>
+                                        <td>30 HRS</td>
+                                    </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <table class="table no-datatable table-responsive">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="2" id="timesheet_hours_worked"><b>Hours Worked <i class="fa fa-info-circle" aria-hidden="true"></i></b></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td><b>CUR</b></td>
+                                        <td>&nbsp;&nbsp;40 HRS</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>MTD</b></td>
+                                        <td>&nbsp;&nbsp;80 HRS</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>YTD</b></td>
+                                        <td>240 HRS</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div id="timesheet_calendar">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <table class="table no-datatable table-responsive">
+                        <tbody>
+                        <tr>
+                            <th class="text-info">Project</th>
+                            <th class="text-info text-nowrap" id="timesheet_status">S <i class="fa fa-info-circle" aria-hidden="true"></i></th>
+                            <th class="text-info text-nowrap" id="timesheet_budget">B <i class="fa fa-info-circle" aria-hidden="true"></i></th>
+                            <th class="text-info">Task</th>
+                            <th class="text-info  text-nowrap">Sub-Task</th>
+                            <th class="text-center text-info">{{ weekstartdate | date_modify("+0 day") | date('m/d') }}</th>
+                            <th class="text-center text-info">{{ weekstartdate | date_modify("+1 day") | date('m/d') }}</th>
+                            <th class="text-center text-info">{{ weekstartdate | date_modify("+2 day") | date('m/d') }}</th>
+                            <th class="text-center text-info">{{ weekstartdate | date_modify("+3 day") | date('m/d') }}</th>
+                            <th class="text-center text-info">{{ weekstartdate | date_modify("+4day") | date('m/d') }}</th>
+                            <th class="text-center text-danger">{{ weekstartdate | date_modify("+5 day") | date('m/d') }}</th>
+                            <th class="text-center text-danger">{{ weekstartdate | date_modify("+6 day") | date('m/d') }}</th>
+                        </tr>
+                        {% for projectassignment in projectassignments %}
+                            <tr class="text-info">
+                                <td>{{ projectassignment.title  }}
+                                    <input type="hidden" name="detail[{{ projectassignment.projectid }}][projectassignmentid]"
+                                           value="{{ projectassignment.id }}"/>
+                                    <input type="hidden" name="detail[{{ projectassignment.projectid }}][taskid]"
+                                           value="{{ projectassignment.taskid }}"/>
+                                </td>
+                                <td>
+                                    <span style="color: {{   random() is even? 'green' : 'red'  }};"><i class="fa fa-square" aria-hidden="true"></i> </span>
+                                </td>
+                                <td>
+                                    <span style="color: {{  random() is even? 'green' : 'red'  }};"><i class="fa fa-square" aria-hidden="true"></i> </span>
+                                </td>
+                                <td>
+                                    {{ projectassignment.task }}
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                {% for day in  0..6 %}
+                                    <td>
+                                        <div class="form-group">
+                                            {% set date_addition = ["+", day, " day"]|join %}
+                                            <input type="text"
+                                                   name="detail[{{ projectassignment.projectid }}][{{ weekstartdate | date_modify(date_addition) | date('Y-m-d') }}]"
+                                                   class="form-control {{ projectassignment.projectid }} col-md-1" maxlength="3"
+                                                   data-rule-number="true"
+                                                   data-rule-max="{{ projectassignment.maximumhoursperday }}" {{ (day == 5 and projectassignment.saturdayworkallowed == 0) ?'readonly' }} {{ (day == 6 and projectassignment.sundayworkallowed == 0)?'readonly' }}
+                                                   value=""/>
+
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                                <td>
+                                    <span class="{{ projectassignment.projectid }}"></span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+                <div class="error" id="error_contents"></div>
+                <input type="hidden" name="id" value="{{ timesheet.id }}"/>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <input type="hidden" name="userid" value="{{ userid }}"/>
+                <input type="hidden" name="start" value="{{ weekstartdate }}"/>
+                <input type="hidden" name="end" value="{{ weekenddate }}"/>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createTask" method="post">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Task</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">Title
+                        <star>*</star>
+                    </label>
+                    <input value="{{ task.title }}" class="form-control" type="text" name="title"
+                           data-rule-required="true" data-msg-required="Please enter the task title"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Start Date
+                        <star>*</star>
+                    </label>
+                    <input value="{{ task.startdate|date('Y-m-d') }}" class="form-control datepicker" type="text" name="startdate"
+                           data-rule-required="true" data-msg-required="Please enter the start date of the task"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">End Date
+                    </label>
+                    <input value="{{ task.enddate|date('Y-m-d') }}" class="form-control datepicker" type="text" name="enddate" />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Assignee
+                    </label>
+                    {%  if task.id is empty %}
+                        {{ form_widget(form.assignee, {'full_name': 'assignee'}) }}
+                    {%  else %}
+                        {{ task.assignee }}
+                        <input type="hidden" id="assignee" name="assignee" value="{{ task.assignee }}"/>
+                    {%  endif %}
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Project
+                    </label>
+                    {%  if task.id is empty %}
+                        {{ form_widget(form.project, {'full_name': 'project'}) }}
+                    {%  else %}
+                        {{ task.project }}
+                        <input type="hidden" id="project" name="project" value="{{ task.project }}"/>
+                    {%  endif %}
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Parent Task
+                    </label>
+                        {{ form_widget(form.parent, {'full_name': 'parent'}) }}
+                        <input type="hidden" id="parent_val" value="{{ task.parent }}"/>
+                </div>
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+                <div class="error" id="error_contents"></div>
+                <input type="hidden" name="id" value="{{ task.id }}"/>
+                <input value="1" class="form-control" type="hidden" name="istimesheettask" />
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

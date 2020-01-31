@@ -1,0 +1,35 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table no-datatable" id="search_results_table">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Last Modified</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {%  for file in files %}
+
+                    <tr>
+                        <td>
+
+                        </td>
+                        <td class="wrap-long-text">
+                            {{ file.Key }}
+                        </td>
+                        <td>
+                            {{  file.Size | human_filesize}}
+                        </td>
+                        <td>
+                            {{  file.LastModified |date('Y-m-d  H:i:s')}}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

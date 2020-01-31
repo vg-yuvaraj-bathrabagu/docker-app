@@ -1,0 +1,108 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createProject" method="post">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Project</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="nav-tabs-navigation">
+                                <div class="nav-tabs-wrapper">
+                                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#general" data-toggle="tab">General</a></li>
+                                        <li role="presentation"><a href="#finance" data-toggle="tab">Finance</a></li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="error" id="error_contents"></div>
+                            <div class="category">
+                                <star>*</star>
+                                Required fields
+                            </div>
+                            <div id="my-tab-content" class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="general">
+                                    {{ form_row(form.title) }}
+                                    {{ form_row(form.projectid) }}
+                                    {{ form_row(form.estimatedstartdate) }}
+                                    {{ form_row(form.estimatedenddate) }}
+                                    {{ form_row(form.actualstartdate) }}
+                                    {{ form_row(form.actualenddate) }}
+                                    {{ form_row(form.budget) }}
+                                    {% if project.builtin == 0 %}
+                                        <div class="form-group">
+                                            <label class="control-label">Project Type
+                                                <star>*</star>
+                                            </label>
+                                            <select id="type" name="project[type]" class="form-control" data-rule-required="true"
+                                                    data-msg-required="Please enter the type of project">
+                                                <option value="Waterfall">Waterfall</option>
+                                                <option value="Agile">Agile</option>
+                                            </select>
+                                            <input type="hidden" id="type_val" value="{{ project.type }}"/>
+                                        </div>
+                                        <div class="form-group hidden agile">
+                                            <label class="control-label">Number of Sprints
+                                                <star>*</star>
+                                            </label>
+                                            <input value="{{ project.sprintcount }}" class="form-control" type="text" name="project[sprintcount]" data-msg-required="Please enter the number of sprints"/>
+                                        </div>
+                                        <div class="form-group hidden agile">
+                                            <label class="control-label">Length of Sprints (weeks)
+                                                <star>*</star>
+                                            </label>
+                                            <input value="{{ project.sprintduration }}" class="form-control" type="text" name="project[sprintduration]" data-msg-required="Please enter the number of weeks for each sprint"/>
+                                        </div>
+                                    {%  endif %}
+                                </div>
+                                <div role="tabpanel" class="tab-pane active" id="finance">
+                                    {{ form_row(form.effectivedate) }}
+                                    {{ form_row(form.expirydate) }}
+                                    {{ form_row(form.projectcategory) }}
+                                    {{ form_row(form.sponsor) }}
+                                    {{ form_row(form.projectexecutive) }}
+                                    {{ form_row(form.projectmanager) }}
+                                    {{ form_row(form.jobcode) }}
+                                    {{ form_row(form.costcentercode) }}
+                                    {{ form_row(form.activity) }}
+                                    {{ form_row(form.laborpoline) }}
+                                    {{ form_row(form.travelpoline) }}
+                                    {{ form_row(form.odcpoline) }}
+                                    {{ form_row(form.mailinglist) }}
+                                    {{ form_row(form.priority) }}
+                                    {{ form_row(form.status) }}
+                                    {{ form_row(form.immediatesupervisorname) }}
+                                    {{ form_row(form.immediatesupervisorphone) }}
+                                    {{ form_row(form.immediatesupervisoremail) }}
+                                    {{ form_row(form.supervisorname) }}
+                                    {{ form_row(form.supervisorphone) }}
+                                    {{ form_row(form.supervisoremail) }}
+                                    {{ form_row(form.notes) }}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+                {{ form_row(form.id) }}
+                {{ form_row(form.uuid) }}
+                {{ form_row(form._token) }}
+            </div>
+        </form>
+    </div>
+</div>

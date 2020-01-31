@@ -1,0 +1,376 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-5 search-row">
+                        <form class="form-inline navbar-search-form navbar-search-form-filter" role="search">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                    <input type="text" value="" class="form-control search" placeholder="Search...">
+                                </div>
+                            </div>&nbsp;&nbsp;
+                            <div class="form-group">
+                                <div id="category-filter-container" class="input-group">
+                                </div>
+                                <div id="status-filter-container" class="input-group"></div>
+                                <div id="assignee-filter-container" class="input-group"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-5 text-left">
+                        <a class="numbers btn btn-info btn-simple" href="#" data-target="#createTaskQueueModal" data-toggle="modal">Task Queue</a>
+                    </div>
+                    <div class="col-md-2 pull-right text-right">
+                        <a class="icon-big btn btn-info btn-simple" href="#" data-target="#createTaskQueueModal" data-toggle="modal">
+                        <i class="fa fa-plus"></i></a>
+                        <a class="btn btn-info btn-simple refresh pull-right small-ref" href="javascript:void(0);"><i
+                                            class="fa fa-refresh"></i></a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="refresh-big hide text-center">
+                <i class="fa fa-refresh fa-5x fa-spin refresh-big text-center"></i>
+            </div>
+            <div class="tablecontent">
+                {{ include('taskqueue_table.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+ <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">TaskQueue</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade results-modal" id="runTaskQueue" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">TaskQueue Results</h4>
+            </div>
+            <div class="modal-body new-window-link">
+                <i class="fa fa-refresh fa-2x fa-fw fa-spin ref"></i>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createTaskQueueModal">
+    {{ include('taskqueue_form.twig') }}
+</div>
+{% endblock body %}
+{% block custom_javascript %}
+<script type="text/javascript">
+    // TODO: Ensure that all AJAX calls are made from references to non-boostrap classes like btn-primary
+$(document).ready(function() {
+    // load the contents and display the filters
+    $('.small-ref').click(function () {
+        $('.refresh i').addClass("fa-spin");
+        //var error = false;
+        $.ajax({
+            url: "taskqueue/refresh",
+            type: "get",
+            dataType: "html", // Change this according to your response from the server.
+            error: function (err) {
+                error = true;
+            },
+            success: function (data) {
+                $('.refresh i').removeClass("fa-spin");
+                $('.tablecontent').html(data);
+                setupTaskQueueDataTable();
+                $('.refresh i').removeClass("fa-spin");
+            }
+        });
+    });
+
+    // trigger a referesh action
+    $('.small-ref').trigger('click');
+
+    $(document).on('click','.edit', function(){
+        var href = $(this).attr('data-location');
+        $('#createTaskQueueModal').load(href,function(){
+            $('#createTaskQueueModal').modal({show:true});
+            $(".create").html('Update');
+            $('#name').val($('#name_val').val()).prop('selected', true);
+        });
+    });
+
+    $(document).on('click','.run-interactive', function(){
+        $('.btn-secondary.cls').html('Cancel');
+        var href = $(this).attr('data-location');
+        var taskqueue = $(this).attr('data-query');
+        var notify = message = taskqueue+ " TaskQueue Execution started at: "+ Date();
+        var type = "info";
+        pushNotification(message, notify, type);
+        $('#runTaskQueue').modal({show:true});
+        $('#runTaskQueue .modal-body').load(href,function(){
+            // change the button to Close
+            $('.btn-secondary.cls').html('Close');
+            var notify = message = taskqueue+ " TaskQueue Execution completed at: "+ Date();
+            var type = "success";
+            pushNotification(message, notify, type);
+            // update the list of file watchers to show the status of the most recent run
+            $('.small-ref').click();
+            // setup all links in containers with the new-window-link class to open in a new window
+            $('.new-window-link a').attr('target', '_blank');
+        });
+
+    });
+
+    $(document).on('click','.run-background', function(){
+        var href = $(this).attr('data-location');
+        var taskqueue = $(this).attr('data-query');
+
+        var type = "info";
+        var notify = message = taskqueue+ " TaskQueue background execution started at: "+ Date();
+        var type = "info";
+        pushNotification(message, message, type);
+        var error = false;
+        $.ajax({
+              url:href,
+              type:"get",
+              error:function(err){
+                error = true;
+              },
+              success:function(data){
+
+              },
+              complete:function(data){
+                var type = "success";
+                if (error === true) {
+                  message = taskqueue+" TaskQueue background execution failed at: " + Date()+ " error: " + data.responseText;
+                  type = "danger";
+                  pushNotification(message, message, type);
+                }
+
+                $('.refresh i').removeClass("fa-spin");
+                if (error !== true) {
+                    $('.tablecontent').html(data.responseText);
+                }
+                setupTaskQueueDataTable();
+            }
+        });
+    });
+
+    $(document).on('click','.cls', function(){
+        if (!$('.ref').length){
+            $('#runTaskQueue .modal-body').html('<i class="fa fa-refresh fa-2x fa-fw fa-spin ref"></i>');
+        }
+    });
+
+    $(document).on('click','.view', function(){
+        var href = $(this).attr('data-location');
+        $('#myModal .modal-body').load(href,function(){
+            $('#myModal').modal({show:true});
+        });
+    });
+
+    $(document).on('click','.delete-taskqueue', function(){
+        var href = $(this).attr('data-location');
+        var taskqueue = $(this).attr('data-query');
+            var message = taskqueue+" TaskQueue deletion started at: " + Date();
+            var type = "info";
+            pushNotification(message, message, type);
+            var error = false;
+            $.ajax({
+              url:href,
+              type:"get",
+              error:function(err){
+                    console.error(err);
+                error = true;
+              },
+              success:function(data){
+
+              },
+              complete:function(data){
+                var message = taskqueue+" TaskQueue deletion completed at: " + Date();
+                var type = "success";
+                if (error === true) {
+                  message = taskqueue+" TaskQueue deletion failed at: " + Date()+ " error: " + data.responseText;
+                  type = "danger";  
+                }
+                pushNotification(message, message, type);
+                $('.btn-secondary.cls').click();
+                $('.refresh i').removeClass("fa-spin");
+                if (error !== true) {
+                    $('.tablecontent').html(data.responseText);
+                }
+                setupTaskQueueDataTable();
+            }
+
+        });
+    });
+
+    $(document).on('click','#createTaskQueue', function() {
+        $('#createTaskQueue').validate({
+            submitHandler: function (form) {
+                hideSubmitButtonShowWorking();
+                // clear the error message
+                $('#error_contents').html('');
+                var vals = $(form).serializeArray();
+                var message = "TaskQueue " + getSerializedFormDataAsCommaDelimitedString($(form).serialize())+ " creation started at: " + Date();
+                var notify = 'createtaskqueue';
+                var type = "info";
+                pushNotification(message, message, type);
+                $('.refresh i').addClass("fa-spin");
+                var error = false;
+                $.ajax({
+                  url:"createtaskqueue",
+                  data: new FormData(form),// the formData function is available in almost all new browsers.
+                  type:"post",
+                  contentType:false,
+                  processData:false,
+                  cache:false,
+                  dataType:"html", // Change this according to your response from the server.
+                  error:function(err){
+                    error = true;
+                  },
+                  success:function(data){
+                      console.log(data);
+                  },
+                  complete:function(data){
+                        showSubmitButtonHideWorking();
+                        var message = notify = "TaskQueue " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " created at: " + Date();
+                        var type = "success";
+                        if (error === true) {
+                          notify = message = "TaskQueue " + getSerializedFormDataAsCommaDelimitedString($(form).serialize()) + " failed at: " + Date()+ " error: " + data.responseText;
+                          type = "danger";
+                            // set the error message
+                            $('#error_contents').html(data.responseText);
+                        } else {
+                            $('.btn-secondary.cls').click();
+                            $('.tablecontent').html(data.responseText);
+                            setupTaskQueueDataTable();
+                            $('#createTaskQueue').clearForm();
+                        }
+                        pushNotification(message, message, type);
+                        $('.refresh i').removeClass("fa-spin");
+                    }
+                });
+            }
+        });
+    });
+
+    /**
+     * Setup Datatables configuration for the Task Queue page which includes a filter on the folder column
+     */
+    function setupTaskQueueDataTable(selector = '.table:not(.no-datatable)') {
+        /* Data Table plugin integration - the no-datatable class stops this styling from being applied*/
+        var table = $(selector).DataTable({
+            'dom': '<"top">tp',
+            "pagingType" : "simple_numbers",
+            "pageLength": {{ tables_rows_per_page }},
+            "order": [],
+            language: {
+                paginate: {
+                    next: '&gt;', // or '>'
+                    previous: '&lt;' // or '<'
+                }
+            },
+            initComplete: function () {
+                // columns use a 0 based column index
+                // Category Filter
+                this.api().columns(3).every( function () {
+                    var column = this;
+                    var category_select = $('<select id="category-filter" class="form-control"><option value="">Category</option></select>')
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+
+                    column.data().unique().sort().each( function ( d, j ) {
+                        category_select.append( '<option value="'+d+'">'+d+'</option>' )
+                    } );
+                    // add the select to the span
+                    $('#category-filter-container').html(category_select);
+                } );
+
+                // Assignee Filter
+                this.api().columns(8).every( function () {
+                    var column = this;
+                    var assignee_select = $('<select id="assignee-filter" class="form-control"><option value="">Assignee</option></select>')
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+
+                    column.data().unique().sort().each( function ( d, j ) {
+                        assignee_select.append( '<option value="'+d+'">'+d+'</option>' )
+                    } );
+                    // add the select to the span
+                    $('#assignee-filter-container').html(assignee_select);
+                } );
+
+                // Status Filter
+                this.api().columns(7).every( function () {
+                    var column = this;
+                    var status_select = $('<select id="status-filter" class="form-control"><option value="">Status</option></select>')
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+
+                    column.data().unique().sort().each( function ( d, j ) {
+                        status_select.append( '<option value="'+d+'">'+d+'</option>' )
+                    } );
+                    // add the select to the span
+                    $('#status-filter-container').html(status_select);
+                } );
+            }
+        });
+
+        $('.search').on('keyup', function(){
+            table.search(this.value).draw();
+        });
+        // This is copied as is from the paper-dashboard.js library as part of trying to remove its functionality
+        // We put modals out of wrapper to working properly
+        $('.modal').appendTo("body");
+        // setup all links in containers with the new-window-link class to open in a new window
+        $('.new-window-link a').attr('target', '_blank');
+    }
+
+});
+</script>
+{% endblock %}

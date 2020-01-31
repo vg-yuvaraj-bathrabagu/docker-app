@@ -1,0 +1,157 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createAccount">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Account</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="card-content Hadoop-form">
+                    <div class="form-group">
+                        <label class="control-label">Name
+                            <star>*</star>
+                        </label>
+                        {% if account.id is defined and account.id is not empty %}
+                            {{ account.name }}
+                            <input type="hidden" name="name" value="{{ account.name }}">
+                        {% else %}
+                            <input class="form-control"
+                                   name="name"
+                                   id="name"
+                                   value=""
+                                   type="text"
+                                   data-rule-required="true"
+                                   data-msg-required="Please enter the account name"/>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Description
+                            <star></star>
+                        </label>
+                        <textarea class="form-control" name="description"
+                                  id="description">{{ account.description }}</textarea>
+                    </div>
+                    {% if account.id is defined and account.id is not empty %}
+                    {% else %}
+                        <div class="form-group">
+                            <label class="control-label">Admin First Name
+                                <star>*</star>
+                            </label>
+                            <input class="form-control"
+                                   name="firstname"
+                                   id="firstname"
+                                   type="text"
+                                   data-rule-required="true"
+                                   data-msg-required="Please enter the administrator's first name"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Admin Last Name
+                                <star>*</star>
+                            </label>
+                            <input class="form-control"
+                                   name="lastname"
+                                   id="lastname"
+                                   type="text"
+                                   data-rule-required="true"
+                                   data-msg-required="Please enter the administrator's last name"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Admin email
+                                <star>*</star>
+                            </label>
+                            <input class="form-control"
+                                   name="email"
+                                   id="email"
+                                   type="text"
+                                   data-rule-required="true"
+                                   data-msg-required="Please enter the email of the administrator account"
+                                   data-rule-email="true"
+                                   data-msg-email="Please enter a valid email address"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Admin password
+                                <star>*</star>
+                            </label>
+                            <input class="form-control"
+                                   name="password"
+                                   id="password"
+                                   type="password"
+                                   data-rule-required="true"
+                                   data-msg-required="Please enter the password for the administrator account" data-rule-strongpassword="true"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Confirm password
+                                <star>*</star>
+                            </label>
+                            <input class="form-control"
+                                   name="confirmpassword"
+                                   id="confirmpassword"
+                                   type="password"
+                                   data-rule-equalTo="#password"
+                                   data-msg-equalTo="Please enter the same password for both fields"/>
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label class="control-label">Dashboard Url
+                        </label>
+                        <textarea class="form-control"
+                                  name="dashboardurl"
+                                  id="dashboardurl"
+                                  data-rule-url="true"
+                                  data-msg-url="Please enter a valid url to the dashboard">{{ account.dashboardurl }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Current Activity Url
+                        </label>
+                        <textarea class="form-control"
+                                  name="currentactivityurl"
+                                  id="currentactivityurl"
+                                  data-rule-url="true"
+                                  data-msg-url="Please enter a valid url to the current activity report">{{ account.currentactivityurl }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">History Activity Url
+                        </label>
+                        <textarea class="form-control"
+                                  name="historyactivityurl"
+                                  id="historyactivityurl"
+                                  data-rule-url="true"
+                                  data-msg-url="Please enter a valid url to the history activity report">{{ account.historyactivityurl }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Nexus Report Url
+                        </label>
+                        <textarea class="form-control"
+                                  name="nexusreporturl"
+                                  id="nexusreporturl"
+                                  data-rule-url="true"
+                                  data-msg-url="Please enter a valid url to the report for the Nexus module">{{ account.nexusreporturl }}</textarea>
+                    </div>
+
+                    <div class="category">
+                        <star>*</star>
+                        Required fields
+                    </div>
+                    <div class="error" id="error_contents">
+                    </div>
+                    <div class="card-footer">
+                        <div class="clearfix"></div>
+                    </div>
+                    <input type="hidden" name="id" value="{{ account.id }}"/>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

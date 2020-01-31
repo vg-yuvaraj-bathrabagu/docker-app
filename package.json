@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "docs:prepare": "npm install gitbook-cli -g && gitbook install",
+    "docs:generate": "npm run docs:prepare && gitbook pdf ./ docs/oncloudtime-usermanual.pdf"
+  },
+  "dependencies": {
+    "gitbook-plugin-chapter-headings": "^0.1.0"
+  }
+}

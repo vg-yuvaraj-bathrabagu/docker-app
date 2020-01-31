@@ -1,0 +1,38 @@
+{# TODO: Clean up the array referencing in this page #}
+{% set Rows = Results['Rows'] %}
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Tables</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set increment = 0 %}
+                    {% for row in Rows %}
+                        {% for data in row %}
+                            {% set increment = increment + 1 %}
+                    <tr>
+
+                        <td>
+                            <a href="javascript:void(0);" class="edit" title="Edit Table" data-location="edittable?table={{data[0]['VarCharValue'] }}">
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a href="#" title="Clone Table"><i class="fa fa-clone" aria-hidden="true"></i></a>
+                        </td>
+                        <td>
+                            {{ data[0]['VarCharValue'] }}
+                        </td>
+
+                    </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div><!--  end card  -->

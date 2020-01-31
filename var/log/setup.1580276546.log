@@ -1,0 +1,137 @@
+++ dirname /data/personal/docker-app/shell/admin/setup.sh
++ script_full_path=/data/personal/docker-app/shell/admin
++ source /data/personal/docker-app/shell/admin/../.aws_config
+++ export AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ export AWS_SECRET_ACCESS_KEY=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
+++ AWS_SECRET_ACCESS_KEY=q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA
++ echo root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580276546.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
+root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580276546.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
++ echo 'Starting installation'
+Starting installation
++ aws s3api create-bucket --bucket yuva-bucket --region us-east-1
+{
+    "Location": "/yuva-bucket"
+}
++ echo 'S3 bucket created'
+S3 bucket created
++ athena_log_file_absolute_path=/data/personal/docker-app/var/log/setup.1580276546.log.athena
++ aws athena --region us-east-1 start-query-execution --query-string 'CREATE DATABASE IF NOT EXISTS test' --result-configuration OutputLocation=s3://yuva-bucket/athena-output/ --output text
+++ cat /data/personal/docker-app/var/log/setup.1580276546.log.out
+++ awk '{print $1}'
++ query_execution_id=b85a7c1f-b65e-47dc-99ae-55b30a8c8442
+++ date '+%Y-%m-%d %H:%M'
++ START='2020-01-29 11:12'
++ count=0
++ true
+++ date '+%Y-%m-%d %H:%M'
++ NOW='2020-01-29 11:12'
+++ aws --region us-east-1 athena get-query-execution --query-execution-id b85a7c1f-b65e-47dc-99ae-55b30a8c8442
+++ grep State
+++ sed 's: ::g'
++ query_status='"State":"SUCCEEDED",'
++ query_status_exit_code=0
++ echo 'The query execution exit code is 0 and "State":"SUCCEEDED",'
+The query execution exit code is 0 and "State":"SUCCEEDED",
++ '[' 0 = 0 ']'
++ case $query_status in
++ break
+++ date '+%Y-%m-%d %H:%M'
++ END='2020-01-29 11:12'
++ echo 'Athena output file /data/personal/docker-app/var/log/setup.1580276546.log.athena'
+Athena output file /data/personal/docker-app/var/log/setup.1580276546.log.athena
++ aws athena --region us-east-1 get-query-results --query-execution-id b85a7c1f-b65e-47dc-99ae-55b30a8c8442 --no-paginate --output json
++ echo 'Athena directory created'
+Athena directory created
++ '[' 1 = 1 ']'
++ echo 'Resetting the database'
+Resetting the database
++ mysql -h localhost --user=root --password=mysql oncloudtime
++ athena_log_file_absolute_path_state_guide=/data/personal/docker-app/var/log/setup.1580276546.logstateguide.athena
++ state_guide_table_input_location=s3://yuva-bucket/app/nexus/stateguide/intake/
++ state_guide_table_output_location=s3://yuva-bucket/app/nexus/stateguide/output/
++ aws athena --region us-east-1 start-query-execution --query-string 'create external table IF NOT EXISTS stateguide (id int, accountid int, state string, code string, effectivedate date, salestransactionsthreshold int, salesdollarsthreshold double, nearingtransactioncountthreshold int, nearingsalesthreshold double, createdby string, datecreated string, lastupdatedby string, lastupdatedate string, uuid string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\'','\'' LOCATION '\''s3://yuva-bucket/app/nexus/stateguide/intake/'\'';' --result-configuration OutputLocation=s3://yuva-bucket/app/nexus/stateguide/output/ --query-execution-context Database=test --output text
+++ cat /data/personal/docker-app/var/log/setup.1580276546.logstateguide.out
+++ awk '{print $1}'
++ query_execution_id_state_guide=e72dfc3f-a514-4b02-8bbc-91b48ab8e66a
+++ date '+%Y-%m-%d %H:%M'
++ START='2020-01-29 11:13'
++ count=0
++ true
+++ date '+%Y-%m-%d %H:%M'
++ NOW='2020-01-29 11:13'
+++ aws --region us-east-1 athena get-query-execution --query-execution-id e72dfc3f-a514-4b02-8bbc-91b48ab8e66a
+++ grep State
+++ sed 's: ::g'
++ query_stateguide_status='"State":"SUCCEEDED",'
++ query_stateguide_status_exit_code=0
++ echo 'The query execution exit code for nexus is 0 and "State":"SUCCEEDED",'
+The query execution exit code for nexus is 0 and "State":"SUCCEEDED",
++ '[' 0 = 0 ']'
++ case $query_stateguide_status in
++ break
+++ date '+%Y-%m-%d %H:%M'
++ END='2020-01-29 11:13'
++ echo 'Athena output file /data/personal/docker-app/var/log/setup.1580276546.logstateguide.athena'
+Athena output file /data/personal/docker-app/var/log/setup.1580276546.logstateguide.athena
++ aws athena --region us-east-1 get-query-results --query-execution-id e72dfc3f-a514-4b02-8bbc-91b48ab8e66a --no-paginate --output json
++ echo 'State guide table created'
+State guide table created
++ echo 'Uploading the state guide file to S3'
+Uploading the state guide file to S3
++ aws s3 --region us-east-1 cp /data/personal/docker-app/shell/admin/../../data/state_guide.csv s3://yuva-bucket/app/nexus/stateguide/intake/
+Completed 5.3 KiB/5.3 KiB (3.5 KiB/s) with 1 file(s) remainingupload: ../data/state_guide.csv to s3://yuva-bucket/app/nexus/stateguide/intake/state_guide.csv
++ INSTALL_YAML_FILE=/data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ COGNITO_POOL_ID_FILE=/data/personal/docker-app/var/log/setup.1580276546.log.aws_cognito_pool_id
++ COGNITO_POOL_CLIENT_ID_FILE=/data/personal/docker-app/var/log/setup.1580276546.log.aws_cognito_pool_client_id
++ COGNITO_USER_CREATE_FILE=/data/personal/docker-app/var/log/setup.1580276546.log.aws_cognito_create_users
++ COGNITO_USER_LIST_FILE=/data/personal/docker-app/var/log/setup.1580276546.log.aws_cognito_users
++ COGNITO_IAM_ROLE_ARN=/data/personal/docker-app/var/log/setup.1580276546.log.iam_role_arn
++ aws iam --region us-east-1 list-roles --output text --query 'Roles[?RoleName==`oncloudtime-iam-role-dev`].Arn'
+++ cat /data/personal/docker-app/var/log/setup.1580276546.log.rolename_check
++ '[' -z arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev ']'
++ echo 'Deleting Role oncloudtime-iam-role-dev'
+Deleting Role oncloudtime-iam-role-dev
++ aws iam delete-role --role-name oncloudtime-iam-role-dev
++ aws iam --region us-east-1 create-role --role-name oncloudtime-iam-role-dev --description 'IAM Role for OnCloudtime Users' --assume-role-policy-document file:///data/personal/docker-app/shell/admin/../../config/policies/oncloudtime-iam-role-trust-policy.json --output text --query Role.Arn
++ aws cognito-idp --region us-east-1 list-user-pools --max-results 20 --output text --query 'UserPools[?Name==`oncloudtime-user-pool-dev`].Id'
+++ cat /data/personal/docker-app/var/log/setup.1580276546.log.user_pool_name_check
++ existing_user_pools_ids=us-east-1_CE2W9vzuJ
++ [[ -z us-east-1_CE2W9vzuJ ]]
++ for user_pool_id_for_deletion in ${existing_user_pools_ids}
++ echo 'Deleting User Pool with name oncloudtime-user-pool-dev and id us-east-1_CE2W9vzuJ'
+Deleting User Pool with name oncloudtime-user-pool-dev and id us-east-1_CE2W9vzuJ
++ aws cognito-idp --region us-east-1 delete-user-pool --user-pool-id us-east-1_CE2W9vzuJ
++ aws cognito-idp --region us-east-1 create-user-pool --pool-name oncloudtime-user-pool-dev --username-attributes email --email-verification-message 'Please click the link below to verify your email address {####}' --email-verification-subject 'OnCloudTime Account Verification Link' --schema 'Name=accountid,AttributeDataType=Number,NumberAttributeConstraints={MinValue=1,MaxValue=4000000},Mutable=false' 'Name=uuid,AttributeDataType=String,Mutable=false,StringAttributeConstraints={MinLength=38,MaxLength=38}' --admin-create-user-config AllowAdminCreateUserOnly=false,UnusedAccountValidityDays=90 --output text --query UserPool.Id
+++ cat /data/personal/docker-app/var/log/setup.1580276546.log.aws_cognito_pool_id
++ cognito_pool_id=us-east-1_pBVuFccj8
++ echo 'The cognito pool id is us-east-1_pBVuFccj8'
+The cognito pool id is us-east-1_pBVuFccj8
+++ cat /data/personal/docker-app/var/log/setup.1580276546.log.iam_role_arn
++ cognito_group_iam_role_arn=arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev
++ aws cognito-idp --region us-east-1 create-group --user-pool-id us-east-1_pBVuFccj8 --group-name oncloudtimePoolGroup --description 'Group for Oncloudtime User Pool' --role-arn arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev
+{
+    "Group": {
+        "GroupName": "oncloudtimePoolGroup",
+        "UserPoolId": "us-east-1_pBVuFccj8",
+        "Description": "Group for Oncloudtime User Pool",
+        "RoleArn": "arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev",
+        "LastModifiedDate": 1580276628.27,
+        "CreationDate": 1580276628.27
+    }
+}
++ aws cognito-idp --region us-east-1 create-user-pool-client --user-pool-id us-east-1_pBVuFccj8 --client-name oncloudtime-client-app --refresh-token-validity 300 --no-generate-secret --explicit-auth-flows ADMIN_NO_SRP_AUTH USER_PASSWORD_AUTH --supported-identity-providers COGNITO --read-attributes email custom:uuid custom:accountid --write-attributes email custom:uuid custom:accountid --output text --query UserPoolClient.ClientId
+++ cat /data/personal/docker-app/var/log/setup.1580276546.log.aws_cognito_pool_client_id
++ cognito_pool_client_id=7kcb45ftjgi7s4uc5vugkq17gd
++ echo 'The cognito pool client id is 7kcb45ftjgi7s4uc5vugkq17gd'
+The cognito pool client id is 7kcb45ftjgi7s4uc5vugkq17gd
+++ mktemp
++ tmp=/tmp/tmp.30YvyPSmUa
++ yq -j '.parameters.cognito_pool_id = "us-east-1_pBVuFccj8"' /data/personal/docker-app/shell/admin/../../config/install/install.yaml
+/data/personal/docker-app/shell/admin/setup.sh: line 193: yq: command not found
++ yq -j '.parameters.cognito_pool_client_id = "7kcb45ftjgi7s4uc5vugkq17gd"' /data/personal/docker-app/shell/admin/../../config/install/install.yaml
+/data/personal/docker-app/shell/admin/setup.sh: line 194: yq: command not found
++ cat /data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ yq -y .
+/data/personal/docker-app/shell/admin/setup.sh: line 197: yq: command not found
+cat: write error: Broken pipe

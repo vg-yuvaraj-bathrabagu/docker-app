@@ -1,0 +1,233 @@
+<div class="card">
+    <div class="card-content table-responsive table-full-width">
+        <table class="table" data-pagination="true" data-page-size="{{ tables_rows_per_page }}">
+            <thead>
+            <tr>
+                <th>Actions</th>
+                <th>Name</th>
+                <th>Format</th>
+                <th>Table</th>
+                <th>Sample Row</th>
+                <th>Metadata Rules</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Date Created</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set increment = 0 %}
+
+            {% for template in templates %}
+                {% set increment = increment + 1 %}
+                <tr>
+                    <td>
+                            <a href="javascript:void(0);" title="Edit Template"
+                               class="btn btn-info btn-simple btn-xs edit" data-location="edittemplate?id={{ template.id }}" data-name="{{ template.name }}">
+                                <i class="ti-pencil"></i>
+                            </a>
+
+                        {% if (template.isactive == 0) %}
+                            <a href="#{{ template.id }}-activate" data-target="#{{ template.id }}-activate" data-toggle="modal" title="Activate Template"
+                               class="btn btn-info btn-simple btn-xs" >
+                                <i class="ti-control-play"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ template.id }}-activate" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Activate Template</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to activate the template '{{ template.name }}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn activate btn-secondary" data-dismiss="modal" data-location="activatetemplate?id={{ template.id }}" data-name="{{ template.name }}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {%  if ((template.createdby == app.user.username) or ((is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPER_ADMIN')) and template.type == 'Core'))  %}
+                        <a href="#{{ template.id }}-delete" data-target="#{{ template.id }}-delete" data-toggle="modal" title="Delete Template">
+                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </a>
+                        <div class="modal fade" tabindex="-1" id="{{ template.id }}-delete" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Delete Template Confirmation</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete the template '{{ template.name }}'?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn delete-template btn-secondary" data-dismiss="modal" data-location="deletetemplate?id={{template.id}}" data-name="{{ template.name}}">Yes</button>
+                                        <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if (template.isactive == 1)%}
+                            <a href="#{{ template.id }}-deactivate" data-target="#{{ template.id }}-deactivate" data-toggle="modal" title="Deactivate Template"
+                               class="btn btn-success btn-simple btn-xs" >
+                                <i class="ti-control-stop"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ template.id }}-deactivate" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Deactivate Template</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to deactivate the template '{{ template.name }}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn deactivate btn-secondary" data-dismiss="modal" data-location="deactivatetemplate?id={{ template.id }}" data-name="{{ template.name }}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if (template.forsync == 1) %}
+                            <a href="#{{ template.id }}-sync" data-target="#{{ template.id }}-sync" data-toggle="modal" title="Sync Template"
+                               class="btn btn-info btn-simple btn-xs">
+                                <i class="ti-reload"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ template.id }}-sync" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Sync Template</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to sync the template '{{ template.name }}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn sync btn-secondary" data-dismiss="modal" data-location="synctemplate?id={{ template.id }}" data-name="{{ template.name }}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button type="button" class="btn-link" data-toggle="modal" data-target="#{{template.id}}-name">
+                            {{ template.name | truncate(tables_long_text_display_characters) }}
+                        </button>
+                        <div class="modal fade" tabindex="-1" role="dialog" id="{{template.id}}-name">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Name</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ template.name | nl2br}}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </td>
+                    <td>{{ template.format }}</td>
+                    <td>
+                        <button type="button" class="btn-link" data-toggle="modal" data-target="#{{template.id}}-tablename">
+                            {{ template.tablename | truncate(tables_long_text_display_characters) }}
+                        </button>
+                        <div class="modal fade" tabindex="-1" role="dialog" id="{{template.id}}-tablename">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Table</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ template.tablename | nl2br}}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+
+                    </td>
+                    <td>
+                        <button type="button" class="btn-link" data-toggle="modal" data-target="#{{template.id}}-samplerow">
+                            {{ template.samplerow | truncate(tables_long_text_display_characters) }}
+                        </button>
+                        <div class="modal fade sample-row" tabindex="-1" role="dialog" id="{{template.id}}-samplerow">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Sample Row</h4>
+                                    </div>
+                                    <div class="modal-body wrap-long-text">
+                                        {{ template.samplerow | nl2br}}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </td>
+                    <td>
+                        <button type="button" class="btn-link" data-toggle="modal" data-target="#{{template.id}}-rules">
+                            {{ template.rules | truncate(tables_long_text_display_characters) }}
+                        </button>
+                        <div class="modal fade rules" tabindex="-1" role="dialog" id="{{template.id}}-rules">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Rules</h4>
+                                    </div>
+                                    <div class="modal-body wrap-long-text">
+                                            {{ template.rules | nl2br }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </td>
+                    <td>
+                        {{ template.type }}
+                    </td>
+                    <td>
+                        {%  if template.forsync == 1 %}
+                            <span style="color: {{ template.color }}"><i class="fa fa-circle" aria-hidden="true"></i> </span> For Sync
+                        {%  else %}
+
+                            {%  if template.isactive == 0 %}
+                                <span style="color: red"><i class="fa fa-circle" aria-hidden="true"></i> </span> Inactive
+                            {%  else  %}
+                                <span style="color: green"><i class="fa fa-circle" aria-hidden="true"></i> </span> Active
+                            {%  endif %}
+                        {%  endif %}
+                    </td>
+                    <td>{{ template.datecreated.date|date("Y-m-d H:i:s") }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+

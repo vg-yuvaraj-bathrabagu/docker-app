@@ -1,0 +1,68 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Date Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for account in accounts %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="editaccount?id={{ account.id }}">
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewaccount?id={{ account.id }}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            {% if(is_granted('ROLE_SUPER_ADMIN')) %}
+                            <a class="delete" href="javascript:void(0);"
+                               data-location="deleteaccount?id={{ account.id }}" data-query="{{ account.name }}">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                            {%  endif %}
+                        </td>
+                        <td>
+                            {{ account.name }}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{account.id}}-title" data-target="#{{account.id}}-title">
+                                {{ account.description | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{account.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Description</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ account.description }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ account.datecreated|date('Y-m-d  H:i:s') }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

@@ -1,0 +1,17 @@
+parameters:
+    rdbms_host: localhost
+    rdbms_dbname: oncloudtime
+    rdbms_user: oncloudtime
+    rdbms_password: oncloudtime
+    aws_credentials_key: ''
+    aws_credentials_secret: ''
+    athena_directory: ''
+    athena_database: ''
+    athena_input: ''
+    athena_output: ''
+    sqs_notificationQueue: ''
+    s3_bucket: ''
+    need_update: 'yes'
+    sns_general_topic: ''
+    cognito_pool_id: ''
+    cognito_pool_client_id: ''

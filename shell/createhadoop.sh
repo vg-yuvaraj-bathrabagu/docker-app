@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+script_full_path=$(dirname "$0")
+source "$script_full_path/".aws_config
+# $1 - rdbms_user
+# $2 - rdbms_password
+# $3- rdbms_dbname
+# $4 - rdbms_host
+# $5 - category
+# $6 - nodes
+# $7 - uuid
+# $8 - account id
+# $9 - s3 region
+# ${10} - absolute path to log file
+# ${11} - path to s3 folder to upload log file
+# ${12} - s3 presign duration
+# ${13} - log file name
+
+
+echo "uuid " $7
+mysql -h $1 --user=$2 --password=$3 $4 <<EOF
+INSERT INTO hadoop_status (\`nodes\`, \`category\`, \`status\`, \`module\`, \`comments\`, \`ts_begin\`, \`description\`, \`uuid\`, \`accountid\`) VALUES ("$6", "$5", "Created", "test_mod", "test_comments", now(), "test_desc", "$7", $8);
+EOF
+
+# url to which the file will be copied
+s3_url="s3://${11}${7}/${13}"
+# copy the log file to S3
+source $script_full_path"/"uploadtos3.sh "$9" "${10}" "$s3_url"
+
+# Presign the url to the file
+https_url=`aws s3 presign "$s3_url" --expires-in ${12}`
+
+mysql -h $1 --user=$2 --password=$3 $4 <<EOF
+UPDATE hadoop_status set \`statusresult\` = '$https_url' where \`uuid\` = "$7";
+EOF
+
+echo 0

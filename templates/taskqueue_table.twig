@@ -1,0 +1,90 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Task</th>
+                    <th>Attachments</th>
+                    <th>Category</th>
+                    <th>Identifier</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Assignee</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for taskqueue in taskqueues %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="edittaskqueue?id={{taskqueue.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewtaskqueue?id={{taskqueue.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="#" title="Search"><i class="fa fa-search" aria-hidden="true"></i></a>
+                            <a href="#" title="Clone"><i class="fa fa-clone" aria-hidden="true"></i></a>
+                            <a href="#" title="Attach"><i class="fa fa-paperclip" aria-hidden="true"></i></a>
+                            <a href="#" title="Mail"><i class="fa fa-envelope-o" aria-hidden="true"></i></a>
+                            <a href="#" title="Update Status"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{taskqueue.id}}-title" data-target="#{{taskqueue.id}}-title">
+                                {{ taskqueue.title | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{taskqueue.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Title</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ taskqueue.title }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            <!-- attachments -->
+                        </td>
+                        <td>
+                            {{ taskqueue.category }}
+                        </td>
+
+                        <td>
+
+                        </td>
+                        <td>
+
+                                {{ taskqueue.startdate | date('m/d/Y') }}
+
+                        </td>
+                        <td>
+                            {{ taskqueue.enddate | date('m/d/Y') }}
+                        </td>
+                        <td>
+                            {{ taskqueue.status }}
+                        </td>
+                        <td>
+                            {{ taskqueue.firstname ~ ' ' ~ taskqueue.lastname }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

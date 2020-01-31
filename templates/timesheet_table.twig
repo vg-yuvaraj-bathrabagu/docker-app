@@ -1,0 +1,72 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>User</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Approver</th>
+                    <th>Approver Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for timesheet in timesheets %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="edittimesheet?id={{timesheet.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewtimesheet?id={{timesheet.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="#{{ timesheet.id }}-delete" data-target="#{{ timesheet.id }}-delete" data-toggle="modal" title="Delete Project">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ timesheet.id }}-delete" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Delete Timesheet Confirmation</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete the timesheet for '{{ timesheet.firstname }} {{ timesheet.lastname }}' from '{{ timesheet.startdate|date('Y-m-d')}} to {{ timesheet.enddate|date('Y-m-d')}}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn delete-timesheet btn-secondary" data-dismiss="modal" data-location="deletetimesheet?id={{timesheet.id}}" data-query="{{ timesheet.firstname}}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            {{ timesheet.firstname }} {{ timesheet.lastname }}
+                        </td>
+                        <td>
+                            {{ timesheet.startdate|date('Y-m-d') }}
+                        </td>
+                        <td>
+                            {{ timesheet.enddate|date('Y-m-d') }}
+
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

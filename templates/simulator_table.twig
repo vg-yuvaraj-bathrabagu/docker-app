@@ -1,0 +1,206 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Folder</th>
+                    <th>Description</th>
+                    <th>Code</th>
+                    <th>Status</th>
+                    <th>Timestamp</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set increment = 0 %}
+
+                {% for simulation in simulations %}
+
+                    {% set increment = increment + 1 %}
+                    <tr>
+                        <td>
+                            <a class="edit" href="javascript:void(0);" data-location="editmodel?id={{simulation.id}}" >
+                                <i class="ti-pencil" aria-hidden="true"></i>
+                            </a>
+                            <a class="view" href="javascript:void(0);" data-location="viewmodel?id={{simulation.id}}">
+                                <i class="ti-eye" aria-hidden="true"></i>
+                            </a>
+                            <a href="#{{ simulation.id }}-delete" data-target="#{{ simulation.id }}-delete" data-toggle="modal" title="Delete Model">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ simulation.id }}-delete" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Delete Model Confirmation</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete the model '{{ simulation.title }}'?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn delete-model btn-secondary" data-dismiss="modal" data-location="deletemodel?id={{simulation.id}}" data-query="{{ simulation.title}}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#{{ simulation.id }}-run-background" data-target="#{{ simulation.id }}-run-background" data-toggle="modal" title="Run in Background">
+                                <i class="fa fa-server" aria-hidden="true"></i>
+                            </a>
+                            <div class="modal fade" tabindex="-1" id="{{ simulation.id }}-run-background" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close cls" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Run Model in Background</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to run the model '{{ simulation.title }}' in the background?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn run-background btn-secondary" data-dismiss="modal" data-location="runmodel?id={{simulation.id}}&type=background" data-query="{{ simulation.title}}">Yes</button>
+                                            <button type="button" class="btn btn-secondary cls" data-dismiss="modal">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="run-interactive" href="javascript:void(0);" data-location="runmodel?id={{simulation.id}}&type=interactive" data-query="{{ simulation.title}}" title="Run Interactively">
+                                <i class="ti-control-play" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{simulation.id}}-title" data-target="#{{simulation.id}}-title">
+                                {{ simulation.title | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{simulation.id}}-title">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Title</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ simulation.title }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ simulation.category }}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{simulation.id}}-bucket" data-target="#{{simulation.id}}-bucket">
+                                {{ simulation.bucket | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{simulation.id}}-bucket">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Folder</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ simulation.bucket }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{simulation.id}}-description" data-target="#{{simulation.id}}-description">
+                                {{ simulation.description | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{simulation.id}}-description">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Description</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ simulation.description }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            <a type="button" class="btn-link" data-toggle="modal" href="#{{simulation.id}}-querystring" data-target="#{{simulation.id}}-querystring">
+                                {{ simulation.querystring | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{simulation.id}}-querystring">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Code</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ simulation.querystring }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+
+                        </td>
+                        <td class="text-nowrap">
+                            {% if simulation.statusresult is empty %}
+                                <span style="color: {{ simulation.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ simulation.status }}
+                            {% else  %}
+                                <a class="btn-link" data-toggle="modal" href="#{{simulation.id}}-statusresult" data-target="#{{simulation.id}}-statusresult">
+                                    <span style="color: {{ simulation.color }};"><i class="fa fa-circle" aria-hidden="true"></i> </span> {{ simulation.status }}
+                                </a>
+                                <div class="modal fade" tabindex="-1" role="dialog" id="{{simulation.id}}-statusresult">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title">Status Result</h4>
+                                            </div>
+                                            <div class="modal-body new-window-link">
+                                                <h1>Log File URL</h1> {{ simulation.statusresult | markdowntohtml | raw | nl2br }} <br>
+
+                                                {{ simulation.statusresult | reads3filecontents | markdowntohtml | raw | nl2br }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            {{ simulation.date|date('Y-m-d  H:i:s') }}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

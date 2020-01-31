@@ -1,0 +1,32 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createTaskCategory" method="post" novalidate>
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Task Category</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                {{ form_row(form.title) }}
+                {{ form_row(form.description) }}
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+                {{ form_rest(form) }}
+                <div class="error" id="error_contents"></div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

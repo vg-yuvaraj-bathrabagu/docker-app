@@ -1,0 +1,29 @@
+POST http://localhost:9000/createhadoop
+Host: localhost:9000
+Authorization: Basic QVRTMDA0OjEyMzQ1Njc4
+Cache-Control: no-cache
+Postman-Token: dd94c70f-6ea2-4336-a38f-046a548e7060
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="nodes"
+
+1
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="category"
+
+Test Category
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+POST http://oncloudtime.test/createhadoop
+Accept: */*
+Cache-Control: no-cache
+
+nodes=1&category=2
+
+<> 2018-05-11T015906.302.html
+
+###
+

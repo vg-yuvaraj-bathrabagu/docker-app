@@ -1,0 +1,282 @@
+++ dirname /data/personal/docker-app/shell/admin/setup.sh
++ script_full_path=/data/personal/docker-app/shell/admin
++ source /data/personal/docker-app/shell/admin/../.aws_config
+++ export AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ AWS_ACCESS_KEY_ID=AKIAIZ6ENRM52CQMFSTA
+++ export AWS_SECRET_ACCESS_KEY=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
+++ AWS_SECRET_ACCESS_KEY=q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA
++ echo root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580291633.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
+root mysql oncloudtime localhost AKIAIZ6ENRM52CQMFSTA q4ShyCPF38sccLYwnb0hcmKtMl820Rx/jo5naFCA test test s3://yuva-bucket/ s3://yuva-bucket/athena-output/ https://sqs.us-east-1.amazonaws.com/590297375119/test-yuva yuva-bucket no arn:aws:sns:us-east-1:590297375119:test-sns us-east-1 /data/personal/docker-app/var/log/setup.1580291633.log 1 oncloudtimePoolGroup oncloudtime-user-pool-dev oncloudtime-iam-role-dev oncloudtime-client-app oc-APP-001
++ echo 'Starting installation'
+Starting installation
++ aws s3api create-bucket --bucket yuva-bucket --region us-east-1
+{
+    "Location": "/yuva-bucket"
+}
++ echo 'S3 bucket created'
+S3 bucket created
++ athena_log_file_absolute_path=/data/personal/docker-app/var/log/setup.1580291633.log.athena
++ aws athena --region us-east-1 start-query-execution --query-string 'CREATE DATABASE IF NOT EXISTS test' --result-configuration OutputLocation=s3://yuva-bucket/athena-output/ --output text
+++ cat /data/personal/docker-app/var/log/setup.1580291633.log.out
+++ awk '{print $1}'
++ query_execution_id=4fd33f81-47cb-4265-a40a-588c24adef03
+++ date '+%Y-%m-%d %H:%M'
++ START='2020-01-29 15:23'
++ count=0
++ true
+++ date '+%Y-%m-%d %H:%M'
++ NOW='2020-01-29 15:23'
+++ aws --region us-east-1 athena get-query-execution --query-execution-id 4fd33f81-47cb-4265-a40a-588c24adef03
+++ grep State
+++ sed 's: ::g'
++ query_status='"State":"SUCCEEDED",'
++ query_status_exit_code=0
++ echo 'The query execution exit code is 0 and "State":"SUCCEEDED",'
+The query execution exit code is 0 and "State":"SUCCEEDED",
++ '[' 0 = 0 ']'
++ case $query_status in
++ break
+++ date '+%Y-%m-%d %H:%M'
++ END='2020-01-29 15:23'
++ echo 'Athena output file /data/personal/docker-app/var/log/setup.1580291633.log.athena'
+Athena output file /data/personal/docker-app/var/log/setup.1580291633.log.athena
++ aws athena --region us-east-1 get-query-results --query-execution-id 4fd33f81-47cb-4265-a40a-588c24adef03 --no-paginate --output json
++ echo 'Athena directory created'
+Athena directory created
++ '[' 1 = 1 ']'
++ echo 'Resetting the database'
+Resetting the database
++ mysql -h localhost --user=root --password=mysql oncloudtime
++ athena_log_file_absolute_path_state_guide=/data/personal/docker-app/var/log/setup.1580291633.logstateguide.athena
++ state_guide_table_input_location=s3://yuva-bucket/app/nexus/stateguide/intake/
++ state_guide_table_output_location=s3://yuva-bucket/app/nexus/stateguide/output/
++ aws athena --region us-east-1 start-query-execution --query-string 'create external table IF NOT EXISTS stateguide (id int, accountid int, state string, code string, effectivedate date, salestransactionsthreshold int, salesdollarsthreshold double, nearingtransactioncountthreshold int, nearingsalesthreshold double, createdby string, datecreated string, lastupdatedby string, lastupdatedate string, uuid string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\'','\'' LOCATION '\''s3://yuva-bucket/app/nexus/stateguide/intake/'\'';' --result-configuration OutputLocation=s3://yuva-bucket/app/nexus/stateguide/output/ --query-execution-context Database=test --output text
+++ cat /data/personal/docker-app/var/log/setup.1580291633.logstateguide.out
+++ awk '{print $1}'
++ query_execution_id_state_guide=0f87acc7-0fc5-40c6-8d17-b716a79bffa6
+++ date '+%Y-%m-%d %H:%M'
++ START='2020-01-29 15:24'
++ count=0
++ true
+++ date '+%Y-%m-%d %H:%M'
++ NOW='2020-01-29 15:24'
+++ aws --region us-east-1 athena get-query-execution --query-execution-id 0f87acc7-0fc5-40c6-8d17-b716a79bffa6
+++ grep State
+++ sed 's: ::g'
++ query_stateguide_status='"State":"SUCCEEDED",'
++ query_stateguide_status_exit_code=0
++ echo 'The query execution exit code for nexus is 0 and "State":"SUCCEEDED",'
+The query execution exit code for nexus is 0 and "State":"SUCCEEDED",
++ '[' 0 = 0 ']'
++ case $query_stateguide_status in
++ break
+++ date '+%Y-%m-%d %H:%M'
++ END='2020-01-29 15:24'
++ echo 'Athena output file /data/personal/docker-app/var/log/setup.1580291633.logstateguide.athena'
+Athena output file /data/personal/docker-app/var/log/setup.1580291633.logstateguide.athena
++ aws athena --region us-east-1 get-query-results --query-execution-id 0f87acc7-0fc5-40c6-8d17-b716a79bffa6 --no-paginate --output json
++ echo 'State guide table created'
+State guide table created
++ echo 'Uploading the state guide file to S3'
+Uploading the state guide file to S3
++ aws s3 --region us-east-1 cp /data/personal/docker-app/shell/admin/../../data/state_guide.csv s3://yuva-bucket/app/nexus/stateguide/intake/
+Completed 5.3 KiB/5.3 KiB (1.7 KiB/s) with 1 file(s) remainingupload: ../data/state_guide.csv to s3://yuva-bucket/app/nexus/stateguide/intake/state_guide.csv
++ INSTALL_YAML_FILE=/data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ COGNITO_POOL_ID_FILE=/data/personal/docker-app/var/log/setup.1580291633.log.aws_cognito_pool_id
++ COGNITO_POOL_CLIENT_ID_FILE=/data/personal/docker-app/var/log/setup.1580291633.log.aws_cognito_pool_client_id
++ COGNITO_USER_CREATE_FILE=/data/personal/docker-app/var/log/setup.1580291633.log.aws_cognito_create_users
++ COGNITO_USER_LIST_FILE=/data/personal/docker-app/var/log/setup.1580291633.log.aws_cognito_users
++ COGNITO_IAM_ROLE_ARN=/data/personal/docker-app/var/log/setup.1580291633.log.iam_role_arn
++ aws iam --region us-east-1 list-roles --output text --query 'Roles[?RoleName==`oncloudtime-iam-role-dev`].Arn'
+++ cat /data/personal/docker-app/var/log/setup.1580291633.log.rolename_check
++ '[' -z arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev ']'
++ echo 'Deleting Role oncloudtime-iam-role-dev'
+Deleting Role oncloudtime-iam-role-dev
++ aws iam delete-role --role-name oncloudtime-iam-role-dev
++ aws iam --region us-east-1 create-role --role-name oncloudtime-iam-role-dev --description 'IAM Role for OnCloudtime Users' --assume-role-policy-document file:///data/personal/docker-app/shell/admin/../../config/policies/oncloudtime-iam-role-trust-policy.json --output text --query Role.Arn
++ aws cognito-idp --region us-east-1 list-user-pools --max-results 20 --output text --query 'UserPools[?Name==`oncloudtime-user-pool-dev`].Id'
+++ cat /data/personal/docker-app/var/log/setup.1580291633.log.user_pool_name_check
++ existing_user_pools_ids=us-east-1_CoYrJynGm
++ [[ -z us-east-1_CoYrJynGm ]]
++ for user_pool_id_for_deletion in ${existing_user_pools_ids}
++ echo 'Deleting User Pool with name oncloudtime-user-pool-dev and id us-east-1_CoYrJynGm'
+Deleting User Pool with name oncloudtime-user-pool-dev and id us-east-1_CoYrJynGm
++ aws cognito-idp --region us-east-1 delete-user-pool --user-pool-id us-east-1_CoYrJynGm
++ aws cognito-idp --region us-east-1 create-user-pool --pool-name oncloudtime-user-pool-dev --username-attributes email --email-verification-message 'Please click the link below to verify your email address {####}' --email-verification-subject 'OnCloudTime Account Verification Link' --schema 'Name=accountid,AttributeDataType=Number,NumberAttributeConstraints={MinValue=1,MaxValue=4000000},Mutable=false' 'Name=uuid,AttributeDataType=String,Mutable=false,StringAttributeConstraints={MinLength=38,MaxLength=38}' --admin-create-user-config AllowAdminCreateUserOnly=false,UnusedAccountValidityDays=90 --output text --query UserPool.Id
+++ cat /data/personal/docker-app/var/log/setup.1580291633.log.aws_cognito_pool_id
++ cognito_pool_id=us-east-1_f2elqUMPV
++ echo 'The cognito pool id is us-east-1_f2elqUMPV'
+The cognito pool id is us-east-1_f2elqUMPV
+++ cat /data/personal/docker-app/var/log/setup.1580291633.log.iam_role_arn
++ cognito_group_iam_role_arn=arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev
++ aws cognito-idp --region us-east-1 create-group --user-pool-id us-east-1_f2elqUMPV --group-name oncloudtimePoolGroup --description 'Group for Oncloudtime User Pool' --role-arn arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev
+{
+    "Group": {
+        "GroupName": "oncloudtimePoolGroup",
+        "UserPoolId": "us-east-1_f2elqUMPV",
+        "Description": "Group for Oncloudtime User Pool",
+        "RoleArn": "arn:aws:iam::590297375119:role/oncloudtime-iam-role-dev",
+        "LastModifiedDate": 1580291718.341,
+        "CreationDate": 1580291718.341
+    }
+}
++ aws cognito-idp --region us-east-1 create-user-pool-client --user-pool-id us-east-1_f2elqUMPV --client-name oncloudtime-client-app --refresh-token-validity 300 --no-generate-secret --explicit-auth-flows ADMIN_NO_SRP_AUTH USER_PASSWORD_AUTH --supported-identity-providers COGNITO --read-attributes email custom:uuid custom:accountid --write-attributes email custom:uuid custom:accountid --output text --query UserPoolClient.ClientId
+++ cat /data/personal/docker-app/var/log/setup.1580291633.log.aws_cognito_pool_client_id
++ cognito_pool_client_id=1ncuuvnku3u4hku6p11dnqiqgv
++ echo 'The cognito pool client id is 1ncuuvnku3u4hku6p11dnqiqgv'
+The cognito pool client id is 1ncuuvnku3u4hku6p11dnqiqgv
+++ mktemp
++ tmp=/tmp/tmp.9XjkDqhSnd
++ yq -j '.parameters.cognito_pool_id = "us-east-1_f2elqUMPV"' /data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ mv /tmp/tmp.9XjkDqhSnd /data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ yq -j '.parameters.cognito_pool_client_id = "1ncuuvnku3u4hku6p11dnqiqgv"' /data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ mv /tmp/tmp.9XjkDqhSnd /data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ cat /data/personal/docker-app/shell/admin/../../config/install/install.yaml
++ yq -y .
++ cat /data/personal/docker-app/shell/admin/../../config/install/install.yaml.tmp
++ rm -f /data/personal/docker-app/shell/admin/../../config/install/install.yaml.tmp
++ mysql -h localhost --user=root --password=mysql --skip-column-names -e 'SELECT credential_email FROM app_user' oncloudtime
++ mysql -h localhost --user=root --password=mysql --skip-column-names -e 'SELECT CONCAT('\''--username '\'', credential_email, '\'' --user-attributes=Name="custom:uuid",Value="'\'' , REPLACE(uuid, '\''\n'\'', '\'''\''), '\''",Name=custom:accountid,Value="'\'', account_id, '\''",Name="email",Value="'\'', credential_email, '\''"'\'') FROM app_user' oncloudtime
++ echo 'Adding application users to us-east-1_f2elqUMPV'
+Adding application users to us-east-1_f2elqUMPV
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username admin@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="3f35cde5-0f47-4c5f-bb59-31bbafcc9c64",Name=custom:accountid,Value="1",Name="email",Value="admin@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "12510c72-c8c7-4038-8124-4d5c3be2fce3"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username ATS002@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="f1cc1e22-6fce-4ce1-88e1-faf704ecf123",Name=custom:accountid,Value="1",Name="email",Value="ATS002@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "e772e408-e8f9-4a65-8a91-ffd8a92f76d8"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username ATS003@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="6eb865f7-d5d6-4f04-bf6d-4a0ee05a8081",Name=custom:accountid,Value="2",Name="email",Value="ATS003@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "15a74e26-dfe1-49b6-9464-80a4ef2bb1cb"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username ATS004@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="5df79a88-b73d-47c6-b482-eb681f3c9b4d",Name=custom:accountid,Value="2",Name="email",Value="ATS004@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "65950b4a-e5fa-4ccf-9b76-419a437afb4c"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username fryawe@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="bb1de4ca-e7ee-49e9-8096-f3fa45082e2b",Name=custom:accountid,Value="2",Name="email",Value="fryawe@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "f51511d0-cf4b-4fc9-ab79-ef681588d151"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username northorp.admin@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="ecf570f6-d7fd-4c54-8946-c3ec56b169ad",Name=custom:accountid,Value="3",Name="email",Value="northorp.admin@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "de35fbcf-effe-433a-b0bb-665b161b4eae"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username northorp.user@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="c67d1c88-0613-4890-89d6-f90879e96c87",Name=custom:accountid,Value="3",Name="email",Value="northorp.user@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "4a4b0264-0e53-4640-a2cf-22643b5ac9a1"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username walmart.admin@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="01965cce-f45e-496c-8364-87998b2ff3bc",Name=custom:accountid,Value="4",Name="email",Value="walmart.admin@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "99e2df31-c5dc-4c9e-bcb0-74b7e5ee8467"
+}
++ IFS=
++ read -r user_details
++ aws cognito-idp --region us-east-1 sign-up --client-id 1ncuuvnku3u4hku6p11dnqiqgv --username walmart.user@oncloudtime.com '--user-attributes=Name="custom:uuid",Value="c31558bb-4215-4dd5-bc88-8f75e8716706",Name=custom:accountid,Value="4",Name="email",Value="walmart.user@oncloudtime.com"' --password oc-APP-001
+{
+    "UserConfirmed": false,
+    "UserSub": "d78a9e42-0a85-47bb-a4b5-bb26da93be18"
+}
++ IFS=
++ read -r user_details
++ echo 'Setting passwords and confirming signup for application users in us-east-1_f2elqUMPV'
+Setting passwords and confirming signup for application users in us-east-1_f2elqUMPV
++ IFS=
++ read -r username
++ echo 'confirming signup for  admin@oncloudtime.com'
+confirming signup for  admin@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username admin@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username admin@oncloudtime.com --output text --query Username
++ cognito_username=12510c72-c8c7-4038-8124-4d5c3be2fce3
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username 12510c72-c8c7-4038-8124-4d5c3be2fce3 --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  ATS002@oncloudtime.com'
+confirming signup for  ATS002@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username ATS002@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username ATS002@oncloudtime.com --output text --query Username
++ cognito_username=e772e408-e8f9-4a65-8a91-ffd8a92f76d8
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username e772e408-e8f9-4a65-8a91-ffd8a92f76d8 --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  ATS003@oncloudtime.com'
+confirming signup for  ATS003@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username ATS003@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username ATS003@oncloudtime.com --output text --query Username
++ cognito_username=15a74e26-dfe1-49b6-9464-80a4ef2bb1cb
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username 15a74e26-dfe1-49b6-9464-80a4ef2bb1cb --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  ATS004@oncloudtime.com'
+confirming signup for  ATS004@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username ATS004@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username ATS004@oncloudtime.com --output text --query Username
++ cognito_username=65950b4a-e5fa-4ccf-9b76-419a437afb4c
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username 65950b4a-e5fa-4ccf-9b76-419a437afb4c --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  fryawe@oncloudtime.com'
+confirming signup for  fryawe@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username fryawe@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username fryawe@oncloudtime.com --output text --query Username
++ cognito_username=f51511d0-cf4b-4fc9-ab79-ef681588d151
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username f51511d0-cf4b-4fc9-ab79-ef681588d151 --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  northorp.admin@oncloudtime.com'
+confirming signup for  northorp.admin@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username northorp.admin@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username northorp.admin@oncloudtime.com --output text --query Username
++ cognito_username=de35fbcf-effe-433a-b0bb-665b161b4eae
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username de35fbcf-effe-433a-b0bb-665b161b4eae --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  northorp.user@oncloudtime.com'
+confirming signup for  northorp.user@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username northorp.user@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username northorp.user@oncloudtime.com --output text --query Username
++ cognito_username=4a4b0264-0e53-4640-a2cf-22643b5ac9a1
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username 4a4b0264-0e53-4640-a2cf-22643b5ac9a1 --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  walmart.admin@oncloudtime.com'
+confirming signup for  walmart.admin@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username walmart.admin@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username walmart.admin@oncloudtime.com --output text --query Username
++ cognito_username=99e2df31-c5dc-4c9e-bcb0-74b7e5ee8467
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username 99e2df31-c5dc-4c9e-bcb0-74b7e5ee8467 --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username
++ echo 'confirming signup for  walmart.user@oncloudtime.com'
+confirming signup for  walmart.user@oncloudtime.com
++ aws cognito-idp --region us-east-1 admin-confirm-sign-up --user-pool-id us-east-1_f2elqUMPV --username walmart.user@oncloudtime.com
+++ aws cognito-idp --region us-east-1 admin-get-user --user-pool-id us-east-1_f2elqUMPV --username walmart.user@oncloudtime.com --output text --query Username
++ cognito_username=d78a9e42-0a85-47bb-a4b5-bb26da93be18
++ aws cognito-idp --region us-east-1 admin-add-user-to-group --user-pool-id us-east-1_f2elqUMPV --username d78a9e42-0a85-47bb-a4b5-bb26da93be18 --group-name oncloudtimePoolGroup
++ IFS=
++ read -r username

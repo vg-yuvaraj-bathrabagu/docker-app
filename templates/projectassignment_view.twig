@@ -1,0 +1,52 @@
+<div class="form-group">
+    <label class="control-label">Project : </label>
+    <span class="help-block">{{ projectassignment.project.title }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">User : </label>
+    <span class="help-block">{{ projectassignment.user.names }}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">Start Date : </label>
+    <span class="help-block">{{ projectassignment.startdate |date('Y-m-d')}}</span>
+</div>
+<div class="form-group">
+    <label class="control-label">End Date : </label>
+    <span class="help-block">{{ projectassignment.enddate |date('Y-m-d') }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Maximum Hours Per Day : </label>
+    <span class="help-block">{{ projectassignment.maximumhoursperday }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Maximum Hours Per Week : </label>
+    <span class="help-block">{{ projectassignment.maximumhoursperweek }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Saturday Work Allowed : </label>
+    <span class="help-block">{{ projectassignment.saturdayworkallowed | booleantoyesno}}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Sunday Work Allowed : </label>
+    <span class="help-block">{{ projectassignment.sundayworkallowed | booleantoyesno}}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Public Holiday Work Allowed : </label>
+    <span class="help-block">{{ projectassignment.publicholidayworkallowed | booleantoyesno}}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Regular Rate : </label>
+    <span class="help-block">{{ projectassignment.regularrate }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Overtime Rate : </label>
+    <span class="help-block">{{ projectassignment.overtimerate }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Approver Name : </label>
+    <span class="help-block">{{ projectassignment.approvername }}</span>
+</div>
+<div class="form-group">
+    <label required class="control-label">Approver Email : </label>
+    <span class="help-block">{{ projectassignment.approveremail }}</span>
+</div>

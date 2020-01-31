@@ -1,0 +1,134 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form id="createProjectAssignment" method="post">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="create">Create</span> Project Assignment</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="control-label">User
+                        {%  if projectassignment.id is empty %}
+                        <star>*</star>
+                        {% endif %}
+                    </label>
+                    {%  if projectassignment.id is empty %}
+                        {{ form_widget(form.user, {'full_name': 'user'}) }}
+                    {%  else %}
+                        {{ projectassignment.user }}
+                        <input type="hidden" id="user" name="user" value="{{ projectassignment.user }}"/>
+                    {%  endif %}
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Project
+                        {%  if projectassignment.id is empty %}
+                        <star>*</star>
+                        {% endif %}
+                    </label>
+                    {%  if projectassignment.id is empty %}
+                        {{ form_widget(form.project, {'full_name': 'project'}) }}
+                    {%  else %}
+                        {{ projectassignment.project.title }}
+                        <input type="hidden" id="project" name="project" value="{{ projectassignment.project }}"/>
+                    {%  endif %}
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Description
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.description }}" class="form-control" type="text" name="description" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Start Date
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.startdate|date('Y-m-d') }}" class="form-control datepicker" type="text" name="startdate"
+                           data-rule-required="true" data-msg-required="Please enter the assignment start date"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">End Date
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.enddate|date('Y-m-d') }}" class="form-control datepicker" type="text" name="enddate"
+                           data-rule-required="true" data-msg-required="Please enter the assignment end date"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Maximum hours per day
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.maximumhoursperday }}" class="form-control" type="text" name="maximumhoursperday"
+                           data-rule-required="true" data-msg-required="Please enter the maxiumum hours to be worked per day"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Maxiumum Hours Per Week
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.maximumhoursperweek }}" class="form-control" type="text" name="maximumhoursperweek"
+                           data-rule-required="true" data-msg-required="Please enter the maximum hours per week"/>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">Saturday Work Allowed
+                        <input type="checkbox" value="1" class="form-check-input" name="saturdayworkallowed" {%  if projectassignment.saturdayworkallowed == 1 %}checked{% endif %}/>
+                    </label>
+
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">Sunday Work Allowed
+                        <input type="checkbox" value="1" class="form-check-input" name="sundayworkallowed" {%  if projectassignment.sundayworkallowed == 1 %}checked{% endif %}/>
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">Public Holiday Work Allowed
+                        <input type="checkbox" value="1" class="form-check-input" name="publicholidayworkallowed" {%  if projectassignment.publicholidayworkallowed == 1 %}checked{% endif %}/>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Regular Rate
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.regularrate }}" class="form-control" type="text" name="regularrate"
+                           data-rule-required="true" data-msg-required="Please enter the regular rate"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Overtime Rate
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.overtimerate }}" class="form-control" type="text" name="overtimerate"
+                           data-rule-required="true" data-msg-required="Please enter the overtime rate"/>
+                </div>
+                 <div class="form-group">
+                    <label class="control-label">Approver Name
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.approvername }}" class="form-control" type="text" name="approvername"
+                           data-rule-required="true" data-msg-required="Please enter the approver's name"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Approver Email
+                        <star>*</star>
+                    </label>
+                    <input value="{{ projectassignment.approveremail }}" class="form-control" type="text" name="approveremail"
+                           data-rule-required="true" data-msg-required="Please enter the approver's email"/>
+                </div>
+                <div class="category">
+                    <star>*</star>
+                    Required fields
+                </div>
+                <div class="error" id="error_contents"></div>
+                <input type="hidden" name="id" value="{{ projectassignment.id }}"/>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cls" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary create">Create</button>
+                <button id="working" class="btn btn-simple hide pull-right">
+                    <i class="fa fa-refresh fa-spin fa-3x"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

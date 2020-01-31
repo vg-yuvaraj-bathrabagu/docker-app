@@ -1,0 +1,57 @@
+<div class="card">
+    <div class="card-content">
+        <div class="table-responsive">
+            <table class="table ">
+                <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Table</th>
+                    <th>Input Folder</th>
+                    <th>File Count</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for table in tables %}
+
+                    <tr>
+                        <td>
+                            <a class="search-for-files" href="javascript:void(0);" data-id="{{table.id}}" >
+                                <i class="ti-search" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td>
+                            {{ table.tablename }}
+                        </td>
+                        <td>
+                            <a class="btn-link" data-toggle="modal" href="#{{table.id}}-bucket" data-target="#{{table.id}}-bucket">
+                                {{ table.bucketinput | truncate(tables_long_text_display_characters) }}
+                            </a>
+
+                            <div class="modal fade" tabindex="-1" role="dialog" id="{{table.id}}-bucket">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">Folder</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ table.bucketinput }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </td>
+                        <td>
+                            {{ table.filecount }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div><!--  end card  -->
+</div>

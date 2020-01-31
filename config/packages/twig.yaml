@@ -1,0 +1,34 @@
+twig:
+    paths: ['%kernel.project_dir%/templates']
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    form_themes:
+            - bootstrap_3_layout.html.twig
+    globals:
+        activity_current_dashboardUrl: '%activity.current.dashboardUrl%'
+        activity_history_dashboardUrl: '%activity.history.dashboardUrl%'
+        athena_directory: "%athena_directory%"
+        athena_database: "%athena_database%"
+        aws_credentials_key: "%aws_credentials_key%"
+        aws_credentials_secret: "%aws_credentials_secret%"
+        company_name: "%company.name%"
+        dashboard_powerbiUrl: '%dashboard.powerbiUrl%'
+        nexus_powerbiUrl: '%nexus.powerbiUrl%'
+        need_update: "%need_update%"
+        rdbms_dbname: "%rdbms_dbname%"
+        rdbms_host: "%rdbms_host%"
+        rdbms_user: "%rdbms_user%"
+        rdbms_password: "%rdbms_password%"
+        s3_bucket: "%s3_bucket%"
+        sns_general_topic: "%sns_general_topic%"
+        sqs_notificationQueue: "%sqs_notificationQueue%"
+        tables_long_text_display_characters: '%tables.long_text_display_characters%'
+        tables_rows_per_page: '%tables.rows_per_page%'
+        tables_templates_rows_per_page: '%tables.templates_rows_per_page%'
+        date_format: '%date.format%'
+        asset_image_login: '%asset.image.login%'
+        asset_image_sidebar: '%asset.image.sidebar%'
+        sidebar_activetext_color: "%sidebar.activetext.color%"
+        notification_success_color: "%notification.success.color%"
+        notification_info_color: "%notification.info.color%"
+        notification_failed_color: "%notification.failed.color%"
